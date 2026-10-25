@@ -1,0 +1,224 @@
+import { g as U, O as h } from "./openbridge-env.DInZk9-t.js";
+const L = "aipay-account-switch-capability",
+  g = "__AIPAY_ACCOUNT_SWITCH_CAPABILITY__";
+function y(t) {
+  return t?.hasOperator === !0;
+}
+function $() {
+  return typeof window > "u" ? !1 : window[g] === !0;
+}
+function v(t) {
+  const n = y(t);
+  return (
+    typeof window > "u" ||
+      ((window[g] = n),
+      window.dispatchEvent(new CustomEvent(L, { detail: { canSwitch: n } }))),
+    n
+  );
+}
+const C = {
+    bizFrom: "alipaysite",
+    stableOrigin: "https://authcenter.stable.alipay.net",
+    preOrigin: "https://authcenter-pre.alipay.com",
+    prodOrigin: "https://auth.alipay.com",
+    loginPath: "/login/homeB.htm",
+    logoutUrl: "/login/logout.htm",
+    asyncLogoutUrl: "/login/logout.json",
+  },
+  a = "aipay_authcenter_login",
+  l = "success",
+  f = "logout",
+  p = "lab.alipay.com",
+  E = "/user/alipayUserInfoTwo.htm",
+  _ = "https://aipay.alipay.com",
+  T = [
+    {
+      domains: [
+        "zhisheng",
+        "alipay",
+        "taobao",
+        "alibaba",
+        "alibaba-inc",
+        "aliloan",
+        "koubei",
+        "alitrip",
+        "antsdaq",
+        "antfortune",
+        "ant-open",
+        "zmxy",
+        "zhimaxy",
+        "ant-biz",
+        "ssdata",
+        "alimama",
+      ],
+      suffixes: ["com", "net", "cn", "com.cn"],
+    },
+    {
+      domains: ["alimama", "1688", "alibado", "alisoft"],
+      suffixes: ["cn", "com", "com.cn"],
+    },
+    { domains: ["yahoo"], suffixes: ["cn", "com.cn"] },
+    { domains: ["zhifubao", "zhifu"], suffixes: ["com"] },
+    { domains: ["aliimg"], suffixes: ["com", "net"] },
+    { domains: ["alipaydev"], suffixes: ["com"] },
+    { domains: ["etao"], suffixes: ["com", "net"] },
+    { domains: ["alipayobjects"], suffixes: ["com"] },
+    { domains: ["aliexpress"], suffixes: ["com"] },
+    { domains: ["aliyun"], suffixes: ["com"] },
+    { domains: ["www"], suffixes: ["net.cn"] },
+    { domains: ["xin"], suffixes: ["xin"] },
+    { domains: ["mybank"], suffixes: ["cn"] },
+    { domains: ["mayibank"], suffixes: ["net"] },
+    { domains: ["antfin"], suffixes: ["com", "net"] },
+  ];
+function R(t) {
+  return String(t || "").replace(/\/+$/, "");
+}
+function w() {
+  return { ...C, ...(window.AIPayAuthCenterConfig || {}) };
+}
+function b(t) {
+  const n = U(),
+    o = n === h.DEV ? t.stableOrigin : n === h.PRE ? t.preOrigin : t.prodOrigin;
+  return R(t.origin || o);
+}
+function O() {
+  const t = new URL(window.location.href);
+  return (t.searchParams.set(a, l), t.toString());
+}
+function S() {
+  const t = new URL(window.location.href);
+  return (t.searchParams.set(a, f), t.toString());
+}
+function I(t, n, o) {
+  const e = `${n}.${o}`.toLowerCase();
+  return t === e || t.endsWith(`.${e}`);
+}
+function x(t) {
+  if (t.protocol !== "http:" && t.protocol !== "https:") return !1;
+  const n = t.hostname.toLowerCase();
+  return T.some((o) =>
+    o.domains.some((e) => o.suffixes.some((r) => I(n, e, r))),
+  );
+}
+function N(t = window.location.href) {
+  const n = new URL(t, window.location.href);
+  return (
+    n.searchParams.delete(a),
+    n.searchParams.set(a, f),
+    x(n)
+      ? n.toString()
+      : new URL(`${n.pathname}${n.search}${n.hash}`, _).toString()
+  );
+}
+function B() {
+  return P({ returnUrl: N() });
+}
+function A() {
+  const t = w(),
+    n = b(t),
+    o = new URL(t.loginPath, n);
+  return (
+    o.searchParams.set("bizFrom", t.bizFrom),
+    t.returnUrl !== !1 && o.searchParams.set("goto", t.returnUrl || O()),
+    { bizFrom: t.bizFrom, origin: n, url: o.toString() }
+  );
+}
+function P({ returnUrl: t } = {}) {
+  const n = w(),
+    o = b(n),
+    e = new URL(n.logoutUrl || "/login/logout.htm", o);
+  return (
+    e.searchParams.set("goto", t || n.logoutReturnUrl || S()),
+    e.toString()
+  );
+}
+function D() {
+  const t = new URL(window.location.href),
+    n = t.searchParams.get(a);
+  return n !== l && n !== f
+    ? ""
+    : (t.searchParams.delete(a),
+      window.history.replaceState(
+        window.history.state,
+        document.title,
+        t.toString(),
+      ),
+      n);
+}
+function G(t) {
+  try {
+    return { href: t.contentWindow?.location?.href || "", readable: !0 };
+  } catch {
+    return { href: "", readable: !1 };
+  }
+}
+function H(t) {
+  if (!t) return !1;
+  try {
+    const n = new URL(t, window.location.href);
+    return n.origin === window.location.origin && n.searchParams.get(a) === l
+      ? !0
+      : n.hostname === p && n.pathname === E;
+  } catch {
+    return !1;
+  }
+}
+function V(t) {
+  const n = t.querySelector("[data-login-iframe]"),
+    o = t.querySelector("[data-login-env-label]"),
+    e = A();
+  return (
+    n instanceof HTMLIFrameElement && (n.src = e.url),
+    o && (o.textContent = `${e.origin} · bizFrom=${e.bizFrom}`),
+    e
+  );
+}
+function W(t, n, o) {
+  const e = t.querySelector("[data-login-iframe]");
+  if (!(e instanceof HTMLIFrameElement)) return;
+  let r = 0,
+    u = e.dataset.authcenterLoadGeneration || "";
+  e.addEventListener("load", () => {
+    const i = e.dataset.authcenterLoadGeneration || "";
+    i !== u && ((u = i), (r = 0));
+    const { href: s, readable: c } = G(e);
+    if (c && s === "about:blank") {
+      const m = e.getAttribute("src") || "";
+      if (m && m !== "about:blank") return;
+      r = 0;
+      return;
+    }
+    ((r += 1),
+      typeof o == "function" && o({ href: s, hrefReadable: c, loadIndex: r }));
+    const d = H(s);
+    (c && s && !d) ||
+      n({
+        href: s,
+        hrefReadable: c,
+        isLoggedInHref: d,
+        loadIndex: r,
+        source: "iframe-load",
+      });
+  });
+}
+function k(t, n) {
+  const o = typeof t == "function" ? t : n;
+  window.addEventListener("message", (e) => {
+    const r = A();
+    if (!new Set([r.origin, `https://${p}`]).has(e.origin)) return;
+    const i = typeof e.data == "string" ? z(e.data) : e.data;
+    !i ||
+      typeof i != "object" ||
+      ((i.type === "AUTHCENTER_LOGIN_SUCCESS" || i.event === "loginSuccess") &&
+        o?.());
+  });
+}
+function z(t) {
+  try {
+    return JSON.parse(t);
+  } catch {
+    return null;
+  }
+}
+export { L as A, W as a, B as b, k as c, D as d, $ as g, V as m, v as p };

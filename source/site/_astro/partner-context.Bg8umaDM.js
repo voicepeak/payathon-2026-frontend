@@ -1,0 +1,19 @@
+const e = "/community/events/payathon-2026",
+  s = new Set(["网页", "APP", "桌面应用"]);
+function o(t = globalThis.location?.href) {
+  if (!t) return !1;
+  try {
+    const n = new URL(t, globalThis.location?.href || "https://aipay.invalid"),
+      a = n.pathname.replace(/\/+$/, "");
+    return (
+      (a === e || a === `${e}/me` || a.startsWith(`${e}/me/`)) &&
+      n.searchParams.get("partner") === "watcha"
+    );
+  } catch {
+    return !1;
+  }
+}
+function c(t) {
+  return s.has(t);
+}
+export { o as i, c as s };

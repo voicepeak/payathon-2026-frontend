@@ -1,0 +1,1638 @@
+#payathon-dev-preview[hidden] {
+  display: none !important;
+}
+#payathon-dev-preview.preview-tools {
+  position: fixed;
+  left: 16px;
+  bottom: 12px;
+  z-index: 40;
+  margin: 0;
+  padding: 0;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  border: 1px solid #303944;
+  border-radius: 8px;
+  background: #10141b;
+  color: #a4adbc;
+  font:
+    12px/1.6 system-ui,
+    sans-serif;
+  text-align: left;
+  box-sizing: border-box;
+}
+#payathon-dev-preview summary {
+  padding: 10px 14px;
+  cursor: pointer;
+  color: #e5e8ed;
+}
+#payathon-dev-preview[open] {
+  width: 360px;
+}
+#payathon-dev-preview .preview-body {
+  padding: 0 16px 16px;
+  max-height: min(620px, 65dvh);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+#payathon-dev-preview :is(section, fieldset) {
+  margin: 16px 0 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+#payathon-dev-preview :is(h3, legend) {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f3f4f6;
+  margin: 16px 0 8px;
+  padding: 0;
+}
+#payathon-dev-preview p {
+  margin: 6px 0 10px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+#payathon-dev-preview .preview-warning {
+  color: #f2cf83;
+}
+#payathon-dev-preview label {
+  display: block;
+  margin: 8px 0;
+}
+#payathon-dev-preview .preview-checkbox {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+#payathon-dev-preview select {
+  width: 100%;
+}
+#payathon-dev-preview :is(select, button) {
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 1px solid #3a4452;
+  border-radius: 4px;
+  background: #222b37;
+  color: #f3f4f6;
+  font: inherit;
+}
+#payathon-dev-preview button {
+  cursor: pointer;
+  margin: 4px 4px 4px 0;
+}
+#payathon-dev-preview [hidden] {
+  display: none !important;
+}
+#payathon-dev-preview .preview-switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: #f3f4f6;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+#payathon-dev-preview .preview-switch input {
+  position: absolute;
+  right: 0;
+  opacity: 0;
+  width: 40px;
+  height: 24px;
+  margin: 0;
+  cursor: pointer;
+}
+#payathon-dev-preview .preview-switch-track {
+  width: 36px;
+  height: 20px;
+  border-radius: 12px;
+  background: #3a4452;
+  padding: 3px;
+  box-sizing: border-box;
+  pointer-events: none;
+  transition: background 0.18s ease;
+}
+#payathon-dev-preview .preview-switch-track:after {
+  content: "";
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.18s ease;
+}
+#payathon-dev-preview .preview-switch input:checked + span {
+  background: #1677ff;
+}
+#payathon-dev-preview .preview-switch input:checked + span:after {
+  transform: translate(16px);
+}
+#payathon-dev-preview .preview-switch input:focus-visible + span {
+  outline: 2px solid #82b5ff;
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  #payathon-dev-preview .preview-switch-track,
+  #payathon-dev-preview .preview-switch-track:after {
+    transition: none;
+  }
+}
+#payathon-dev-preview a {
+  color: #82b5ff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+#payathon-dev-preview nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 20px;
+}
+#payathon-dev-preview :focus-visible {
+  outline: 2px solid #82b5ff;
+  outline-offset: 3px;
+}
+#payathon-dev-preview fieldset:disabled {
+  opacity: 0.5;
+}
+#payathon-preview-login {
+  width: min(360px, calc(100vw - 32px));
+  box-sizing: border-box;
+  padding: 24px;
+  border: 1px solid #303944;
+  border-radius: 8px;
+  background: #171d26;
+  color: #f3f4f6;
+  font:
+    14px/1.7 system-ui,
+    sans-serif;
+}
+#payathon-preview-login::backdrop {
+  background: #0009;
+}
+#payathon-preview-login h2 {
+  font-size: 20px;
+  margin: 0 0 12px;
+}
+#payathon-preview-login form {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+#payathon-preview-login button {
+  padding: 8px 12px;
+  border: 1px solid #3a4452;
+  border-radius: 4px;
+  background: #222b37;
+  color: #fff;
+  cursor: pointer;
+}
+#payathon-preview-login button[value="login"] {
+  background: #1677ff;
+}
+.payathon-button[data-astro-cid-dmurru2v] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 10px 20px;
+  border: 0;
+  background: var(--payathon-accent, #86eaff);
+  color: #10141b;
+  font-family: var(
+    --font-system,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "PingFang SC",
+    "Hiragino Sans GB",
+    "Microsoft YaHei",
+    sans-serif
+  );
+  font-size: var(--text-body, 16px);
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.18s ease;
+}
+@media (hover: hover) {
+  .payathon-button[data-astro-cid-dmurru2v]:hover {
+    transform: translateY(-1px);
+  }
+}
+.payathon-button[data-astro-cid-dmurru2v]:active {
+  transform: translateY(0);
+}
+.payathon-button[data-astro-cid-dmurru2v]:focus-visible {
+  outline: 2px solid var(--payathon-accent, #86eaff);
+  outline-offset: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .payathon-button[data-astro-cid-dmurru2v] {
+    transition: none;
+  }
+}
+.registration-load-error[data-astro-cid-r4d73bnm] {
+  position: fixed;
+  z-index: 10000;
+  top: 90px;
+  left: 50%;
+  transform: translate(-50%);
+  width: min(440px, calc(100vw - 32px));
+  padding: 16px;
+  background: #291818;
+  border: 1px solid #ff4d4f;
+  color: #fff;
+  font-size: 14px;
+}
+dialog[data-astro-cid-r4d73bnm] {
+  --registration-error: #ff4d4f;
+  --registration-accent: #86eaff;
+  padding: 20px;
+  border: 0;
+  background: transparent;
+  color: #f3f4f6;
+  width: min(940px, calc(100vw - 40px));
+  max-width: none;
+  max-height: calc(100dvh - 48px);
+  overflow: visible;
+  text-align: left;
+  color-scheme: dark;
+  box-shadow: none;
+}
+dialog[data-astro-cid-r4d73bnm]:focus {
+  outline: none;
+}
+dialog[data-astro-cid-r4d73bnm]::backdrop {
+  background: #05090dd9;
+}
+dialog[data-astro-cid-r4d73bnm][open]
+  .registration-sidebar[data-astro-cid-r4d73bnm] {
+  animation: hud-float 7s ease-in-out infinite;
+}
+dialog[data-astro-cid-r4d73bnm][open]
+  .registration-shell[data-astro-cid-r4d73bnm] {
+  animation: hud-float 8s ease-in-out infinite reverse;
+}
+[data-astro-cid-r4d73bnm] {
+  box-sizing: border-box;
+}
+[data-astro-cid-r4d73bnm][hidden] {
+  display: none !important;
+}
+button[data-astro-cid-r4d73bnm],
+input[data-astro-cid-r4d73bnm] {
+  font: inherit;
+}
+button[data-astro-cid-r4d73bnm] {
+  cursor: pointer;
+}
+.registration-head[data-astro-cid-r4d73bnm] {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 32px 36px 24px;
+  border-bottom: 1px solid #303944;
+}
+h2[data-astro-cid-r4d73bnm] {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  margin: 0;
+}
+.close[data-astro-cid-r4d73bnm] {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #38424d;
+  background: transparent;
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+}
+.registration-body[data-astro-cid-r4d73bnm] {
+  padding: 24px 36px;
+}
+.registration-stage[data-astro-cid-r4d73bnm] {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 32px;
+  height: min(740px, calc(100dvh - 88px));
+  perspective: 1600px;
+}
+.registration-shell[data-astro-cid-r4d73bnm] {
+  z-index: 2;
+  --panel-angle: -2deg;
+  position: relative;
+  transform: rotateY(var(--panel-angle));
+  transform-origin: left center;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
+  border: 1px solid transparent;
+}
+.registration-surface[data-astro-cid-r4d73bnm] {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+.registration-surface[data-astro-cid-r4d73bnm]:before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 1;
+  background: #10141b;
+  border: 1px solid #38424d;
+  box-shadow: 0 24px 80px #0005;
+  pointer-events: none;
+}
+dialog[data-astro-cid-r4d73bnm] {
+  --screen-surface:
+    linear-gradient(115deg, #ffffff05 0%, #ffffff01 26%, transparent 45%),
+    repeating-linear-gradient(0deg, transparent 0 5px, #00000008 5px 6px),
+    #10141b;
+}
+.registration-surface[data-astro-cid-r4d73bnm]:before {
+  background: var(--screen-surface);
+}
+.registration-surface[data-astro-cid-r4d73bnm]:after,
+.registration-sidebar[data-astro-cid-r4d73bnm]
+  > section[data-astro-cid-r4d73bnm]:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 45%,
+    transparent 76%,
+    #00000012 100%
+  );
+  box-shadow:
+    inset 0 1px #ffffff0d,
+    inset 1px 0 color-mix(in srgb, var(--registration-accent) 20%, transparent),
+    inset 0 -1px #0006;
+}
+.registration-layout[data-astro-cid-r4d73bnm] {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+  contain: paint;
+}
+.registration-layout[data-astro-cid-r4d73bnm] > form[data-astro-cid-r4d73bnm] {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-top: 24px;
+}
+.registration-sidebar[data-astro-cid-r4d73bnm] {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  perspective: 1200px;
+  z-index: 1;
+  padding-top: 4px;
+}
+.registration-sidebar[data-astro-cid-r4d73bnm]
+  > section[data-astro-cid-r4d73bnm] {
+  padding: 20px;
+  background: var(--screen-surface);
+  border: 1px solid #303944;
+  position: relative;
+}
+.registration-sidebar[data-astro-cid-r4d73bnm]
+  > section[data-astro-cid-r4d73bnm]:after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 12px;
+  height: 12px;
+  border-bottom: 1px solid var(--registration-accent);
+  border-right: 1px solid var(--registration-accent);
+  pointer-events: none;
+}
+.registration-sidebar[data-astro-cid-r4d73bnm]
+  > section[data-astro-cid-r4d73bnm] {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  order: -1;
+  flex: 0 1 auto;
+  transform: rotateY(3deg);
+  transform-origin: right center;
+}
+.registration-sidebar[data-astro-cid-r4d73bnm]
+  > section[data-astro-cid-r4d73bnm]::-webkit-scrollbar {
+  display: none;
+}
+.registration-sidebar[data-astro-cid-r4d73bnm]
+  .participation-note[data-astro-cid-r4d73bnm] {
+  margin-bottom: 0;
+}
+.registration-nav[data-astro-cid-r4d73bnm] {
+  position: absolute;
+  top: 60%;
+  right: calc(100% - 24px);
+  z-index: 0;
+  display: grid;
+  gap: 8px;
+  width: 190px;
+}
+.registration-nav[data-astro-cid-r4d73bnm] button[data-astro-cid-r4d73bnm] {
+  padding: 12px 20px;
+  border: 1px solid #38424d;
+  background: #1b242e;
+  color: #bbc5d2;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.registration-nav[data-astro-cid-r4d73bnm]
+  button[data-astro-cid-r4d73bnm][aria-current] {
+  color: #10141b;
+  background: var(--registration-accent);
+  border-color: var(--registration-accent);
+  font-weight: 600;
+}
+.registration-nav[data-astro-cid-r4d73bnm]
+  button[data-astro-cid-r4d73bnm]:hover:not([aria-current]) {
+  border-color: var(--registration-accent);
+  color: var(--registration-accent);
+}
+.registration-rules[data-astro-cid-r4d73bnm] h3[data-astro-cid-r4d73bnm] {
+  margin: 0 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+[data-astro-cid-r4d73bnm][data-mobile-rules]
+  .registration-rules[data-astro-cid-r4d73bnm] {
+  margin-bottom: 28px;
+}
+.identity[data-astro-cid-r4d73bnm] {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.identity-avatar[data-astro-cid-r4d73bnm] {
+  overflow: hidden;
+  display: block;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #38424d;
+}
+.identity-avatar[data-astro-cid-r4d73bnm] img[data-astro-cid-r4d73bnm] {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.avatar-upload[data-astro-cid-r4d73bnm] {
+  display: inline-block;
+  position: relative;
+  color: var(--registration-accent);
+  font-size: 12px;
+  margin-top: 6px;
+  cursor: pointer;
+}
+.identity[data-astro-cid-r4d73bnm]
+  .avatar-upload[data-astro-cid-r4d73bnm]
+  input[data-astro-cid-r4d73bnm][type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.avatar-upload[data-astro-cid-r4d73bnm]:focus-within {
+  outline: 2px solid var(--registration-accent);
+  outline-offset: 4px;
+}
+.avatar-remove[data-astro-cid-r4d73bnm] {
+  background: transparent;
+  border: 0;
+  color: #a4adbc;
+  font-size: 12px;
+  padding: 4px 8px;
+}
+.avatar-hint[data-astro-cid-r4d73bnm] {
+  display: block;
+  margin-top: 6px;
+  line-height: 1.6;
+}
+.identity[data-astro-cid-r4d73bnm] strong[data-astro-cid-r4d73bnm] {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+}
+small[data-astro-cid-r4d73bnm] {
+  font-size: 11px;
+  color: #a4adbc;
+  font-weight: 400;
+}
+fieldset[data-astro-cid-r4d73bnm] {
+  border: 0;
+  border-bottom: 1px solid #303944;
+  padding: 0 0 28px;
+  margin: 0 0 28px;
+  min-width: 0;
+}
+legend[data-astro-cid-r4d73bnm] {
+  padding: 0;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--registration-accent);
+}
+.form-grid[data-astro-cid-r4d73bnm] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px 20px;
+}
+.field[data-astro-cid-r4d73bnm] {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  min-width: 0;
+}
+.field[data-astro-cid-r4d73bnm] b[data-astro-cid-r4d73bnm] {
+  color: var(--registration-accent);
+  font-weight: 400;
+}
+.field[data-astro-cid-r4d73bnm] > small[data-astro-cid-r4d73bnm] {
+  line-height: 1.5;
+}
+input[data-astro-cid-r4d73bnm]:not([type="checkbox"]):not([type="radio"]) {
+  width: 100%;
+  height: 46px;
+  border: 1px solid #38424d;
+  border-radius: 0;
+  background: #171e27;
+  color: #fff;
+  padding: 10px 12px;
+  outline-offset: 2px;
+}
+input[data-astro-cid-r4d73bnm]::placeholder {
+  color: #8793a3;
+  opacity: 1;
+  font-size: 12px;
+}
+input[data-astro-cid-r4d73bnm][aria-invalid="true"]:not([type="checkbox"]):not(
+    [type="radio"]
+  ) {
+  border-color: var(--registration-error);
+  background: #291818;
+}
+input[data-astro-cid-r4d73bnm][aria-invalid="true"]:focus-visible {
+  outline-color: var(--registration-error);
+}
+.field-error[data-astro-cid-r4d73bnm] {
+  display: block;
+  color: var(--registration-error);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.field-error[data-astro-cid-r4d73bnm]:before {
+  content: "!";
+  display: inline-grid;
+  place-items: center;
+  width: 13px;
+  height: 13px;
+  margin-right: 6px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font: 10px/1 monospace;
+  vertical-align: 1px;
+}
+.agreement[data-astro-cid-r4d73bnm]:has([aria-invalid="true"]) {
+  color: var(--registration-error);
+}
+.agreement[data-astro-cid-r4d73bnm] + .field-error[data-astro-cid-r4d73bnm] {
+  margin-top: 8px;
+}
+input[data-astro-cid-r4d73bnm]:focus-visible,
+button[data-astro-cid-r4d73bnm]:focus-visible {
+  outline: 2px solid var(--registration-accent);
+  outline-offset: 3px;
+}
+input[data-astro-cid-r4d73bnm][type="checkbox"],
+input[data-astro-cid-r4d73bnm][type="radio"] {
+  accent-color: var(--registration-accent);
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  flex-shrink: 0;
+}
+.kind-options[data-astro-cid-r4d73bnm] {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.kind-options[data-astro-cid-r4d73bnm] label[data-astro-cid-r4d73bnm] {
+  border: 1px solid #38424d;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.kind-options[data-astro-cid-r4d73bnm]
+  label[data-astro-cid-r4d73bnm]:has(:checked) {
+  border-color: var(--registration-accent);
+  color: var(--registration-accent);
+  background: #1a242e;
+}
+.conditional[data-astro-cid-r4d73bnm] {
+  margin-top: 16px;
+}
+.source-options[data-astro-cid-r4d73bnm] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  margin-top: 4px;
+}
+.source-options[data-astro-cid-r4d73bnm] label[data-astro-cid-r4d73bnm] {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 46px;
+  padding: 12px 14px;
+  border: 1px solid #38424d;
+  background: #171e27;
+  cursor: pointer;
+}
+.source-options[data-astro-cid-r4d73bnm]
+  label[data-astro-cid-r4d73bnm]:has(:checked) {
+  border-color: var(--registration-accent);
+  color: var(--registration-accent);
+  background: color-mix(in srgb, var(--registration-accent) 10%, #10141b);
+}
+.source-options[data-astro-cid-r4d73bnm]
+  label[data-astro-cid-r4d73bnm]:hover:not(:has(:disabled)),
+.source-options[data-astro-cid-r4d73bnm]
+  label[data-astro-cid-r4d73bnm]:focus-within {
+  border-color: var(--registration-accent);
+}
+.source-options[data-astro-cid-r4d73bnm]
+  label[data-astro-cid-r4d73bnm]:has(:disabled) {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.participation-note[data-astro-cid-r4d73bnm] {
+  display: grid;
+  gap: 14px;
+  font-size: 12px;
+  color: #a4adbc;
+  line-height: 1.7;
+  margin: 0 0 28px;
+}
+.participation-note[data-astro-cid-r4d73bnm] > div[data-astro-cid-r4d73bnm] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+}
+.participation-note[data-astro-cid-r4d73bnm] dt[data-astro-cid-r4d73bnm] {
+  color: #d9dfe8;
+  font-weight: 500;
+}
+.participation-note[data-astro-cid-r4d73bnm] dd[data-astro-cid-r4d73bnm] {
+  margin: 0;
+}
+.agreement[data-astro-cid-r4d73bnm] {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #bac3d0;
+}
+.agreement[data-astro-cid-r4d73bnm] input[data-astro-cid-r4d73bnm] {
+  margin-top: 4px;
+}
+.agreement[data-astro-cid-r4d73bnm] a[data-astro-cid-r4d73bnm] {
+  color: var(--registration-accent);
+  text-decoration: none;
+}
+.agreement[data-astro-cid-r4d73bnm] a[data-astro-cid-r4d73bnm]:hover {
+  color: #f3f4f6;
+}
+.agreement[data-astro-cid-r4d73bnm] a[data-astro-cid-r4d73bnm]:focus-visible {
+  outline: 2px solid var(--registration-accent);
+  outline-offset: 3px;
+}
+.form-feedback[data-astro-cid-r4d73bnm] {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--registration-accent);
+  padding: 12px 0 0;
+  margin: 0;
+}
+.form-feedback[data-astro-cid-r4d73bnm][data-error] {
+  color: var(--registration-error);
+}
+.recovery-button[data-astro-cid-r4d73bnm] {
+  background: transparent;
+  color: #bbc5d2;
+  border: 1px solid #38424d;
+  padding: 10px 16px;
+  margin-top: 12px;
+  font-size: 14px;
+}
+button[data-astro-cid-r4d73bnm]:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.registration-footer[data-astro-cid-r4d73bnm] {
+  gap: 12px;
+  display: flex;
+  justify-content: flex-end;
+  position: sticky;
+  bottom: 0;
+  background: #10141b;
+  border-top: 1px solid #303944;
+  padding: 18px 36px;
+}
+dialog[data-astro-cid-r4d73bnm][data-appearance="center"] {
+  --screen-surface: #171d26;
+}
+dialog[data-astro-cid-r4d73bnm][data-appearance="center"]
+  .registration-shell[data-astro-cid-r4d73bnm],
+dialog[data-astro-cid-r4d73bnm][data-appearance="center"]
+  .registration-sidebar[data-astro-cid-r4d73bnm],
+dialog[data-astro-cid-r4d73bnm][data-appearance="center"]
+  .registration-sidebar[data-astro-cid-r4d73bnm]
+  > section[data-astro-cid-r4d73bnm] {
+  transform: none;
+  animation: none;
+}
+dialog[data-astro-cid-r4d73bnm][data-appearance="center"]
+  .registration-surface[data-astro-cid-r4d73bnm]:before {
+  border-radius: 8px;
+}
+dialog[data-astro-cid-r4d73bnm][data-appearance="center"]
+  .registration-surface[data-astro-cid-r4d73bnm]:after,
+dialog[data-astro-cid-r4d73bnm][data-appearance="center"]
+  .registration-sidebar[data-astro-cid-r4d73bnm]
+  > section[data-astro-cid-r4d73bnm]:before,
+dialog[data-astro-cid-r4d73bnm][data-appearance="center"]
+  .registration-sidebar[data-astro-cid-r4d73bnm]
+  > section[data-astro-cid-r4d73bnm]:after {
+  content: none;
+}
+dialog[data-astro-cid-r4d73bnm][data-appearance="center"]
+  .registration-sidebar[data-astro-cid-r4d73bnm]
+  > section[data-astro-cid-r4d73bnm] {
+  border-radius: 8px;
+}
+dialog[data-astro-cid-r4d73bnm][data-appearance="center"]
+  .registration-layout[data-astro-cid-r4d73bnm] {
+  border-radius: 0 0 8px 8px;
+}
+dialog[data-astro-cid-r4d73bnm][data-appearance="center"]
+  .registration-footer[data-astro-cid-r4d73bnm] {
+  background: #171d26;
+}
+dialog[data-astro-cid-r4d73bnm][data-appearance="center"]
+  input[data-astro-cid-r4d73bnm]:not([type="checkbox"]):not([type="radio"]) {
+  border-radius: 8px;
+}
+dialog[data-astro-cid-r4d73bnm][data-appearance="center"]
+  .registration-nav[data-astro-cid-r4d73bnm]
+  button[data-astro-cid-r4d73bnm] {
+  border-radius: 8px 0 0 8px;
+}
+dialog[data-astro-cid-r4d73bnm][data-appearance="center"]
+  [data-astro-cid-r4d73bnm]:is(.recovery-button, .close),
+dialog[data-astro-cid-r4d73bnm][data-appearance="center"] .payathon-button {
+  border-radius: 8px;
+}
+@keyframes hud-float {
+  0%,
+  to {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -5px;
+  }
+}
+@media (max-width: 640px) {
+  .registration-stage[data-astro-cid-r4d73bnm] {
+    display: block;
+    height: calc(100dvh - 24px);
+  }
+  .registration-shell[data-astro-cid-r4d73bnm] {
+    height: 100%;
+    --panel-angle: 0deg;
+    transform: none;
+  }
+  .registration-nav[data-astro-cid-r4d73bnm] {
+    display: none;
+  }
+  .registration-layout[data-astro-cid-r4d73bnm] {
+    display: flex;
+  }
+  .registration-layout[data-astro-cid-r4d73bnm]
+    > form[data-astro-cid-r4d73bnm] {
+    height: 100%;
+  }
+  .registration-sidebar[data-astro-cid-r4d73bnm] {
+    display: none;
+  }
+  dialog[data-astro-cid-r4d73bnm] {
+    padding: 0;
+    width: calc(100vw - 24px);
+    max-height: calc(100dvh - 24px);
+  }
+  .registration-head[data-astro-cid-r4d73bnm],
+  .registration-body[data-astro-cid-r4d73bnm] {
+    padding: 22px 20px;
+  }
+  .registration-footer[data-astro-cid-r4d73bnm] {
+    padding: 16px 20px;
+  }
+  h2[data-astro-cid-r4d73bnm] {
+    font-size: 23px;
+  }
+  .form-grid[data-astro-cid-r4d73bnm] {
+    grid-template-columns: 1fr;
+  }
+  .kind-options[data-astro-cid-r4d73bnm] label[data-astro-cid-r4d73bnm] {
+    padding: 12px 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  dialog[data-astro-cid-r4d73bnm][open]
+    .registration-sidebar[data-astro-cid-r4d73bnm],
+  dialog[data-astro-cid-r4d73bnm][open]
+    .registration-shell[data-astro-cid-r4d73bnm],
+  dialog[data-astro-cid-r4d73bnm][open]
+    .registration-sidebar[data-astro-cid-r4d73bnm]
+    > section[data-astro-cid-r4d73bnm],
+  dialog[data-astro-cid-r4d73bnm][open]
+    .registration-surface[data-astro-cid-r4d73bnm],
+  dialog[data-astro-cid-r4d73bnm][open]
+    .registration-nav[data-astro-cid-r4d73bnm] {
+    animation: none;
+  }
+}
+.english-heading[data-astro-cid-wq7h7znm] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: var(--english-heading-align, center);
+  gap: 0.4em 0.6em;
+  font-size: var(--english-heading-size);
+  line-height: 1;
+  color: inherit;
+}
+.english-heading[data-astro-cid-wq7h7znm] svg[data-astro-cid-wq7h7znm] {
+  display: block;
+  flex: none;
+  height: 1em;
+  max-width: 100%;
+  overflow: visible;
+}
+.english-heading--1[data-astro-cid-wq7h7znm] {
+  --english-heading-size: clamp(36px, 5vw, 64px);
+}
+.english-heading--2[data-astro-cid-wq7h7znm] {
+  --english-heading-size: clamp(18px, 2.2vw, 28px);
+}
+.english-heading--3[data-astro-cid-wq7h7znm] {
+  --english-heading-size: clamp(12px, 1.4vw, 18px);
+}
+.ascii-section-transition[data-astro-cid-zvihkcu2] {
+  --edge-base: #10141b;
+  --edge-height: clamp(224px, 18vw, 256px);
+  position: relative;
+  height: var(--edge-height);
+  margin-top: calc(-1 * var(--edge-height));
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+}
+.ascii-section-transition--exit[data-astro-cid-zvihkcu2] {
+  --edge-base: #fff;
+  margin-top: 0;
+}
+.ascii-stage[data-astro-cid-zvihkcu2] {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: var(--edge-height);
+  background: var(--edge-base);
+  overflow: hidden;
+}
+.ascii-section-transition--exit[data-astro-cid-zvihkcu2]
+  .ascii-stage[data-astro-cid-zvihkcu2] {
+  bottom: auto;
+  top: 0;
+}
+img[data-astro-cid-zvihkcu2],
+canvas[data-astro-cid-zvihkcu2] {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+canvas[data-astro-cid-zvihkcu2] {
+  opacity: 0;
+  image-rendering: pixelated;
+}
+canvas[data-astro-cid-zvihkcu2][data-ready] {
+  opacity: 1;
+}
+.ascii-stage[data-astro-cid-zvihkcu2]:has(canvas[data-ready])
+  img[data-astro-cid-zvihkcu2] {
+  visibility: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  canvas[data-astro-cid-zvihkcu2] {
+    display: none;
+  }
+  .ascii-stage[data-astro-cid-zvihkcu2]:has(canvas[data-ready])
+    img[data-astro-cid-zvihkcu2] {
+    visibility: visible;
+  }
+}
+.partner-benefits,
+.partner-wall {
+  box-sizing: border-box;
+  min-width: 0;
+}
+.partner-benefits [hidden],
+.partner-wall[hidden],
+.partner-benefits[hidden] {
+  display: none !important;
+}
+#payathon-page :is(.partner-benefits, .partner-wall) {
+  position: relative;
+  width: 100%;
+  max-width: none;
+  margin-inline: auto;
+  padding-inline: 16px;
+  background: #fff;
+  --partner-surface: #fff;
+  --partner-logo-surface: #fff;
+  --partner-title: #171d26;
+  --partner-copy: #4b5563;
+  --partner-muted: #626b78;
+  --partner-border: #dce0e5;
+  --partner-accent: #171d26;
+  --partner-button-text: #fff;
+  --partner-disabled: #edf0f3;
+  scroll-margin-top: calc(var(--event-header-height, 60px) + 80px);
+}
+#payathon-page :is(.partner-benefits-layout, .partner-wall-layout) {
+  width: 100%;
+  max-width: 960px;
+  margin-inline: auto;
+}
+#payathon-page :is(.partner-benefits, .partner-wall) .event-section-head h2 {
+  color: var(--partner-title);
+}
+#payathon-page :is(.partner-benefits, .partner-wall) .event-section-head p {
+  color: var(--partner-copy);
+}
+#payathon-page
+  :is(.partner-benefits, .partner-wall)
+  .event-section-head
+  .event-english-title {
+  color: var(--partner-muted);
+}
+#payathon-page .partner-benefits:has(+ .partner-wall) {
+  padding-bottom: 0;
+}
+#payathon-page .partner-benefits-heading > div {
+  display: grid;
+  gap: 24px;
+}
+#payathon-page .partner-benefits-heading .event-english-title {
+  margin-bottom: 6px;
+}
+.partner-benefits-layout,
+.partner-wall-layout {
+  min-width: 0;
+}
+.partner-benefits-access {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 24px;
+  margin: 0 0 24px;
+  border: 1px solid var(--partner-border, #303944);
+  border-radius: 8px;
+  text-align: left;
+}
+:is(#payathon-page, #payathon-center) .partner-benefits-access p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--partner-copy, #b0b8c4);
+}
+.partner-benefit-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 10px 20px;
+  border: 1px solid var(--partner-accent, var(--payathon-accent, #86eaff));
+  border-radius: 8px;
+  background: var(--partner-accent, var(--payathon-accent, #86eaff));
+  color: var(--partner-button-text, #10141b);
+  font: 600 14px/1.5 var(--font-system, system-ui, sans-serif);
+  cursor: pointer;
+}
+.partner-benefit-action:disabled {
+  border-color: var(--partner-border, #38424d);
+  background: var(--partner-disabled, #252e3a);
+  color: var(--partner-muted, #a4adbc);
+  cursor: default;
+}
+.partner-benefit-card-action {
+  align-self: flex-start;
+  margin-top: auto;
+}
+.partner-benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 24px;
+  text-align: left;
+}
+.partner-benefit-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  grid-column: span 2;
+  padding: 28px 24px;
+  border: 1px solid var(--partner-border, #303944);
+  border-radius: 8px;
+  background: var(--partner-surface, #171d26);
+}
+#payathon-center .partner-benefit-card {
+  --partner-surface: #fff;
+  --partner-logo-surface: #fff;
+  --partner-title: #171d26;
+  --partner-copy: #4b5563;
+  --partner-muted: #626b78;
+  --partner-border: #dce0e5;
+  --partner-accent: #171d26;
+  --partner-button-text: #fff;
+}
+.partner-benefit-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.partner-benefit-logo {
+  display: grid;
+  place-items: center;
+  width: 152px;
+  height: 64px;
+  border-radius: 4px;
+  background: var(--partner-logo-surface, #f5f6f8);
+  padding: 8px;
+  box-sizing: border-box;
+}
+.partner-benefit-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.partner-benefit-logo[href] {
+  text-decoration: none;
+  cursor: pointer;
+}
+.partner-benefit-logo[href]:focus-visible {
+  outline: 2px solid var(--partner-accent, var(--payathon-accent, #86eaff));
+  outline-offset: 4px;
+}
+@media (hover: hover) {
+  .partner-benefit-logo[href]:hover img {
+    opacity: 0.72;
+  }
+}
+:is(#payathon-page, #payathon-center) .partner-benefit-brand h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--partner-copy, #b0b8c4);
+}
+:is(#payathon-page, #payathon-center) .partner-benefit-copy h4 {
+  white-space: pre-line;
+  margin: 0 0 14px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: -0.015em;
+  color: var(--partner-title, #f3f4f6);
+}
+:is(#payathon-page, #payathon-center) .partner-benefit-copy p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--partner-copy, #b0b8c4);
+}
+:is(#payathon-page, #payathon-center) .partner-benefit-copy p + p {
+  margin-top: 10px;
+}
+.partner-benefit-copy:has(+ .partner-benefit-claim:not([hidden])) {
+  margin-bottom: 28px;
+}
+:is(#payathon-page, #payathon-center) .partner-benefits .partner-benefit-claim {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  box-sizing: border-box;
+  margin-top: auto;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: #000;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.7;
+  text-decoration: none;
+}
+:is(#payathon-page, #payathon-center)
+  .partner-benefits
+  .partner-benefit-claim:hover {
+  background: #252525;
+}
+:is(#payathon-page, #payathon-center) .partner-benefits .partner-benefits-note {
+  margin: 24px 0 0;
+  text-align: left;
+  color: var(--partner-muted, #8e99a9);
+  font-size: 12px;
+  line-height: 1.7;
+}
+#payathon-center
+  :is(
+    .benefits-scroll-runway,
+    .benefits-scroll-stage,
+    .benefits-card-stage,
+    .benefits-scroll-viewport
+  ) {
+  display: contents;
+}
+#payathon-page .benefits-scroll-runway {
+  position: relative;
+}
+#payathon-page .benefits-scroll-stage {
+  position: relative;
+  top: 0;
+  width: min(1200px, calc(100vw - 32px));
+  margin-inline: calc((100% - min(1200px, 100vw - 32px)) / 2);
+  isolation: isolate;
+}
+#payathon-page .benefits-scroll-runway[data-pinned] .benefits-scroll-stage {
+  position: sticky;
+}
+#payathon-page .benefits-scroll-viewport {
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 24px 0;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 7%,
+    #000 93%,
+    transparent
+  );
+}
+#payathon-page .benefits-scroll-runway[data-pinned] .benefits-scroll-viewport {
+  overflow: hidden;
+  touch-action: pan-y pinch-zoom;
+}
+#payathon-page .benefits-scroll-viewport::-webkit-scrollbar {
+  display: none;
+}
+#payathon-page .partner-benefits-grid {
+  grid-auto-flow: column;
+  grid-template-columns: none;
+  position: relative;
+  width: max-content;
+  grid-auto-columns: min(320px, 82vw);
+  padding-inline: max(24px, calc((100% - min(320px, 82vw)) / 2));
+  grid-template-rows: 1fr;
+  gap: 24px;
+}
+#payathon-page .partner-benefit-card {
+  display: flex;
+  flex-direction: column;
+  grid-column: auto;
+  min-height: 460px;
+  box-sizing: border-box;
+  padding: 28px;
+  transform: perspective(1100px) translateZ(var(--benefit-depth, 0px))
+    rotateY(var(--benefit-turn, 0deg));
+  transform-origin: center;
+}
+#payathon-page .partner-benefit-brand {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0 0 28px;
+}
+#payathon-page .partner-benefit-brand h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--partner-muted, #626b78);
+}
+#payathon-page .partner-benefit-copy {
+  min-width: 0;
+  margin: 0 0 28px;
+  overflow-wrap: anywhere;
+}
+#payathon-page .partner-benefit-copy h4 {
+  min-height: 60px;
+  margin: 0 0 16px;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+}
+#payathon-page .partner-benefit-copy p {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: 0;
+}
+#payathon-page .partner-benefit-copy p + p {
+  margin-top: 8px;
+}
+#payathon-page .partner-benefits .partner-benefit-claim {
+  align-self: stretch;
+  margin: auto 0 0;
+  white-space: nowrap;
+}
+#payathon-page .partner-benefits .partner-benefit-card-action {
+  align-self: stretch;
+}
+.partner-benefit-action:focus-visible,
+.partner-benefit-claim:focus-visible,
+.participation-benefits-link:focus-visible {
+  outline: 2px solid var(--partner-accent, var(--payathon-accent, #86eaff));
+  outline-offset: 4px;
+}
+.partner-wall-groups {
+  display: grid;
+  gap: 48px;
+}
+#payathon-page .partner-wall-group {
+  margin: 0;
+  padding: 0;
+}
+#payathon-page .partner-wall-group + .partner-wall-group {
+  padding-top: 40px;
+}
+#payathon-page .partner-wall-group > h3 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.7;
+  letter-spacing: 0.06em;
+  color: var(--partner-muted, #a4adbc);
+}
+.partner-wall-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px 24px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+#payathon-page .partner-wall-grid > li {
+  margin: 0;
+}
+.partner-wall-item {
+  display: grid;
+  place-items: center;
+  flex: 0 1 168px;
+  min-width: 0;
+}
+.partner-wall-logo {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 72px;
+  padding: 12px 16px;
+  border-radius: 4px;
+  background: var(--partner-logo-surface, #f5f6f8);
+}
+.partner-wall-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+}
+.partner-wall-logo--link {
+  cursor: pointer;
+  text-decoration: none;
+}
+.partner-wall-logo--link img {
+  transition: opacity 0.15s ease;
+}
+@media (hover: hover) {
+  .partner-wall-logo--link:hover img {
+    opacity: 0.72;
+  }
+}
+.partner-wall-logo--link:focus-visible {
+  outline: 2px solid #171d26;
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .partner-wall-logo--link img {
+    transition: none;
+  }
+}
+.partner-wall-group--organizer .partner-wall-item {
+  flex-basis: 208px;
+}
+:is(.partner-benefit-logo, .partner-wall-logo) img {
+  transform: scale(var(--partner-logo-scale, 1));
+  transform-origin: center;
+}
+#payathon-page .partner-wall .partner-wall-note {
+  margin: 40px 0 0;
+  color: var(--partner-muted, #8e99a9);
+  font-size: 12px;
+  line-height: 1.7;
+}
+#payathon-center .partner-benefits-heading > div {
+  min-width: 0;
+}
+#payathon-center .participation-benefits-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: var(--muted, #a4adbc);
+  font-size: 13px;
+  line-height: 1.7;
+  text-decoration: none;
+  text-underline-offset: 4px;
+}
+#payathon-center .participation-benefits-link:hover {
+  color: var(--partner-accent, var(--payathon-accent, #86eaff));
+  text-decoration: underline;
+}
+.partner-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 1100px) {
+  .partner-wall-group--supporters .partner-wall-grid {
+    max-width: 552px;
+  }
+  .partner-benefits-grid {
+    gap: 20px;
+  }
+  .partner-benefit-card {
+    padding: 24px 20px;
+  }
+}
+@media (max-width: 760px) {
+  .partner-benefits-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .partner-benefit-card {
+    grid-column: auto;
+    padding: 24px;
+  }
+  .partner-benefit-brand {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .partner-benefit-logo {
+    width: 128px;
+    height: 56px;
+    flex-shrink: 0;
+  }
+  #payathon-page .partner-benefits-grid {
+    gap: 16px;
+  }
+  #payathon-page .partner-benefit-card {
+    padding: 24px;
+  }
+  #payathon-page .partner-benefit-copy h4 {
+    font-size: 20px;
+    min-height: 54px;
+  }
+  .partner-benefits-access {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
+  .partner-benefit-action {
+    align-self: flex-start;
+  }
+  .partner-wall-grid {
+    gap: 12px 16px;
+  }
+  .partner-wall-item {
+    flex-basis: calc(50% - 8px);
+    max-width: 168px;
+  }
+  .partner-wall-groups {
+    gap: 32px;
+  }
+  #payathon-page .partner-wall-group + .partner-wall-group {
+    padding-top: 32px;
+  }
+  .partner-wall-logo {
+    height: 72px;
+    padding: 12px 16px;
+  }
+}
+#payathon-page .benefits-lens {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  #payathon-page .benefits-lens {
+    display: none;
+  }
+  #payathon-page .partner-benefit-card {
+    transform: none;
+  }
+}
+#payathon-page .benefits-card-stage {
+  position: relative;
+}
+#payathon-page .benefits-scroll-stage > .partner-benefits-heading {
+  max-width: 960px;
+  margin: 0 auto 24px;
+}
+#payathon-page .benefits-scroll-stage > .partner-benefits-access {
+  max-width: 960px;
+  margin: 0 auto 12px;
+  box-sizing: border-box;
+}
+@media (max-height: 900px) {
+  #payathon-page .benefits-scroll-stage > .partner-benefits-heading {
+    margin-bottom: 16px;
+  }
+  #payathon-page .partner-benefits-heading > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px 16px;
+  }
+  #payathon-page .partner-benefits-heading .event-english-title {
+    margin: 0;
+  }
+  #payathon-page .partner-benefits-heading .english-heading {
+    font-size: 18px;
+  }
+  #payathon-page .partner-benefits-heading h2 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.4;
+  }
+  #payathon-page .partner-benefits-heading p:not(.event-english-title) {
+    flex-basis: 100%;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  #payathon-page .benefits-scroll-stage > .partner-benefits-access {
+    padding: 10px 16px;
+    margin-bottom: 8px;
+  }
+  #payathon-page .benefits-scroll-viewport {
+    padding-block: 12px;
+  }
+  #payathon-page .partner-benefit-card {
+    min-height: 400px;
+    padding: 24px;
+  }
+  #payathon-page .partner-benefit-brand {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  #payathon-page .partner-benefit-logo {
+    height: 48px;
+  }
+  #payathon-page .partner-benefit-copy {
+    margin-bottom: 20px;
+  }
+  #payathon-page .partner-benefit-copy h4 {
+    font-size: 20px;
+    min-height: 54px;
+    margin-bottom: 12px;
+  }
+  #payathon-page .partner-benefit-copy p {
+    line-height: 1.6;
+  }
+}
+#payathon-page
+  .partner-benefits
+  .benefits-scroll-stage
+  > .partner-benefits-note {
+  text-align: center;
+  max-width: 960px;
+  margin: 12px auto 0;
+  padding-inline: 16px;
+  box-sizing: border-box;
+}
+.partner-wall-item[data-partner="shengwang"],
+.partner-benefit-logo[data-partner="shengwang"] {
+  --logo-content-height: 48px;
+  --logo-aspect: calc(490 / 257);
+}
+.partner-wall-item[data-partner="shengwang"] {
+  flex-basis: calc(
+    var(--logo-content-height) * var(--partner-logo-scale) *
+      var(--logo-aspect) + 32px
+  );
+}
+.partner-benefit-logo[data-partner="shengwang"] {
+  width: calc(
+    var(--logo-content-height) * var(--partner-logo-scale) *
+      var(--logo-aspect) + 16px
+  );
+}
+.partner-wall-item[data-partner="shengwang"] img,
+.partner-benefit-logo[data-partner="shengwang"] img {
+  width: auto;
+  height: calc(var(--logo-content-height) * var(--partner-logo-scale));
+  max-width: none;
+  transform: none;
+}
+@media (max-width: 760px) {
+  .partner-benefit-logo[data-partner="shengwang"] {
+    --logo-content-height: 40px;
+  }
+}
+@media (max-height: 900px) {
+  #payathon-page .partner-benefit-logo[data-partner="shengwang"] {
+    --logo-content-height: 32px;
+  }
+}

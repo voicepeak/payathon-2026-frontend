@@ -1,0 +1,2787 @@
+var ke = Math.PI * 2,
+  Te = 0.58,
+  ue = Array.from({ length: 8 }, (e, t) => `crab-leg-${t}`);
+function oe(e, t = 0) {
+  const n = e < 4 ? -1 : 1,
+    a = e % 4,
+    s = { x: 160 + n * (49 - a * 2), y: 99 + a * 11 },
+    c = { x: 160 + n * (85 + a * 4), y: 94 + a * 20 },
+    l = { x: 160 + n * (111 + a * 4), y: 128 + a * 22 },
+    i = t * ke + (a % 2) * Math.PI + (n > 0 ? Math.PI : 0),
+    h = { x: l.x + Math.sin(i) * 12, y: l.y - Math.max(0, Math.cos(i)) * 11 },
+    o = Math.hypot(c.x - s.x, c.y - s.y),
+    r = Math.hypot(l.x - c.x, l.y - c.y),
+    f = h.x - s.x,
+    u = h.y - s.y,
+    p = Math.min(o + r - 0.01, Math.hypot(f, u)),
+    m = Math.atan2(u, f),
+    d = (o * o - r * r + p * p) / (2 * p),
+    x = Math.sqrt(Math.max(0, o * o - d * d)),
+    C = [-1, 1].map((b) => ({
+      x: s.x + Math.cos(m) * d - Math.sin(m) * x * b,
+      y: s.y + Math.sin(m) * d + Math.cos(m) * x * b,
+    }));
+  return (
+    C.sort(
+      (b, Q) =>
+        Math.hypot(b.x - c.x, b.y - c.y) - Math.hypot(Q.x - c.x, Q.y - c.y),
+    ),
+    [s, C[0], { x: s.x + Math.cos(m) * p, y: s.y + Math.sin(m) * p }]
+  );
+}
+function Re(e) {
+  const t = oe(e),
+    n = t[0],
+    a = t[1],
+    s = t[2];
+  return `M${n.x} ${n.y} L${a.x} ${a.y} L${s.x} ${s.y}`;
+}
+var Pe = [
+    [30, 62],
+    [2, 65],
+    [-28, 51],
+    [-22, 26],
+    [3, 20],
+    [45, 14],
+    [62, 25],
+    [48, 48],
+  ],
+  Ie = [
+    [24, 30],
+    [39, 36],
+    [33, 57],
+    [5, 62],
+    [-31, 51],
+    [-54, 28],
+    [-34, 21],
+    [0, 22],
+  ],
+  Kt = (e, t, n) => Math.max(t, Math.min(n, e));
+function ve(e, t) {
+  const n = (((t % 1) + 1) % 1) * e.length,
+    a = Math.floor(n),
+    s = n - a,
+    c = e.length;
+  return [0, 1].map((l) => {
+    const i = e[(a + c - 1) % c][l],
+      h = e[a][l],
+      o = e[(a + 1) % c][l],
+      r = e[(a + 2) % c][l];
+    return (
+      0.5 *
+      (2 * h +
+        (-i + o) * s +
+        (2 * i - 5 * h + 4 * o - r) * s * s +
+        (-i + 3 * h - 3 * o + r) * s * s * s)
+    );
+  });
+}
+function Lt(e, t) {
+  const n = e.startsWith("fore"),
+    a = e.endsWith("far"),
+    s = { x: (n ? 217 : 123) - (a ? 7 : 0), y: n ? 116 : 119 },
+    [c, l] = ve(n ? Pe : Ie, t + (a ? 0.095 : 0)),
+    i = n ? 34 : 30,
+    h = n ? 34 : 36,
+    o = Kt(Math.hypot(c, l), 14, i + h - 1.2),
+    r = Math.atan2(l, c),
+    f =
+      (n ? 1 : -1) *
+      Math.acos(Kt((i * i + o * o - h * h) / (2 * i * o), -1, 1)),
+    u = { x: s.x + Math.cos(r + f) * i, y: s.y + Math.sin(r + f) * i },
+    p = { x: s.x + Math.cos(r) * o, y: s.y + Math.sin(r) * o },
+    m = Kt((175 - p.y) / 40, 0, 1),
+    d = -0.16 * m,
+    x = { x: p.x + 9 * Math.cos(d), y: p.y + 9 * Math.sin(d) };
+  return [s, u, p, x];
+}
+function Rt(e, t) {
+  const n = Math.min(2, Math.floor(t * 3)),
+    a = Math.min(1, t * 3 - n),
+    s = e[n],
+    c = e[n + 1],
+    l = e[Math.max(0, n - 1)],
+    i = e[Math.min(3, n + 2)],
+    h = (E, X) => ({ x: X.x - E.x, y: X.y - E.y }),
+    o = h(s, c),
+    r = Math.hypot(o.x, o.y),
+    f = n === 0 ? o : h(l, c),
+    u = n === 2 ? o : h(s, i),
+    p = (E) => {
+      const X = Math.hypot(E.x, E.y) || 1;
+      return { x: (E.x / X) * r, y: (E.y / X) * r };
+    },
+    m = p(f),
+    d = p(u),
+    x = 2 * a * a * a - 3 * a * a + 1,
+    C = a * a * a - 2 * a * a + a,
+    b = -2 * a * a * a + 3 * a * a,
+    Q = a * a * a - a * a,
+    w = x * s.x + C * m.x + b * c.x + Q * d.x,
+    z = x * s.y + C * m.y + b * c.y + Q * d.y,
+    j =
+      (6 * a * a - 6 * a) * s.x +
+      (3 * a * a - 4 * a + 1) * m.x +
+      (-6 * a * a + 6 * a) * c.x +
+      (3 * a * a - 2 * a) * d.x,
+    v =
+      (6 * a * a - 6 * a) * s.y +
+      (3 * a * a - 4 * a + 1) * m.y +
+      (-6 * a * a + 6 * a) * c.y +
+      (3 * a * a - 2 * a) * d.y;
+  return { x: w, y: z, angle: Math.atan2(v, j) };
+}
+function Gt(e) {
+  const t = Lt(e, 0),
+    n = [[], []];
+  for (let a = 0; a <= 36; a++) {
+    const s = a / 36,
+      c = Rt(t, s),
+      l = s < 1 / 3 ? 7 - 9 * s : s < 2 / 3 ? 4 - 3 * (s - 1 / 3) : 3;
+    for (let i = 0; i < 2; i++) {
+      const h = i ? 1 : -1;
+      n[i].push(
+        `${(c.x - Math.sin(c.angle) * l * h).toFixed(2)} ${(c.y + Math.cos(c.angle) * l * h).toFixed(2)}`,
+      );
+    }
+  }
+  return `M${[...n[0], ...n[1].reverse()].join(" L")} Z`;
+}
+function ze(e, t, n) {
+  const a = Lt(e, 0);
+  let s = { distance: 1 / 0 };
+  for (let c = 0; c <= 180; c++) {
+    const l = c / 180,
+      i = Rt(a, l),
+      h = t - i.x,
+      o = n - i.y,
+      r = h * h + o * o;
+    r < s.distance &&
+      (s = {
+        distance: r,
+        u: l,
+        offset: -h * Math.sin(i.angle) + o * Math.cos(i.angle),
+        angle: i.angle,
+      });
+  }
+  return s;
+}
+function je(e, t) {
+  const n = Rt(e, t.u);
+  return {
+    x: n.x - Math.sin(n.angle) * t.offset,
+    y: n.y + Math.cos(n.angle) * t.offset,
+    angle:
+      (Math.atan2(Math.sin(n.angle - t.angle), Math.cos(n.angle - t.angle)) *
+        180) /
+      Math.PI,
+  };
+}
+var Pt = [0, 0.115, 0.24, 0.36, 0.47, 0.585, 0.735, 0.885, 1],
+  re = 1.2;
+function De(e) {
+  const t = Math.PI * 2,
+    n = 0.1;
+  return e - (0.06 / t) * (Math.sin(t * (e - n)) - Math.sin(-t * n));
+}
+var de = Pt.slice(1).map((e, t) => 0.125 / (e - Pt[t])),
+  Me = Pt.map((e, t) => {
+    const n = de[(t + 7) % 8],
+      a = de[t % 8];
+    return (2 * n * a) / (n + a);
+  });
+function Be(e) {
+  const t = ((e % 1) + 1) % 1;
+  let n = 0;
+  for (; n < 7 && t >= Pt[n + 1]; ) n++;
+  const a = Pt[n + 1] - Pt[n],
+    s = (t - Pt[n]) / a;
+  return (
+    ((2 * s * s * s - 3 * s * s + 1) * n) / 8 +
+    (s * s * s - 2 * s * s + s) * a * Me[n] +
+    ((-2 * s * s * s + 3 * s * s) * (n + 1)) / 8 +
+    (s * s * s - s * s) * a * Me[n + 1]
+  );
+}
+function Fe(e) {
+  const [t, n] = ve(
+    [
+      [0, 0],
+      [3, 1],
+      [2, 2],
+      [0, 0],
+      [-3, -2],
+      [-6, -2],
+      [-5, -1],
+      [-2, 0],
+    ],
+    e,
+  );
+  return `translate(0 ${t.toFixed(3)}) rotate(${n.toFixed(3)} 165 110)`;
+}
+var ge =
+    "M94 104 C101 78 124 74 150 78 C175 83 202 75 220 79 L239 72 L240 60 Q250 58 253 70 C264 69 272 77 274 84 L287 89 L284 98 L267 104 L246 99 L231 113",
+  _e = "M213 128 C190 138 173 128 145 128",
+  Oe = ["turtle", "crab", "pearl", "dolphin"],
+  Xe = {
+    crab: {
+      contours: [
+        "M108 99 Q111 79 135 76 L149 80 L160 77 L172 80 L186 76 Q210 80 214 99 L207 125 Q185 143 160 143 Q134 143 112 125 Z",
+        ...Array.from({ length: 8 }, (e, t) => Re(t)),
+        "M116 96 L92 79 L78 67 Q54 68 48 50 L45 29 Q62 29 72 46 L76 22 Q96 33 94 50 L87 64 L102 73 L121 85 Z",
+        "M204 96 L228 79 L242 67 Q266 68 272 50 L275 29 Q258 29 248 46 L244 22 Q224 33 226 50 L233 64 L218 73 L199 85 Z",
+        "M140 79 L136 60 L142 59 L147 80",
+        "M174 80 L179 59 L185 60 L181 79",
+      ],
+      details: ["M128 102 Q160 92 195 102", "M140 122 Q160 129 180 122"],
+      glyphs: [
+        [138, 56, "·"],
+        [183, 56, "·"],
+        [148, 108, "0"],
+        [176, 113, "1"],
+        [160, 86, "■"],
+      ],
+    },
+    turtle: {
+      contours: [
+        "M145 53 C130 20 143 10 160 10 C179 10 189 27 175 53",
+        "M119 72 C89 46 69 51 54 77 C72 78 82 94 105 99",
+        "M201 72 C231 46 251 51 266 77 C248 78 238 94 215 99",
+        "M111 155 C79 157 75 181 79 195 C99 189 112 185 126 174",
+        "M209 155 C241 157 245 181 241 195 C221 189 208 185 194 174",
+        "M151 186 L160 208 L169 186",
+        "M160 48 C123 48 104 83 105 125 C106 164 127 188 160 188 C193 188 214 164 215 125 C216 83 197 48 160 48 Z",
+      ],
+      details: [
+        "M146 72 L174 72 L187 96 L173 121 L147 121 L133 96 Z",
+        "M147 121 L133 145 L147 168 L173 168 L187 145 L173 121",
+        "M133 96 L113 91 M187 96 L207 91 M133 145 L112 151 M187 145 L208 151",
+      ],
+      glyphs: [
+        [155, 95, "01"],
+        [157, 148, "10"],
+        [124, 120, ":"],
+        [193, 121, ":"],
+        [154, 31, "·"],
+        [168, 31, "·"],
+        [160, 60, "■"],
+      ],
+    },
+    leopard: {
+      backing: `${ge} L217 124 L213 128 C190 138 173 128 145 128 Q114 144 94 119 Z`,
+      contours: [
+        ge,
+        Gt("fore-near"),
+        Gt("fore-far"),
+        Gt("hind-near"),
+        Gt("hind-far"),
+        "M95 107 C74 103 65 86 44 82 C26 78 14 84 12 96 C10 103 18 106 21 99 C26 88 41 91 54 98 C67 110 79 120 95 119",
+        _e,
+      ],
+      details: [
+        "M248 83 L257 89 L260 99",
+        "M274 91 L284 92",
+        "M113 99 Q121 104 120 119",
+        "M209 96 Q218 104 217 118",
+        "M28 135 L64 135 M16 151 L39 151",
+      ],
+      glyphs: [
+        [264, 83, "·"],
+        [139, 103, "0"],
+        [161, 106, "1"],
+        [180, 99, "0"],
+        [197, 111, "0"],
+        [148, 117, ":"],
+        [119, 95, "0"],
+        [219, 96, "■"],
+        [234, 86, "0"],
+        [Rt(Lt("hind-far", 0), 0.55).x, Rt(Lt("hind-far", 0), 0.55).y, "1"],
+        [Rt(Lt("fore-near", 0), 0.55).x, Rt(Lt("fore-near", 0), 0.55).y, "0"],
+      ],
+    },
+    pearl: {
+      contours: [
+        "M157 157 C110 153 68 119 62 77 C68 59 81 51 96 56 C108 31 128 31 141 43 C153 24 171 24 182 43 C200 31 216 39 225 57 C244 49 258 64 259 79 C252 124 212 154 165 157",
+        "M65 155 Q160 123 255 155 C239 192 203 210 160 210 C117 210 80 192 65 155 Z",
+        "M65 155 Q160 184 255 155",
+      ],
+      details: [
+        "M92 75 Q106 111 137 141",
+        "M121 60 Q128 99 149 133",
+        "M160 54 L160 125",
+        "M200 61 Q191 104 177 134",
+        "M231 79 Q216 116 186 142",
+        "M92 174 Q160 211 228 174",
+      ],
+      glyphs: [
+        [118, 89, "1"],
+        [207, 100, "0"],
+        [91, 107, ":"],
+        [222, 122, "+"],
+        [147, 146, "0"],
+        [161, 144, "1"],
+        [169, 155, "0"],
+        [155, 158, "■"],
+        [160, 188, "~"],
+      ],
+    },
+    dolphin: {
+      contours: [
+        "M47 151 C73 109 106 84 145 77 C150 61 163 44 181 40 C177 53 178 64 185 77 C212 79 235 91 247 107 L276 114 Q281 120 273 124 L246 126 C224 147 199 153 178 150 C170 165 157 176 143 177 L151 147 C111 137 80 139 47 151 Z",
+        "M47 151 C36 133 23 126 13 128 L26 151 L12 179 C31 177 40 165 47 151",
+      ],
+      details: [
+        "M77 133 Q149 100 211 112",
+        "M204 136 Q230 135 246 126",
+        "M280 86 Q297 111 287 139",
+        "M295 70 Q320 111 304 154",
+      ],
+      glyphs: [
+        [231, 109, "0"],
+        [132, 112, "01"],
+        [165, 122, "1"],
+        [104, 121, "+"],
+        [194, 98, "■"],
+        [70, 141, "~"],
+      ],
+    },
+  };
+function Ne() {
+  let e = [],
+    t = -1 / 0;
+  const n = 40,
+    a = (l, i) => ((l + 32768) << 16) ^ (i + 32768),
+    s = (l) => {
+      const i = new Map();
+      return (
+        l.forEach((h, o) => {
+          const r = a(Math.floor(h.x / n), Math.floor(h.y / n)),
+            f = i.get(r);
+          f ? f.push(o) : i.set(r, [o]);
+        }),
+        i
+      );
+    },
+    c = (l, i, h) => {
+      const o = Math.floor(i.x / n),
+        r = Math.floor(i.y / n);
+      for (let f = -1; f <= 1; f++)
+        for (let u = -1; u <= 1; u++)
+          for (const p of l.get(a(o + f, r + u)) ?? []) h(p);
+    };
+  return {
+    reset() {
+      ((e = []), (t = -1 / 0));
+    },
+    apply(l, i, h) {
+      (h < t && (e = []), (t = h));
+      const o = l.map((x) => x.alpha > 0.15 && !x.exitBlock),
+        r = s(l),
+        f = s(e),
+        u = new Set(),
+        p = [],
+        m = l.map(() => ({ x: 0, y: 0, weight: 0, strength: 0 }));
+      for (let x = 0; x < l.length; x++) {
+        if (!o[x]) continue;
+        const C = l[x];
+        c(r, C, (b) => {
+          if (b <= x || !o[b] || C.subject === l[b].subject) return;
+          const Q = l[b],
+            w = Math.min(36, (C.size + Q.size) * 0.9);
+          let z = C.x - Q.x,
+            j = C.y - Q.y;
+          if (Math.abs(z) >= w || Math.abs(j) >= w) return;
+          const v = z * z + j * j;
+          if (v >= w * w) return;
+          const E = Math.sqrt(v);
+          E < 0.01
+            ? ((z = C.subject < Q.subject ? -1 : 1), (j = 0))
+            : ((z /= E), (j /= E));
+          const X = 1 - E / w,
+            B = X * X,
+            L = Math.min(22, w * 0.7) * X,
+            P = m[x],
+            V = m[b],
+            tt = z * B,
+            at = j * B;
+          ((P.x += tt),
+            (P.y += at),
+            (P.weight += B),
+            (P.strength = Math.max(P.strength, L)),
+            (V.x -= tt),
+            (V.y -= at),
+            (V.weight += B),
+            (V.strength = Math.max(V.strength, L)));
+        });
+      }
+      const d = l.map((x, C) => {
+        let b = -1,
+          Q = x.size * x.size * 4;
+        const w = e[C];
+        w &&
+        !u.has(C) &&
+        w.subject === x.subject &&
+        w.incarnation === x.incarnation &&
+        (w.x - x.x) ** 2 + (w.y - x.y) ** 2 < x.size * x.size
+          ? (b = C)
+          : c(f, x, (at) => {
+              const ot = e[at];
+              if (
+                u.has(at) ||
+                ot.subject !== x.subject ||
+                ot.incarnation !== x.incarnation
+              )
+                return;
+              const ut = (ot.x - x.x) ** 2 + (ot.y - x.y) ** 2;
+              ut < Q && ((Q = ut), (b = at));
+            });
+        const z = b < 0 ? null : e[b];
+        b >= 0 && u.add(b);
+        const j = m[C],
+          v = j.weight > 0,
+          E = 1 - Math.exp(-Math.min(0.05, Math.max(0, i)) * (v ? 22 : 9)),
+          X = v ? (j.x / j.weight) * j.strength : 0,
+          B = v ? (j.y / j.weight) * j.strength : 0,
+          L = (z?.dx ?? 0) + (X - (z?.dx ?? 0)) * E,
+          P = (z?.dy ?? 0) + (B - (z?.dy ?? 0)) * E,
+          V = v ? h + 0.22 : (z?.until ?? -1 / 0),
+          tt = v && !z?.touching ? h : (z?.start ?? -1 / 0);
+        return (
+          p.push({
+            x: x.x,
+            y: x.y,
+            subject: x.subject,
+            incarnation: x.incarnation,
+            dx: L,
+            dy: P,
+            until: V,
+            start: tt,
+            touching: v,
+          }),
+          Object.assign({}, x, {
+            x: x.x + L,
+            y: x.y + P,
+            creatureContact: h < V,
+            contactBlock: h - tt < 0.12,
+          })
+        );
+      });
+      return ((e = p), d);
+    },
+  };
+}
+var Tt = Math.PI * 2,
+  Ye = { turtle: 1, pearl: 1.05, crab: 1.05, leopard: 1.12, dolphin: 1.45 },
+  pe = 5,
+  se = 5,
+  Ue = 0.65,
+  Ae = 1.65;
+function Qe(e, t, n, a, s, c = !1) {
+  const l = 170 * s + 24,
+    i = n.left - l;
+  let h,
+    o,
+    r = 0;
+  if (e === "crab") ((h = t * 175), (o = n.top + n.height * (0.66 + a * 0.1)));
+  else if (e === "leopard")
+    ((h = 354 * re * De(t / re)), (o = n.top + n.height * (0.64 + a * 0.12)));
+  else if (e === "turtle")
+    ((h = t * 22 + 1.4 * Math.sin((t / 2.8) * Tt)),
+      (o = n.top + n.height * (0.62 + a * 0.16) + Math.sin((t / 5.6) * Tt) * 3),
+      (r = Math.PI / 2 + Math.sin((t / 2.8) * Tt) * 0.025));
+  else if (e === "dolphin") {
+    h = t * 120 + 2 * Math.sin((t / Ae) * Tt);
+    const f = (t / 7) * Tt + a * Tt,
+      u = Math.min(14, n.height * 0.022);
+    ((o = n.top + n.height * (0.3 + a * 0.2) + Math.sin(f) * u),
+      (r = Math.atan2((Math.cos(f) * u * Tt) / 7, 120) * 0.5));
+  } else {
+    const f = Math.min(n.width / 2, 112 * s + 24);
+    return (
+      (o = Math.min(
+        n.top + n.height * (0.55 + a * 0.15),
+        n.bottom - 102 * s - 24,
+      )),
+      { x: n.left + f + (n.width - 2 * f) * a, y: o, angle: r }
+    );
+  }
+  return {
+    x: (c ? n.left + n.width * (0.15 + a * 0.65) : i) + h,
+    y: o,
+    angle: r,
+  };
+}
+var Qt = Math.PI * 2,
+  Le = (e, t, n) => Math.max(t, Math.min(n, e)),
+  Ee = (e, t) => ({
+    a: e,
+    b: t,
+    angle: Math.atan2(t.y - e.y, t.x - e.x),
+    length: Math.hypot(t.x - e.x, t.y - e.y),
+  }),
+  ft = (e, t) => ({ x: e, y: t }),
+  jt = (e) => e.slice(1).map((t, n) => Ee(e[n], t)),
+  ie = (e, t, n) => ({
+    x: e * Math.cos(n) - t * Math.sin(n),
+    y: e * Math.sin(n) + t * Math.cos(n),
+  });
+function te(e, t) {
+  const n = Le((235 - e) / 140, 0, 1),
+    a = n * n * (3 - 2 * n);
+  return {
+    x: e,
+    y: t,
+    u: n,
+    smooth: a,
+    arch: Math.sin(Math.PI * n) ** 2,
+    slope: Math.PI * Math.sin(Qt * n),
+    smoothSlope: 6 * n * (1 - n),
+  };
+}
+function ee(e, t) {
+  const { x: n, y: a, smooth: s, arch: c, slope: l, smoothSlope: i } = e,
+    h = Math.atan2((9 * l + 4 * i) * t, 140 - 16 * i * t),
+    o = a - 105;
+  return {
+    x: n + 16 * s * t - Math.sin(h) * o,
+    y: 105 - (9 * c + 4 * s) * t + Math.cos(h) * o,
+    angle: (h * 180) / Math.PI,
+  };
+}
+function ye(e, t, n) {
+  const a = e
+      .map((c, l) => {
+        const i = Le(
+          ((t - c.a.x) * (c.b.x - c.a.x) + (n - c.a.y) * (c.b.y - c.a.y)) /
+            (c.length * c.length),
+          0,
+          1,
+        );
+        return {
+          index: l,
+          d: Math.hypot(
+            t - c.a.x - i * (c.b.x - c.a.x),
+            n - c.a.y - i * (c.b.y - c.a.y),
+          ),
+        };
+      })
+      .sort((c, l) => c.d - l.d)
+      .slice(0, 2),
+    s = a.reduce((c, l) => c + 1 / Math.pow(l.d + 5, 3), 0);
+  return a.map((c) => ({ ...c, weight: 1 / Math.pow(c.d + 5, 3) / s }));
+}
+function xe(e, t, n, a, s) {
+  let c = 0,
+    l = 0,
+    i = 0;
+  for (const { index: h, weight: o } of n) {
+    const r = e[h],
+      f = t[h],
+      u = Math.atan2(Math.sin(f.angle - r.angle), Math.cos(f.angle - r.angle)),
+      p = ie(a - r.a.x, s - r.a.y, u);
+    ((c += (f.a.x + p.x) * o), (l += (f.a.y + p.y) * o), (i += u * o));
+  }
+  return { x: c, y: l, angle: (i * 180) / Math.PI };
+}
+function qe(e, { swimming: t = !1 } = {}) {
+  if (e === "crab") {
+    const r = Object.fromEntries(ue.map((u, p) => [u, jt(oe(p))]));
+    ((r["crab-claw-left"] = jt([ft(118, 92), ft(75, 48)])),
+      (r["crab-claw-right"] = jt([ft(202, 92), ft(245, 48)])));
+    const f = { ...r };
+    return {
+      bind(u, p, m) {
+        const d = Object.keys(r).find((x) => u.includes(x));
+        return d ? { key: d, weights: ye(r[d], p, m) } : null;
+      },
+      pose(u) {
+        ue.forEach((p, m) => {
+          f[p] = jt(oe(m, u / Te));
+        });
+        for (const [p, m] of [
+          ["crab-claw-left", -1],
+          ["crab-claw-right", 1],
+        ]) {
+          const d = r[p][0],
+            x = Math.sin((u / 1.16) * Qt) * 0.08 * m,
+            C = ie(d.b.x - d.a.x, d.b.y - d.a.y, x);
+          f[p] = jt([d.a, ft(d.a.x + C.x, d.a.y + C.y)]);
+        }
+      },
+      bodyTransform() {
+        return null;
+      },
+      deform(u, p, m) {
+        return u
+          ? xe(r[u.key], f[u.key], u.weights, p, m)
+          : { x: p, y: m, angle: 0 };
+      },
+    };
+  }
+  if (!["leopard", "dolphin"].includes(e)) return null;
+  const n = {},
+    a = {};
+  let s = 0,
+    c = 0,
+    l = 0,
+    i = null;
+  const h = {},
+    o = e === "leopard" ? te(95, 113) : null;
+  if (e === "leopard")
+    for (const r of ["fore-near", "fore-far", "hind-near", "hind-far"])
+      ((n[r] = Lt(r, 0)), (h[r] = te(n[r][0].x, n[r][0].y)));
+  else
+    n.spine = jt([
+      ft(260, 110),
+      ft(220, 113),
+      ft(180, 117),
+      ft(140, 124),
+      ft(100, 136),
+      ft(60, 148),
+      ft(30, 151),
+    ]);
+  return (
+    Object.entries(n).forEach(([r, f]) => {
+      a[r] = f;
+    }),
+    {
+      bind(r, f, u) {
+        const p =
+          e === "dolphin"
+            ? r.includes("echo-")
+              ? null
+              : "spine"
+            : Object.keys(n).find((m) => r.includes(m));
+        return e === "leopard" && !p
+          ? r.includes("speed-trail")
+            ? null
+            : { spine: te(f, u), tail: r.includes("tail") }
+          : p
+            ? {
+                key: p,
+                ...(e === "leopard"
+                  ? { leg: ze(p, f, u) }
+                  : { weights: ye(n[p], f, u) }),
+              }
+            : null;
+      },
+      pose(r) {
+        if (e === "leopard") {
+          const f = Be(r / re);
+          ((s = f),
+            (c = Math.cos(Qt * (f - 0.25))),
+            (l = Math.sin(Qt * f) * 0.12),
+            (i = ee(o, c)),
+            Object.keys(n).forEach((u) => {
+              const p = n[u][0],
+                m = ee(h[u], c);
+              a[u] = Lt(u, f).map((d) => ({
+                x: d.x + m.x - p.x,
+                y: d.y + m.y - p.y,
+              }));
+            }));
+        } else {
+          const f = (r / (t ? Ae : 2.8)) * Qt;
+          let u = ft(260, 110 + Math.sin(f) * (t ? 0.5 : 2));
+          a.spine = n.spine.map((p, m) => {
+            const d = t
+                ? 0.012 + 0.255 * Math.pow(m / (n.spine.length - 1), 1.8)
+                : 0.015 + m * 0.035,
+              x = p.angle + Math.sin(f - m * (t ? 0.9 : 0.48)) * d,
+              C = ft(
+                u.x + Math.cos(x) * p.length,
+                u.y + Math.sin(x) * p.length,
+              ),
+              b = Ee(u, C);
+            return ((u = C), b);
+          });
+        }
+      },
+      bodyTransform() {
+        return e === "leopard" ? Fe(s) : null;
+      },
+      deform(r, f, u) {
+        if (r?.spine) {
+          const p = ee(r.spine, c);
+          if (r.tail && i) {
+            const m = ie(p.x - i.x, p.y - i.y, l);
+            return {
+              x: m.x + i.x,
+              y: m.y + i.y,
+              angle: p.angle + (l * 180) / Math.PI,
+            };
+          }
+          return p;
+        }
+        return r
+          ? r.leg
+            ? je(a[r.key], r.leg)
+            : xe(n[r.key], a[r.key], r.weights, f, u)
+          : { x: f, y: u, angle: 0 };
+      },
+    }
+  );
+}
+var ae = Math.PI * 2,
+  me = (e, t, n, a, s) => ({
+    x: a + (e - a) * Math.cos(n) - (t - s) * Math.sin(n),
+    y: s + (e - a) * Math.sin(n) + (t - s) * Math.cos(n),
+  });
+function He(e, t) {
+  const n = Xe[e],
+    a = qe(e, { swimming: !0 }),
+    s = [],
+    c = (h) =>
+      e === "crab"
+        ? h >= 1 && h <= 8
+          ? `crab-leg-${h - 1}`
+          : h === 9
+            ? "crab-claw-left"
+            : h === 10
+              ? "crab-claw-right"
+              : ""
+        : e === "leopard"
+          ? ["", "fore-near", "fore-far", "hind-near", "hind-far", "tail", ""][
+              h
+            ]
+          : e === "turtle"
+            ? [
+                "",
+                "fin-left",
+                "fin-right",
+                "rear-left",
+                "rear-right",
+                "tail",
+                "",
+              ][h]
+            : e === "pearl"
+              ? h === 0
+                ? "lid"
+                : ""
+              : h === 1
+                ? "tail"
+                : "",
+    l = (h, o, r, f, u, p) => {
+      const m = Math.random();
+      (r !== "·" &&
+        m < 0.245 &&
+        ((r = m < 0.025 ? "▪" : Math.random() < 0.5 ? "0" : "1"),
+        (p = void 0)),
+        s.push({
+          x: h,
+          y: o,
+          char: r,
+          alpha: f,
+          part: u,
+          line: p,
+          binding: a?.bind(u, h, o),
+        }));
+    },
+    i = (h, o, r) => {
+      const f = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      f.setAttribute("d", h);
+      const u = f.getTotalLength();
+      for (let p = 0; p < u; p += (o ? 28 : 22) / t) {
+        const m = f.getPointAtLength(p),
+          d = f.getPointAtLength(Math.min(u, p + 8));
+        l((m.x + d.x) / 2, (m.y + d.y) / 2, "|", o ? 0.4 : 0.9, r, {
+          angle: Math.atan2(d.y - m.y, d.x - m.x),
+        });
+      }
+    };
+  return (
+    n.contours.forEach((h, o) => i(h, !1, c(o))),
+    n.details.forEach((h, o) => {
+      (e === "dolphin" && o >= 2) ||
+        (e === "leopard" && o >= 4) ||
+        i(h, !0, e === "pearl" && o < 5 ? "lid" : "");
+    }),
+    e === "pearl" &&
+      i("M184 148 A24 24 0 1 0 136 148 A24 24 0 1 0 184 148", !1, "pearl"),
+    n.glyphs.forEach(([h, o, r], f) =>
+      l(
+        h,
+        o,
+        r.length > 1 ? r[0] : r,
+        0.85,
+        e === "leopard"
+          ? f === 9
+            ? "hind-far"
+            : f === 10
+              ? "fore-near"
+              : ""
+          : e === "pearl"
+            ? f < 4
+              ? "lid"
+              : f < 8
+                ? "pearl"
+                : ""
+            : "",
+      ),
+    ),
+    s.sort((h, o) => h.x + h.y - (o.x + o.y)),
+    { glyphs: s, rig: a }
+  );
+}
+function be() {
+  const e = ["jellyfish", "jellyfish", ...Oe],
+    t = new Map();
+  let n = 0;
+  const a = (c, l, i, h) => {
+      let o = t.get(c);
+      if (!o || o.retired) {
+        const r = new Set(
+            [...t.entries()].filter(([u]) => u !== c).map(([, u]) => u.species),
+          ),
+          f = e.filter((u) => !r.has(u) && u !== o?.species);
+        ((o = {
+          species: f[Math.floor(Math.random() * f.length)],
+          born: l,
+          initial: !o,
+          phase: Math.random(),
+          generation: ++n,
+          seen: !1,
+          retired: !1,
+        }),
+          (o.scale = (i.objectScale / 50) * (Ye[o.species] ?? 1)),
+          o.species !== "jellyfish" && (o.model = He(o.species, o.scale)),
+          t.set(c, o));
+      }
+      return ((o.viewport = h), o);
+    },
+    s = (c, l, i, h, o, r, f) => {
+      const u = t.get(c),
+        p = u.species;
+      if (p === "pearl" && l >= se + Ue) return ((u.retired = !0), []);
+      let m;
+      return (
+        p === "jellyfish" ? (m = f(l, i, h, o, r)) : (m = We(u, l, o, r)),
+        s.observe(c, m, u.viewport),
+        m.map((d) => ({ ...d, incarnation: u.generation }))
+      );
+    };
+  return (
+    (s.prepare = a),
+    (s.retire = (c) => {
+      t.get(c).retired = !0;
+    }),
+    (s.hasOwnMotion = (c) => t.get(c).species !== "jellyfish"),
+    (s.observe = (c, l, i) => {
+      const h = t.get(c);
+      l.some(
+        (r) =>
+          r.x + r.size > i.left &&
+          r.x - r.size < i.right &&
+          r.y + r.size > i.top &&
+          r.y - r.size < i.bottom,
+      )
+        ? (h.seen = !0)
+        : h.seen && (h.retired = !0);
+    }),
+    s
+  );
+}
+function We(e, t, n, a) {
+  const {
+    species: s,
+    model: { glyphs: c, rig: l },
+    scale: i,
+  } = e;
+  l?.pose(t);
+  const h = l?.bodyTransform()?.match(/translate\(0 ([^)]+)\) rotate\(([^ ]+)/),
+    o = h ? Number(h[1]) : 0,
+    r = h ? (Number(h[2]) * Math.PI) / 180 : 0,
+    f = Qe(s, t, a, e.phase, i, e.initial),
+    u = f.angle,
+    p = Math.cos(u),
+    m = Math.sin(u),
+    d = f.x,
+    x = f.y,
+    C = s === "pearl" ? Math.min(t, se) : t;
+  return c.map((b, Q) => {
+    let w = l?.deform(b.binding, b.x, b.y) ?? { x: b.x, y: b.y, angle: 0 },
+      z = ((w.angle ?? 0) * Math.PI) / 180;
+    if (s === "turtle" && b.part) {
+      const L = b.part.startsWith("rear"),
+        P = b.part.endsWith("right"),
+        V =
+          Math.sin((t / 2.8) * ae + (L ? Math.PI : 0) + (P ? Math.PI : 0)) *
+          0.16,
+        tt = b.part === "tail" ? [160, 187] : [P ? 212 : 108, L ? 174 : 90];
+      ((w = me(w.x, w.y, V, ...tt)), (z += V));
+    } else if (s === "pearl")
+      if (b.part === "lid") {
+        const L = 0.8 + 0.2 * Math.cos((C / pe) * ae);
+        ((w = { x: w.x, y: 157 + (w.y - 157) * L }),
+          b.line &&
+            (z =
+              Math.atan2(Math.sin(b.line.angle) * L, Math.cos(b.line.angle)) -
+              b.line.angle));
+      } else
+        b.part === "pearl" &&
+          (w = { x: w.x, y: w.y + Math.sin((C / pe) * ae) * 5 });
+    else
+      s === "leopard" &&
+        ((w = me(w.x, w.y, r, 165, 110)), (w.y += o), (z += r));
+    const j = (w.x - 160) * i,
+      v = (w.y - 108) * i,
+      E = t - se - (Q / Math.max(1, c.length - 1)) * 0.25,
+      X = s === "pearl" && E >= 0,
+      B = X ? Math.max(0, 1 - E / 0.4) * (E % 0.12 < 0.075 ? 1 : 0.12) : 1;
+    return {
+      x: d + j * p - v * m,
+      y: x + j * m + v * p,
+      char: b.char,
+      alpha: b.alpha * B,
+      size: n.fontSize,
+      exitBlock: X,
+      color: b.part ? "#46c933" : b.line ? "#308cff" : "#ff8300",
+      line: b.line
+        ? { angle: b.line.angle + z + u, length: n.fontSize * 0.9 }
+        : void 0,
+    };
+  });
+}
+function we(e, t, n, a, s) {
+  const c = a.depthTarget;
+  if (!e.depthRay) {
+    const m = e.phase / (Math.PI * 2),
+      d = e.depthAngle ?? m * Math.PI * 2,
+      x = Math.cos(d),
+      C = Math.sin(d),
+      b =
+        Math.min(
+          (x < 0 ? c.x - a.left : a.right - c.x) / Math.max(0.001, Math.abs(x)),
+          (C < 0 ? c.y - a.top : a.bottom - c.y) / Math.max(0.001, Math.abs(C)),
+        ) * 1.5;
+    ((e.depthRay = {
+      x: x * b,
+      y: C * b,
+      z: 0.8 * Math.pow(6.25, e.depthPhase ?? (m * 17.37) % 1),
+    }),
+      (e.depthFresh = !0));
+  }
+  const l = e.depthRay;
+  ((l.z *= Math.exp(n * 0.22 * s.oceanSpeed)),
+    l.z > 5 && ((l.z = 0.8 * (l.z / 5)), (e.depthFresh = !0)));
+  const i = Math.max(0, (0.8 / l.z - 0.16) / 0.84),
+    h = c.x + l.x * i,
+    o = c.y + l.y * i;
+  (e.depthFresh
+    ? ((e.x = h),
+      (e.y = o),
+      (e.vx = e.vy = e.energy = 0),
+      (e.creatureGlow = 0),
+      (e.creatureAvoidX = e.creatureAvoidY = 0),
+      (e.creatureRefillAge = 9),
+      (e.depthFresh = !1))
+    : ((e.x += h - e.homeX), (e.y += o - e.homeY)),
+    (e.homeX = h),
+    (e.homeY = o),
+    (e.depthScale = 0.6 + 0.9 * i));
+  const r = Math.min(1, (l.z - 0.8) / 0.2),
+    f = Math.min(1, (5 - l.z) / 0.5),
+    u = Math.hypot(h - c.x, o - c.y),
+    p = Math.min(180, (a.width ?? a.right - a.left) * 0.34) * 1.5;
+  ((e.depthActivation = Math.exp((-u * u) / (p * p * 0.5))),
+    (e.depthAlpha =
+      Math.max(0, r * f * Math.min(1, Math.max(0, (u - 22) / 32))) *
+      (0.7 + 0.3 * e.depthActivation)));
+}
+class $e {
+  constructor(t, n, a) {
+    ((this.left = Math.floor(n.left / a) - 32),
+      (this.top = Math.floor(n.top / a) - 32),
+      (this.width = Math.ceil(n.width / a) + 66),
+      (this.height = Math.ceil(n.height / a) + 66));
+    const s = this.width * this.height;
+    ((this.heads = new Int32Array(s)),
+      (this.tails = new Int32Array(s)),
+      (this.stamps = new Uint32Array(s)),
+      (this.next = new Int32Array(t)),
+      (this.epoch = 0),
+      (this.overflow = new Map()));
+  }
+  clear() {
+    (this.overflow.clear(),
+      (this.epoch = (this.epoch + 1) >>> 0),
+      this.epoch || (this.stamps.fill(0), (this.epoch = 1)));
+  }
+  slot(t, n) {
+    return (
+      (t -= this.left),
+      (n -= this.top),
+      t >= 0 && n >= 0 && t < this.width && n < this.height
+        ? t * this.height + n
+        : -1
+    );
+  }
+  get(t, n) {
+    const a = this.slot(t, n);
+    return a < 0
+      ? (this.overflow.get((t + 1e3) * 4096 + n + 1e3)?.head ?? -1)
+      : this.stamps[a] === this.epoch
+        ? this.heads[a]
+        : -1;
+  }
+  append(t, n, a) {
+    const s = this.slot(t, n);
+    if (((this.next[a] = -1), s < 0)) {
+      const c = (t + 1e3) * 4096 + n + 1e3,
+        l = this.overflow.get(c);
+      l
+        ? ((this.next[l.tail] = a), (l.tail = a))
+        : this.overflow.set(c, { head: a, tail: a });
+      return;
+    }
+    (this.stamps[s] !== this.epoch
+      ? ((this.stamps[s] = this.epoch), (this.heads[s] = a))
+      : (this.next[this.tails[s]] = a),
+      (this.tails[s] = a));
+  }
+}
+function Ze(
+  e,
+  t,
+  n,
+  a,
+  s = 0,
+  c = { left: 180, right: 740, top: 65, bottom: 545, cx: 460 },
+) {
+  const l = Ht(e, a),
+    i = a.objectScale / 100,
+    h = a.fontSize * 0.8,
+    o = a.fontSize * 1.1,
+    r = c.cx + Math.sin(e * 0.45) * a.sway * 16 + t * a.follow * 16,
+    f = c.top + 9,
+    u = (c.lip ?? f + (8 - l.lift) * 22) + n * a.follow * 22,
+    p =
+      Math.max(3, a.bellWidth - ((l.squeeze * a.contraction) / 100) * 4) *
+      i *
+      16,
+    m = Math.max(0, (l.fan - 0.25) / 0.75),
+    d =
+      Math.max(2, a.bellHeight - ((l.squeeze * a.contraction) / 100) * 2) *
+      (1 - (m * a.chargeFlatten) / 100) *
+      i *
+      22,
+    x = [],
+    C = c.tilt ?? 0,
+    b = Math.cos(C),
+    Q = Math.sin(C),
+    w = (v, E, X, B = "#308cff", L = 1, P) => {
+      const V = v - r,
+        tt = E - u;
+      ((v = r + V * b - tt * Q),
+        (E = u + V * Q + tt * b),
+        (v += (c.cx + Math.round((v - c.cx) / h) * h - v) * s),
+        (E += (f + Math.round((E - f) / o) * o - E) * s));
+      const at = E;
+      at < c.top ||
+        at > c.bottom ||
+        v < c.left ||
+        v > c.right ||
+        x.some(
+          (ot) =>
+            Math.abs(v - ot.x) < a.fontSize * 0.65 &&
+            Math.abs(at - ot.y) < a.fontSize * 0.85,
+        ) ||
+        x.push({
+          x: v,
+          y: at,
+          char: X,
+          color: B,
+          alpha: L,
+          size: a.fontSize,
+          line: P ? { ...P, angle: P.angle + C } : void 0,
+        });
+    },
+    z = Math.max(2, Math.ceil((a.bellHeight * i * 22) / o));
+  for (let v = 0; v < z; v++) {
+    const E = v / z,
+      X = p * Math.sqrt(1 - (1 - E) * (1 - E)),
+      B = u - d + E * d;
+    if (v === 0) (w(r - h, B, "_"), w(r, B, "."), w(r + h, B, "_"));
+    else if (v === z - 1) (w(r - X, B, "("), w(r + X, B, ")"));
+    else {
+      const L = (p * (1 - E)) / Math.sqrt(1 - (1 - E) * (1 - E)),
+        P = a.fontSize * 0.9;
+      (w(r - X, B, "/", "#308cff", 1, { angle: Math.atan2(d, -L), length: P }),
+        w(r + X, B, "\\", "#308cff", 1, {
+          angle: Math.atan2(d, L),
+          length: P,
+        }));
+    }
+    v > 0 &&
+      v < z - 1 &&
+      (w(r - p * 0.25, B, ":", "#308cff", 0.5),
+      w(r + p * 0.25, B, ":", "#308cff", 0.5));
+  }
+  const j = Math.max(4, Math.round((a.bellWidth * i * 32) / h));
+  for (let v = 0; v <= j; v++) w(r - p + (v / j) * p * 2, u, v % 2 ? "_" : "~");
+  for (let v = -1; v <= 1; v++)
+    w(
+      r + v * h * 1.5,
+      u - Math.max(o, d * 0.2),
+      v === 0 ? "*" : "+",
+      "#ff8300",
+    );
+  for (let v = 0; v < a.tentacles; v++) {
+    const E = (v / (a.tentacles - 1)) * 2 - 1,
+      X =
+        i *
+        22 *
+        (a.length * (0.8 + 0.2 * (1 - Math.abs(E))) +
+          l.jet * a.stretch -
+          l.fan * 2),
+      B = Math.max(3, Math.ceil((i * 22 * (a.length + a.stretch)) / o));
+    for (let L = 0; L < B; L++) {
+      const P = (L + 1) / B,
+        V =
+          Math.sin(P * Math.PI * 0.85) * a.spread +
+          Math.sin(P * Math.PI * 2) * a.curl * 0.45,
+        tt = Math.sin(e * 2 - P * 4 + v) * P * i * 5 * (1 - l.jet),
+        at = r + E * (p - 16 * i) + E * l.fan * V * i * 16 + tt,
+        ot =
+          E *
+            l.fan *
+            i *
+            16 *
+            (Math.cos(P * Math.PI * 0.85) * Math.PI * 0.85 * a.spread +
+              Math.cos(P * Math.PI * 2) * Math.PI * 2 * a.curl * 0.45) +
+          (Math.sin(e * 2 - P * 4 + v) - 4 * P * Math.cos(e * 2 - P * 4 + v)) *
+            i *
+            5 *
+            (1 - l.jet);
+      w(at, u + o * 0.6 + P * X, "|", "#46c933", 1 - P * 0.18, {
+        angle: Math.atan2(X, ot),
+        length: Math.min(a.fontSize * 0.9, (Math.hypot(X, ot) / B) * 0.8),
+      });
+    }
+  }
+  return x;
+}
+var Ge = {
+    settings: {
+      smoothMotion: 0,
+      oceanEnabled: 1,
+      oceanSpacing: 18,
+      oceanSpeed: 1,
+      oceanOpacity: 22,
+      bubbleCount: 10,
+      bubbleSize: 20,
+      bubbleSpeed: 18,
+      wakeStrength: 60,
+      wakeRadius: 90,
+      wakeLife: 2.5,
+      objectScale: 50,
+      speed: 1,
+      fps: 24,
+      charge: 48,
+      travel: 12,
+      sway: 1,
+      follow: 0,
+      bellWidth: 9,
+      bellHeight: 5,
+      contraction: 100,
+      chargeFlatten: 80,
+      tentacles: 5,
+      length: 12,
+      stretch: 1,
+      spread: 4,
+      curl: 4,
+      fontSize: 16,
+      barHeight: 14,
+      barRadius: 3.5,
+      guides: 1,
+      refillSpeed: 1.4,
+      mouseRadius: 60,
+      tintRadius: 45,
+      tintStrength: 90,
+      darkBackground: 0,
+      paletteIndex: 0,
+      randomPalette: 1,
+      jellyCount: 1,
+      swimTilt: 14,
+      seekMouse: 1,
+      aimTurn: 12,
+      titleEnabled: 1,
+    },
+  },
+  le = Ge.settings,
+  Ve = "characters",
+  Jt = (e) => ((e = Math.max(0, Math.min(1, e))), e * e * (3 - 2 * e));
+function Ht(e, t = le) {
+  const n = Math.floor(e / 3.2),
+    a = (e - n * 3.2) / 3.2,
+    s = t.charge / 100,
+    c = 0.05,
+    l = s + c,
+    i = 1 - Math.pow(1 - Math.max(0, Math.min(1, (a - s) / c)), 3),
+    h = a < s ? 0 : a < l ? i : 1 - Jt((a - l) / (1 - l)),
+    o =
+      a < s
+        ? 0.25 + 0.75 * Jt(a / s)
+        : a < l
+          ? 1 - i
+          : 0.25 * Jt((a - l) / (1 - l)),
+    r = Math.max(0, (a - s) / (1 - s)),
+    f = 1 - Math.pow(1 - r, 3);
+  return { squeeze: h, fan: o, jet: h, lift: (n + f) * t.travel };
+}
+function Ce(e, t, n) {
+  const a = Math.floor(e * t),
+    s = e * t - a;
+  if (n <= 0) return a / t;
+  const c = Math.max(0, (s - (1 - n)) / n),
+    l = c * n + Jt(c) * (1 - n);
+  return (a + l) / t;
+}
+function ne(e, t = 0, n = 0, a = le, s) {
+  const c = Math.max(0, Math.min(1, a.smoothMotion));
+  return Ze(Ce(e, a.fps, c), t, n, a, 1 - c, s);
+}
+var ce = [
+  {
+    name: "潮汐蓝绿",
+    light: ["#1680ef", "#32ad41", "#f07b00", "#3585bc", "#0058ed"],
+    dark: ["#60b5ff", "#7ce66d", "#ffc166", "#529ab8", "#86eaff"],
+  },
+  {
+    name: "珊瑚薄荷",
+    light: ["#df5865", "#278b7c", "#c27e13", "#599a91", "#147c70"],
+    dark: ["#ff8690", "#74deba", "#ffe29b", "#609e9d", "#a0ffe2"],
+  },
+  {
+    name: "紫雾柠檬",
+    light: ["#7b55ce", "#78951d", "#d75e96", "#8e80b0", "#7950dc"],
+    dark: ["#bd9bff", "#d3eb74", "#ffa4d0", "#8e80b0", "#dbc8ff"],
+  },
+  {
+    name: "靛蓝杏桃",
+    light: ["#4256be", "#d87842", "#249994", "#6e85ad", "#344fe2"],
+    dark: ["#9baaff", "#ffb78b", "#71dfdb", "#737fa5", "#bacbff"],
+  },
+  {
+    name: "森林琥珀",
+    light: ["#24826a", "#a77c18", "#b95947", "#6e9c89", "#126c53"],
+    dark: ["#6ad6a5", "#edc366", "#ff9c83", "#628c7e", "#a5f5cc"],
+  },
+  {
+    name: "玫瑰冰川",
+    light: ["#bd527f", "#358cab", "#8765b9", "#7599b2", "#256faf"],
+    dark: ["#ff97c6", "#7bd5f5", "#ccb0ff", "#688ea4", "#a9e7ff"],
+  },
+  {
+    name: "晴空橙",
+    light: ["#237dad", "#ed762d", "#4b9676", "#729daa", "#006caa"],
+    dark: ["#69c8f5", "#ffb06f", "#88e2b4", "#608d9f", "#a1eaff"],
+  },
+  {
+    name: "莓果鼠尾草",
+    light: ["#9c4773", "#718751", "#c88b2a", "#97828f", "#a43a81"],
+    dark: ["#e995c1", "#c2d399", "#ffd18b", "#997b98", "#ffbce5"],
+  },
+  {
+    name: "孔雀金",
+    light: ["#167d90", "#9373bd", "#ba8927", "#59959f", "#0869a0"],
+    dark: ["#64d2d6", "#c4a8f4", "#f8d581", "#578b98", "#9dffff"],
+  },
+  {
+    name: "落日海岸",
+    light: ["#cb6544", "#ad5189", "#a9871f", "#a38b8a", "#cd4563"],
+    dark: ["#ffa17a", "#ed9bd3", "#e8d185", "#967b95", "#ffc3a1"],
+  },
+  {
+    name: "电光蓝紫",
+    light: ["#3a6ce0", "#a44abd", "#219786", "#8493bd", "#3b42e5"],
+    dark: ["#7faaff", "#e08aff", "#65e2c8", "#7684bc", "#c4aaff"],
+  },
+  {
+    name: "石墨银",
+    light: ["#343a46", "#727a85", "#ba7d43", "#89929d", "#303f59"],
+    dark: ["#e1e6ec", "#a5b3c3", "#efd0a0", "#718091", "#eff7ff"],
+  },
+];
+function Dt(e) {
+  const t =
+      ce[Math.max(0, Math.min(ce.length - 1, Math.round(e.paletteIndex)))],
+    n = e.darkBackground ? t.dark : t.light;
+  return {
+    background: e.darkBackground ? "#10141b" : "#ffffff",
+    bell: n[0],
+    tentacle: n[1],
+    accent: n[2],
+    water: n[3],
+    waterActive: n[4],
+  };
+}
+function qt(e) {
+  return [1, 3, 5].map((t) => parseInt(e.slice(t, t + 2), 16));
+}
+var Je = [1, 0.73, 1.29, 0.87, 1.13, 0.64],
+  Ke = [0, 12, -10, 7, -6, 15];
+function he(e, t, n) {
+  const a = {
+      ...n,
+      charge: Math.max(25, Math.min(65, n.charge + Ke[t])),
+      travel: n.travel * [1, 0.86, 1.17, 0.94, 1.08, 0.8][t],
+    },
+    s = e * Je[t] + [0, 1.43, 0.58, 2.31, 0.91, 1.87][t];
+  return { clock: s, settings: a, power: 0.15 + Ht(s, a).jet };
+}
+function ta(e, t, n, a, s) {
+  const c = n.jellyCount,
+    l = c <= 3 ? c : Math.ceil(Math.sqrt(c)),
+    i = Math.ceil(c / l),
+    h = Math.floor(t / l),
+    o = Math.min(l, c - h * l),
+    r = a.width / o,
+    f = a.height / i,
+    u = a.left + r * ((t % l) + 0.5),
+    p = a.top + h * f;
+  Math.min(
+    (r - 32) / (2 * (n.bellWidth + n.spread + 2) * 16),
+    (f - 32) / ((n.bellHeight + n.length + n.stretch + 2) * 22),
+  );
+  const m = he(e, t, n),
+    d = {
+      ...m.settings,
+      objectScale: n.objectScale,
+      sway: n.sway,
+      follow: c === 1 ? n.follow : 0,
+    },
+    x = d.objectScale / 100,
+    C = n.bellHeight * x * 22 + 24,
+    b = (n.length + n.stretch + 2) * x * 22 + 24,
+    Q = p + f + C,
+    w = p - b,
+    z = [35, 65, 20, 50, 80, 28][t],
+    j = Q - w + z,
+    v = Ht(he(0, t, n).clock, d).lift,
+    X =
+      ((((Ht(m.clock, d).lift - v) * 22 +
+        (s.enter ? 0 : Q - (p + f * (0.2 + s.y * 0.55)))) %
+        j) +
+        j) %
+      j,
+    B = Math.atan(((560 / o) * 0.32) / ((480 / i) * 0.6)),
+    L =
+      Math.min((n.swimTilt * Math.PI) / 180, B) *
+      [1, -0.82, 0.68, -1, 0.88, -0.65][t],
+    P = Q - X,
+    V = u + (s.x - 0.5) * r * 0.3 + (p + f * 0.5 - P) * Math.tan(L),
+    tt = {
+      left: u - r / 2 + 8,
+      right: u + r / 2 - 8,
+      top: p + 8,
+      bottom: p + f - 8,
+      cx: V,
+      lip: P,
+      tilt: L,
+    };
+  return { local: d, bounds: tt, clock: m.clock };
+}
+var ea = class {
+    constructor() {
+      ((this.swimmers = new Map()),
+        (this.creatureFrame = be()),
+        (this.creatureGenerations = new Map()),
+        (this.spawn = Array.from({ length: 6 }, () => ({
+          x: Math.random(),
+          y: Math.random(),
+        }))),
+        (this.lastTime = null));
+    }
+    reset() {
+      (this.swimmers.clear(),
+        (this.creatureFrame = be()),
+        this.creatureGenerations.clear(),
+        (this.lastTime = null));
+    }
+    frame(e, t, n, a, s, c) {
+      (this.lastTime !== null && e < this.lastTime && this.reset(),
+        (this.lastTime = e));
+      for (const i of this.swimmers.keys())
+        i >= a.jellyCount && this.swimmers.delete(i);
+      const l = [];
+      for (let i = 0; i < a.jellyCount; i++) {
+        const h = this.creatureFrame.prepare(i, e, a, c),
+          o = e - h.born;
+        if (
+          (this.creatureGenerations.get(i) !== h.generation &&
+            (this.swimmers.delete(i),
+            h.initial ||
+              (this.spawn[i] = { x: Math.random(), y: 0, enter: !0 }),
+            this.creatureGenerations.set(i, h.generation)),
+          this.creatureFrame.hasOwnMotion(i))
+        ) {
+          l.push(
+            ...this.creatureFrame(i, o, 0, 0, a, c, ne).map((L) => ({
+              ...L,
+              subject: i,
+            })),
+          );
+          continue;
+        }
+        const { local: r, bounds: f, clock: u } = ta(o, i, a, c, this.spawn[i]),
+          p = Ce(u, a.fps, a.smoothMotion),
+          m = Ht(p, r).lift * 22;
+        let d = this.swimmers.get(i);
+        if (
+          (!d &&
+            a.seekMouse &&
+            s &&
+            ((d = {
+              x: f.cx,
+              y: f.lip,
+              angle: f.tilt ?? 0,
+              distance: m,
+              poseTime: p,
+              passed: !1,
+              guide: null,
+            }),
+            this.swimmers.set(i, d)),
+          !d)
+        ) {
+          l.push(
+            ...this.creatureFrame(i, u, t, n, r, f, ne).map((L) => ({
+              ...L,
+              subject: i,
+            })),
+          );
+          continue;
+        }
+        const x = a.seekMouse ? s : null;
+        (x &&
+          (!d.guide || Math.hypot(x.x - d.guide.x, x.y - d.guide.y) >= 12) &&
+          ((d.guide = { x: x.x, y: x.y }), (d.passed = !1)),
+          x || (d.guide = null));
+        let C = d.angle;
+        if (x) {
+          const L = x.x - d.x,
+            P = x.y - d.y;
+          (L * Math.sin(d.angle) - P * Math.cos(d.angle) <= 0 &&
+            (d.passed = !0),
+            !d.passed && Math.hypot(L, P) > 24 && (C = Math.atan2(L, -P)));
+        }
+        const b = Math.max(0, m - d.distance);
+        d.distance = m;
+        const Q = Math.atan2(Math.sin(C - d.angle), Math.cos(C - d.angle)),
+          w = (3.2 * r.charge) / 100,
+          z = (L) => Math.floor(L / 3.2) * w + Math.min(L % 3.2, w),
+          j = Math.max(0, z(p) - z(d.poseTime)) / w;
+        d.poseTime = p;
+        const v = ((a.aimTurn * Math.PI) / 180) * j,
+          E = Math.min(v, Math.abs(Q)) * Math.sign(Q),
+          X = d.angle;
+        if (((d.angle += E), Math.abs(E) > 1e-6)) {
+          const L = b / E;
+          ((d.x += L * (Math.cos(X) - Math.cos(d.angle))),
+            (d.y += L * (Math.sin(X) - Math.sin(d.angle))));
+        } else ((d.x += Math.sin(d.angle) * b), (d.y -= Math.cos(d.angle) * b));
+        const B =
+          (((a.length + a.stretch + a.bellWidth) * r.objectScale) / 100) * 22 +
+          60;
+        if (
+          d.x < c.left - B ||
+          d.x > c.right + B ||
+          d.y < c.top - B ||
+          d.y > c.bottom + B
+        ) {
+          (this.swimmers.delete(i), this.creatureFrame.retire(i));
+          continue;
+        }
+        l.push(
+          ...this.creatureFrame(
+            i,
+            u,
+            0,
+            0,
+            { ...r, sway: 0, follow: 0 },
+            { ...c, cx: d.x, lip: d.y, tilt: d.angle },
+            ne,
+          ).map((L) => ({ ...L, subject: i })),
+        );
+      }
+      return l;
+    }
+  },
+  aa = class {
+    constructor() {
+      this.offsets = [];
+    }
+    reset() {
+      this.offsets = [];
+    }
+    apply(e, t, n) {
+      const a = new Set(this.offsets.map((h, o) => o)),
+        s = [],
+        c = 1 - Math.exp(-Math.min(0.05, n) * (t ? 18 : 9)),
+        l = e.map((h) => {
+          let o = -1,
+            r = h.size * h.size * 4;
+          for (const m of a) {
+            const d = this.offsets[m];
+            if (d.color !== h.color || d.subject !== h.subject) continue;
+            const x = (d.bx - h.x) ** 2 + (d.by - h.y) ** 2;
+            x < r && ((r = x), (o = m));
+          }
+          const f = o < 0 ? 0 : this.offsets[o].x;
+          o >= 0 && a.delete(o);
+          let u = 0;
+          if (t) {
+            const m = h.x - t.x,
+              d = h.y - t.y,
+              x = t.radius + h.size * 0.5;
+            if (Math.abs(d) < x && Math.abs(m) < x * 1.6) {
+              const C = Math.pow(1 - (d / x) ** 2, 1.5),
+                b = Math.pow(Math.max(0, 1 - Math.abs(m) / (x * 1.6)), 2);
+              u = (m === 0 ? (f < 0 ? -1 : 1) : Math.sign(m)) * x * C * b;
+            }
+          }
+          const p = f + (u - f) * c;
+          return (
+            s.push({
+              x: p,
+              bx: h.x,
+              by: h.y,
+              color: h.color,
+              subject: h.subject,
+            }),
+            { ...h, x: h.x + p, displaced: Math.abs(p) > 0.5 }
+          );
+        }),
+        i = l.map((h, o) => o).sort((h, o) => l[h].x - l[o].x);
+      for (let h = 0; h < i.length; h++) {
+        const o = i[h],
+          r = l[o];
+        if (r.displaced)
+          for (let f = h + 1; f < i.length; f++) {
+            const u = i[f],
+              p = l[u],
+              m = Math.min(r.size, p.size) * 0.67;
+            if (p.x - r.x > m) break;
+            if (
+              Math.abs(p.y - r.y) < Math.min(r.size, p.size) * 0.75 &&
+              p.displaced
+            ) {
+              const d = (m - (p.x - r.x)) * 0.5;
+              ((r.x -= d), (p.x += d), (s[o].x -= d), (s[u].x += d));
+            }
+          }
+      }
+      return ((this.offsets = s), l);
+    }
+  },
+  Ut = (e) => {
+    const t = Math.sin(e * 127.1) * 43758.5453;
+    return t - Math.floor(t);
+  },
+  na = (e, t) => ((e % t) + t) % t,
+  oa = class {
+    constructor() {
+      ((this.particles = []), (this.previousTime = null), (this.spacing = 0));
+    }
+    reset() {
+      ((this.particles = []), (this.previousTime = null), (this.spacing = 0));
+    }
+    frame(e, t, n, a, s = "characters", c = null, l = [], i) {
+      if (!t.oceanEnabled) return (this.reset(), []);
+      const h = t.oceanSpacing,
+        o = Math.min(t.fontSize, h * 0.68),
+        r = o * 0.34 + 2,
+        f = o * 0.6 + 2;
+      if (
+        h !== this.spacing ||
+        this.previousTime === null ||
+        e < this.previousTime
+      ) {
+        ((this.spacing = h), (this.particles = []));
+        const y = i.depthTarget ? 0.95 : 1,
+          M = h * 1.35 * y,
+          T = h * 1.55 * y;
+        for (let k = 0; k < Math.ceil(i.height / T); k++)
+          for (let S = -1; S < Math.ceil(i.width / M) + 1; S++) {
+            const D = i.top + (k + 0.5) * T,
+              O = i.left + (S + 0.5 + (k % 2) * 0.4) * M;
+            this.particles.push({
+              x: O,
+              y: D,
+              vx: 0,
+              vy: 0,
+              homeX: O,
+              homeY: D,
+              energy: 0,
+              visualSpeed: 0,
+              pressure: 0,
+              armed: !0,
+              quiet: 0,
+              phase: Ut(k * 57 + S + 4) * Math.PI * 2,
+            });
+          }
+        this.previousTime = e;
+      }
+      const u = Math.max(0, Math.min(0.08, e - this.previousTime));
+      if (((this.previousTime = e), i.depthTarget)) {
+        const y = Dt(t),
+          M = qt(y.water),
+          T = qt(y.waterActive),
+          k = Math.max(48, Math.round(i.width / 14)),
+          S = Math.ceil(this.particles.length / k),
+          D = 1 - Math.exp(-u * 5),
+          O = 32,
+          $ = new Map(),
+          _ = new Map(),
+          q = (g, Z) => (g + 4096) * 8192 + Z + 4096;
+        for (const g of n) {
+          if (g.char === " " || g.alpha < 0.05) continue;
+          const Z = Math.floor(g.x / O),
+            nt = Math.floor(g.y / O);
+          for (let rt = Z - 2; rt <= Z + 3; rt++)
+            for (let A = nt - 2; A <= nt + 3; A++) {
+              const N = rt * O - g.x,
+                R = A * O - g.y,
+                U = Math.hypot(N, R),
+                st = Math.max(0, 1 - U / 84) * g.alpha;
+              if (st > 0) {
+                const Y = q(rt, A);
+                $.set(Y, Math.max($.get(Y) || 0, st));
+                const et = _.get(Y) || { x: 0, y: 0, weight: 0 },
+                  ct = Math.min(64, 84 - U) * g.alpha;
+                ((et.x += (N / (U || 1)) * ct * st),
+                  (et.y += (R / (U || 1)) * ct * st),
+                  (et.weight += st),
+                  _.set(Y, et));
+              }
+            }
+        }
+        const Mt = 1 - Math.exp(-u * 14),
+          it = Math.exp(-u * 3);
+        this.driftSource !== this.particles &&
+          ((this.driftSource = this.particles), (this.waterDrifts = []));
+        const F = this.waterDrifts,
+          I = Math.min(320, Math.ceil(this.particles.length * 0.3));
+        let H = F.reduce((g, Z) => g + (Z.central ? 0 : 1), 0);
+        const ht = Math.floor(I * 0.6),
+          W = (g, Z = 0) =>
+            "rgb(" +
+            M.map((nt, rt) => {
+              const A = nt + (255 - nt) * 0.22,
+                N = A + (T[rt] - A) * g;
+              return Math.round(N + (255 - N) * Z);
+            }).join(",") +
+            ")",
+          G = this.particles.map((g, Z) => {
+            ((g.depthAngle = ((Z % k) / k) * Math.PI * 2),
+              (g.depthPhase = ((Math.floor(Z / k) + (Z % 2) * 0.5) / S) % 1),
+              we(g, e, u, i, t),
+              (g.creatureRefillAge = (g.creatureRefillAge ?? 9) + u));
+            let nt = 0,
+              rt = 0;
+            if (c) {
+              const pt = g.homeX - c.x,
+                yt = g.homeY - c.y,
+                xt = Math.hypot(pt, yt),
+                Yt = Math.exp((-xt * xt) / 4900) * 12;
+              ((nt = (pt / (xt || 1)) * Yt), (rt = (yt / (xt || 1)) * Yt));
+            }
+            ((g.depthOffsetX =
+              (g.depthOffsetX || 0) + (nt - (g.depthOffsetX || 0)) * D),
+              (g.depthOffsetY =
+                (g.depthOffsetY || 0) + (rt - (g.depthOffsetY || 0)) * D),
+              (g.x = g.homeX + g.depthOffsetX),
+              (g.y = g.homeY + g.depthOffsetY));
+            const A = g.homeX / O,
+              N = g.homeY / O,
+              R = Math.floor(A),
+              U = Math.floor(N),
+              st = A - R,
+              Y = N - U,
+              et = $.get(q(R, U)) || 0,
+              ct = $.get(q(R + 1, U)) || 0,
+              bt = $.get(q(R, U + 1)) || 0,
+              Ct = $.get(q(R + 1, U + 1)) || 0,
+              gt =
+                et * (1 - st) * (1 - Y) +
+                ct * st * (1 - Y) +
+                bt * (1 - st) * Y +
+                Ct * st * Y;
+            let wt = 0,
+              vt = 0;
+            for (let pt = 0; pt < 2; pt++)
+              for (let yt = 0; yt < 2; yt++) {
+                const xt = _.get(q(R + yt, U + pt));
+                if (xt) {
+                  const Yt = (yt ? st : 1 - st) * (pt ? Y : 1 - Y);
+                  ((wt += (xt.x / xt.weight) * Yt),
+                    (vt += (xt.y / xt.weight) * Yt));
+                }
+              }
+            const St = Math.hypot(wt, vt),
+              $t = ((Z * 73 + 19) % 251) / 251,
+              Zt = Math.hypot(
+                g.homeX - i.depthTarget.x,
+                g.homeY - i.depthTarget.y,
+              ),
+              It = Math.min(190, i.width * 0.4),
+              zt = Zt < It,
+              Bt = Math.max(0, 1 - Zt / It),
+              Ft = 1 - Math.exp(-u * 10);
+            ((g.creatureAvoidX =
+              (g.creatureAvoidX || 0) + (wt - (g.creatureAvoidX || 0)) * Ft),
+              (g.creatureAvoidY =
+                (g.creatureAvoidY || 0) + (vt - (g.creatureAvoidY || 0)) * Ft),
+              (g.x += g.creatureAvoidX),
+              (g.y += g.creatureAvoidY));
+            const _t = Math.min(
+              1,
+              Math.max(
+                0,
+                (g.creatureRefillAge - (g.creatureRefillDelay ?? 0.25)) / 0.55,
+              ),
+            );
+            if (
+              _t >= 0.55 &&
+              gt > 0.12 &&
+              St > (zt ? 2 : 4) &&
+              g.depthAlpha > 0.05 &&
+              F.length < I &&
+              (zt || H < ht)
+            ) {
+              const pt = Math.min(64, 84 * gt) * (1 + Bt * 0.3),
+                yt = 18;
+              (F.push({
+                x: g.x,
+                y: g.y,
+                vx: (wt / St) * yt,
+                vy: (vt / St) * yt,
+                clearanceX: (wt / St) * pt,
+                clearanceY: (vt / St) * pt,
+                age: 0,
+                life: 1.05 + (((Z * 37) % 101) / 101) * 0.55,
+                size: o * g.depthScale,
+                alpha: g.depthAlpha * _t,
+                spark: $t < 0.3,
+                phase: Z * 2.399,
+                central: zt,
+              }),
+                zt || H++,
+                (g.creatureRefillDelay = 0.25 + Bt * 0.35),
+                (g.creatureRefillAge = 0));
+            }
+            const Ot = Math.min(
+                1,
+                Math.max(
+                  0,
+                  (g.creatureRefillAge - (g.creatureRefillDelay ?? 0.25)) /
+                    0.55,
+                ),
+              ),
+              J = Ot * Ot * (3 - 2 * Ot),
+              Xt =
+                $t < 0.3
+                  ? 0.65 + 0.35 * Math.sin(e * (2.2 + $t * 3) + Z * 2.399) ** 2
+                  : 0,
+              K = Math.min(1, gt * 2.4) * Xt,
+              kt = g.creatureGlow || 0;
+            g.creatureGlow = K > kt ? kt + (K - kt) * Mt : Math.max(K, kt * it);
+            const At = Math.max(g.depthActivation, g.creatureGlow * 0.98),
+              Nt = Math.min(90, i.width * 0.2),
+              fe = Math.hypot(g.x - i.depthTarget.x, g.y - i.depthTarget.y),
+              Se = 0.58 * Math.exp((-fe * fe) / (Nt * Nt * 0.5));
+            return {
+              x: g.x,
+              y: g.y,
+              char: s === "bars" ? "━" : "≈",
+              size: o * g.depthScale,
+              color: W(At, Se),
+              alpha: (0.5 + 0.47 * At) * g.depthAlpha * J,
+            };
+          });
+        let lt = 0;
+        for (const g of F) {
+          if (((g.age += u), g.age >= g.life)) continue;
+          const Z = 1 - Math.exp(-u * 10);
+          ((g.x += g.clearanceX * Z),
+            (g.y += g.clearanceY * Z),
+            (g.clearanceX *= 1 - Z),
+            (g.clearanceY *= 1 - Z));
+          const nt = (1 - Math.exp(-u * 0.12)) / 0.12;
+          ((g.x += g.vx * nt),
+            (g.y += g.vy * nt),
+            (g.vx *= Math.exp(-u * 0.12)),
+            (g.vy *= Math.exp(-u * 0.12)));
+          const rt = 1 - g.age / g.life,
+            A = g.spark
+              ? 0.78 + 0.22 * Math.sin(g.age * 8 + g.phase) ** 2
+              : 0.08;
+          (G.push({
+            x: g.x,
+            y: g.y,
+            char: s === "bars" ? "━" : "≈",
+            size: g.size,
+            color: W(A),
+            alpha: g.alpha * (g.spark ? 0.98 : 0.48) * rt * rt,
+          }),
+            (F[lt++] = g));
+        }
+        return ((F.length = lt), G);
+      }
+      const p = i.depthTarget ? [] : l.map((y) => ({ ...y, reactive: !0 })),
+        m = new Map();
+      for (const y of n)
+        if (
+          !(y.char === " " || y.alpha < 0.4) &&
+          (p.push({
+            x: y.x,
+            y: y.y,
+            hw: Math.max(y.size * 0.35, s === "bars" ? 8 : 0) + 3,
+            hh: Math.max(y.size * 0.52, s === "bars" ? t.barHeight / 2 : 0) + 3,
+          }),
+          y.color === "#308cff" && !y.displaced)
+        ) {
+          const M = `${y.subject ?? 0}:${y.y}`,
+            T = m.get(M) ?? [];
+          (T.push(y), m.set(M, T));
+        }
+      for (const y of m.values()) {
+        if (y.length < 2) continue;
+        const M = Math.min(...y.map((k) => k.x)),
+          T = Math.max(...y.map((k) => k.x));
+        p.push({
+          x: (M + T) / 2,
+          y: y[0].y,
+          hw: (T - M) / 2 + 4,
+          hh: y[0].size * 0.65 + 3,
+        });
+      }
+      const d = a
+          .map((y) => {
+            const M = e - y.time;
+            return {
+              x: y.x,
+              y: y.y,
+              power: y.power,
+              age: M,
+              decay: Math.pow(1 - M / t.wakeLife, 2) * y.power,
+            };
+          })
+          .filter((y) => y.age >= 0 && y.age <= t.wakeLife),
+        x = new Map(),
+        C = 128,
+        b = (y, M) => (y + 1e3) * 4096 + M + 1e3,
+        Q = d.reduce((y, M) => y + M.decay, 0);
+      for (const y of d) {
+        const M = t.wakeRadius * 4;
+        for (
+          let T = Math.floor((y.x - M) / C);
+          T <= Math.floor((y.x + M) / C);
+          T++
+        )
+          for (
+            let k = Math.floor((y.y - M) / C);
+            k <= Math.floor((y.y + M) / C);
+            k++
+          ) {
+            const S = b(T, k),
+              D = x.get(S) ?? [];
+            (D.push(y), x.set(S, D));
+          }
+      }
+      const w = 48,
+        z = new Map(),
+        j = (y, M) => (y + 1e3) * 4096 + M + 1e3;
+      for (const y of p)
+        for (
+          let M = Math.floor((y.x - y.hw - r) / w);
+          M <= Math.floor((y.x + y.hw + r) / w);
+          M++
+        )
+          for (
+            let T = Math.floor((y.y - y.hh - f) / w);
+            T <= Math.floor((y.y + y.hh + f) / w);
+            T++
+          ) {
+            const k = j(M, T),
+              S = z.get(k) ?? [];
+            (S.push(y), z.set(k, S));
+          }
+      const v = new Map();
+      for (const y of a) {
+        const M = e - y.time;
+        if (!(M < 0 || M > 0.35 || y.power <= 0.35))
+          for (const T of y.footprint ?? []) {
+            const k = t.tintRadius,
+              S = { ...T, power: y.power * (1 - M / 0.35) };
+            for (
+              let D = Math.floor((T.x - T.hw - k) / 48);
+              D <= Math.floor((T.x + T.hw + k) / 48);
+              D++
+            )
+              for (
+                let O = Math.floor((T.y - T.hh - k) / 48);
+                O <= Math.floor((T.y + T.hh + k) / 48);
+                O++
+              ) {
+                const $ = j(D, O),
+                  _ = v.get($) ?? [];
+                (_.push(S), v.set($, _));
+              }
+          }
+      }
+      const E = Array.from({ length: t.bubbleCount }, (y, M) => ({
+        x:
+          i.left + 10 + Ut(M + 4) * (i.width - 30) + Math.sin(e * 0.4 + M) * 12,
+        y:
+          i.top -
+          30 +
+          na(
+            Ut(M + 20) * (i.height + 60) -
+              e * t.bubbleSpeed * (0.7 + Ut(M + 12)),
+            i.height + 60,
+          ),
+        r: t.bubbleSize * (0.7 + Ut(M + 41) * 0.6),
+        reactive: !1,
+      }));
+      c && E.push({ x: c.x, y: c.y, r: c.radius, reactive: !0 });
+      const X = Math.hypot(r, f) * 0.8;
+      for (const y of E) y.collisionRadius = y.r + X;
+      const B = Math.max(1, Math.ceil(u / (1 / 60))),
+        L = u / B;
+      (!this.collisionStorage ||
+        this.collisionStorage.next.length !== this.particles.length ||
+        this.collisionViewport !== i ||
+        this.collisionCell !== r * 2 + 4) &&
+        ((this.collisionStorage = new $e(this.particles.length, i, r * 2 + 4)),
+        (this.collisionViewport = i),
+        (this.collisionCell = r * 2 + 4));
+      const P = this.collisionStorage,
+        V = P.next,
+        tt = 1 - Math.exp(-L * 3),
+        at = (t.wakeStrength * 1.8) / Math.max(1, Q * 0.5),
+        ot = t.wakeRadius * t.wakeRadius * 0.65,
+        ut = t.wakeRadius * t.wakeRadius * 0.35;
+      for (const y of this.particles)
+        ((y.frameCurrent =
+          t.oceanSpeed * (9 + Math.sin(y.homeY * 0.012 + e * 0.3) * 3)),
+          (y.frameDrift = Math.sin(e * 0.65 + y.phase) * t.oceanSpeed * 3),
+          i.depthTarget &&
+            (we(y, e, u, i, t), (y.frameCurrent = 0), (y.frameDrift = 0)));
+      for (let y = 0; y < B; y++) {
+        for (const M of this.particles) M.pressure = 0;
+        if (L > 0)
+          for (const M of this.particles) {
+            const T = M.frameCurrent;
+            i.depthTarget ||
+              (M.homeX = Math.min(i.right + 70, M.homeX + T * L));
+            const k = M.homeX - M.x,
+              S = M.homeY - M.y,
+              D = t.refillSpeed,
+              O = (I) => Math.max(-80, Math.min(80, I));
+            let $ = T + O(k * D),
+              _ = M.frameDrift + O(S * D),
+              q = 0,
+              Mt = 0,
+              it = 0;
+            for (const I of x.get(
+              b(Math.floor(M.x / C), Math.floor(M.y / C)),
+            ) ?? []) {
+              const { age: H, decay: ht } = I,
+                W = M.x - I.x,
+                G = M.y - I.y,
+                lt = t.wakeRadius,
+                g = Math.hypot(W, G),
+                Z = Math.exp((-g * g) / ot),
+                nt = W < 0 ? -1 : 1,
+                rt = W - nt * lt * 0.4,
+                A = G - lt * 0.4 - H * 12,
+                N = Math.exp(-(rt * rt + A * A) / ut);
+              ((q += ((W / (g + 1)) * Z - ((nt * A) / lt) * N) * ht),
+                (Mt +=
+                  ((G / (g + 1)) * Z * 0.3 + ((nt * rt) / lt) * N + N * 0.5) *
+                  ht),
+                H < 0.4 &&
+                  g < lt &&
+                  I.power > 0.35 &&
+                  (it = Math.max(
+                    it,
+                    (1 - g / lt) * I.power * t.wakeStrength * 1.8,
+                  )));
+            }
+            const F = at;
+            (($ += q * F), (_ += Mt * F));
+            for (const I of v.get(
+              j(Math.floor(M.x / 48), Math.floor(M.y / 48)),
+            ) ?? []) {
+              const H = Math.max(0, Math.abs(M.x - I.x) - I.hw),
+                ht = Math.max(0, Math.abs(M.y - I.y) - I.hh),
+                W = Math.max(0, 1 - Math.hypot(H, ht) / t.tintRadius);
+              it = Math.max(it, Math.sqrt(W) * I.power * t.tintStrength * 2.4);
+            }
+            ((M.pressure = it),
+              (M.vx += ($ - M.vx) * tt),
+              (M.vy += (_ - M.vy) * tt),
+              (M.x += M.vx * L),
+              (M.y += M.vy * L),
+              !i.depthTarget &&
+                M.homeX >= i.right + 70 &&
+                M.x > i.right + 30 &&
+                ((M.x = i.left - 50),
+                (M.homeX = i.left - 50),
+                (M.y = M.homeY),
+                (M.vx = T),
+                (M.vy = 0),
+                (M.energy = 0),
+                (M.visualSpeed = 0),
+                (M.pressure = 0),
+                (M.armed = !0),
+                (M.quiet = 0)));
+          }
+        for (let M = 0; M < 5; M++) {
+          for (const S of this.particles) {
+            for (const D of z.get(
+              j(Math.floor(S.x / w), Math.floor(S.y / w)),
+            ) ?? []) {
+              const O = S.x - D.x,
+                $ = S.y - D.y,
+                _ = r + D.hw - Math.abs(O),
+                q = f + D.hh - Math.abs($);
+              _ <= 0 ||
+                q <= 0 ||
+                (D.reactive !== !1 &&
+                  M === 0 &&
+                  Math.min(_, q) > 1 &&
+                  (S.pressure = Math.max(S.pressure, Math.min(_, q) * 30)),
+                _ < q
+                  ? ((S.x += (O < 0 ? -1 : 1) * (_ + 0.2)), (S.vx *= 0.8))
+                  : ((S.y += ($ < 0 ? -1 : 1) * (q + 0.2)), (S.vy *= 0.8)));
+            }
+            for (const D of E) {
+              const O = S.x - D.x,
+                $ = S.y - D.y,
+                _ = D.collisionRadius;
+              if (
+                Math.abs(O) >= _ ||
+                Math.abs($) >= _ ||
+                O * O + $ * $ >= _ * _
+              )
+                continue;
+              const q = Math.hypot(O, $);
+              (D.reactive &&
+                M === 0 &&
+                _ - q > 1 &&
+                (S.pressure = Math.max(S.pressure, (_ - q) * 30)),
+                q < _ &&
+                  ((S.x += (O / (q || 1)) * (_ - q)),
+                  (S.y += ($ / (q || 1)) * (_ - q))));
+            }
+          }
+          const T = P,
+            k = r * 2 + 4;
+          T.clear();
+          for (let S = 0; S < this.particles.length; S++) {
+            const D = this.particles[S],
+              O = Math.floor(D.x / k),
+              $ = Math.floor(D.y / k);
+            for (let _ = O - 1; _ <= O + 1; _++)
+              for (let q = $ - 1; q <= $ + 1; q++)
+                for (let Mt = T.get(_, q); Mt !== -1; Mt = V[Mt]) {
+                  if (
+                    i.depthTarget &&
+                    Math.abs(D.depthRay.z - this.particles[Mt].depthRay.z) > 0.4
+                  )
+                    continue;
+                  const it = this.particles[Mt],
+                    F = D.x - it.x,
+                    I = D.y - it.y,
+                    H = r * 2 + 2 - Math.abs(F),
+                    ht = f * 2 + 2 - Math.abs(I);
+                  if (!(H <= 0 || ht <= 0))
+                    if (H < ht) {
+                      const W = (F < 0 ? -1 : 1) * (H + 0.1) * 0.5;
+                      ((D.x += W), (it.x -= W));
+                    } else {
+                      const W = (I < 0 ? -1 : 1) * (ht + 0.1) * 0.5;
+                      ((D.y += W), (it.y -= W));
+                    }
+                }
+            T.append(O, $, S);
+          }
+        }
+        L > 0 &&
+          this.particles.forEach((M) => {
+            const T = M.frameCurrent,
+              k = Math.hypot(M.vx - T, M.vy - M.frameDrift),
+              S = Math.max(0, (M.visualSpeed - k) / Math.max(1, M.visualSpeed));
+            ((M.energy *= Math.exp(-L * (9 + S * 24))),
+              M.armed &&
+                M.pressure > 18 &&
+                ((M.energy = Math.max(
+                  M.energy,
+                  Math.min(1, 0.65 + M.pressure / 150),
+                )),
+                (M.armed = !1),
+                (M.quiet = 0)),
+              M.pressure < 6
+                ? ((M.quiet += L), M.quiet > 0.25 && (M.armed = !0))
+                : (M.quiet = 0),
+              (M.visualSpeed = k));
+          });
+      }
+      const Et = Dt(t),
+        mt = qt(Et.water),
+        Wt = qt(Et.waterActive),
+        dt = t.darkBackground
+          ? mt.map((y) => Math.round(y + (255 - y) * 0.22))
+          : mt;
+      return this.particles.map((y) => {
+        const M = Math.max(y.energy, (y.depthActivation ?? 0) * 0.92),
+          T = `rgb(${dt.map((D, O) => Math.round(D + (Wt[O] - D) * M)).join(",")})`,
+          k = t.oceanOpacity / 100,
+          S = t.darkBackground ? Math.min(0.85, k + 0.18) : k;
+        return {
+          x: y.x,
+          y: y.y,
+          char: s === "bars" ? "━" : "≈",
+          size: o * (y.depthScale ?? 1),
+          color: T,
+          alpha: (S + (Math.max(S, 0.98) - S) * M) * (y.depthAlpha ?? 1),
+        };
+      });
+    }
+  },
+  ra = class {
+    constructor(e) {
+      ((this.canvas = e),
+        (this.program = null),
+        (this.buffer = null),
+        (this.texture = null),
+        (this.data = new Float32Array(0)),
+        (this.lost = !1),
+        (this.glyph = ""),
+        (this.colors = new Map()),
+        (this.onLost = (t) => {
+          (t.preventDefault(), (this.lost = !0));
+        }),
+        (this.onRestored = () => {
+          ((this.lost = !1), this.init());
+        }),
+        (this.gl = e.getContext("webgl", {
+          alpha: !0,
+          antialias: !1,
+          premultipliedAlpha: !0,
+        })),
+        e.addEventListener("webglcontextlost", this.onLost),
+        e.addEventListener("webglcontextrestored", this.onRestored),
+        this.gl && this.init());
+    }
+    init() {
+      const e = this.gl,
+        t = (n, a) => {
+          const s = e.createShader(n);
+          if (
+            (e.shaderSource(s, a),
+            e.compileShader(s),
+            !e.getShaderParameter(s, e.COMPILE_STATUS))
+          )
+            throw new Error("Water shader compile failed");
+          return s;
+        };
+      try {
+        const n = t(
+            e.VERTEX_SHADER,
+            "attribute vec3 position;attribute vec4 color;uniform vec2 viewport;uniform float scale;varying vec4 tint;void main(){vec2 p=(position.xy-vec2(460.,305.))*scale;gl_Position=vec4(p.x/(viewport.x*.5),-p.y/(viewport.y*.5),0.,1.);gl_PointSize=position.z*1.6*scale;tint=color;}",
+          ),
+          a = t(
+            e.FRAGMENT_SHADER,
+            "precision mediump float;uniform sampler2D atlas;varying vec4 tint;void main(){float a=texture2D(atlas,gl_PointCoord).a;float coverage=tint.a*a;float opacity=coverage*coverage*coverage;gl_FragColor=vec4(tint.rgb*opacity,opacity);}",
+          );
+        if (
+          ((this.program = e.createProgram()),
+          e.attachShader(this.program, n),
+          e.attachShader(this.program, a),
+          e.linkProgram(this.program),
+          e.deleteShader(n),
+          e.deleteShader(a),
+          !e.getProgramParameter(this.program, e.LINK_STATUS))
+        )
+          throw new Error("Water shader link failed");
+        ((this.buffer = e.createBuffer()),
+          (this.texture = e.createTexture()),
+          (this.glyph = ""));
+      } catch {
+        this.lost = !0;
+      }
+    }
+    draw(e) {
+      const t = this.gl;
+      if (!t || this.lost || !this.program) return !1;
+      const n = this.canvas.getBoundingClientRect(),
+        a = Math.min(devicePixelRatio || 1, 2),
+        s = Math.max(1, Math.round(n.width * a)),
+        c = Math.max(1, Math.round(n.height * a));
+      if (
+        ((this.canvas.width !== s || this.canvas.height !== c) &&
+          ((this.canvas.width = s), (this.canvas.height = c)),
+        t.viewport(0, 0, s, c),
+        t.clearColor(0, 0, 0, 0),
+        t.clear(t.COLOR_BUFFER_BIT),
+        !e.length)
+      )
+        return !0;
+      if (
+        (t.useProgram(this.program),
+        t.bindTexture(t.TEXTURE_2D, this.texture),
+        this.glyph !== e[0].char)
+      ) {
+        this.glyph = e[0].char;
+        const h = document.createElement("canvas");
+        h.width = h.height = 64;
+        const o = h.getContext("2d");
+        ((o.font = "600 40px 'Courier New', monospace"),
+          (o.textAlign = "center"),
+          (o.textBaseline = "middle"),
+          (o.fillStyle = "#fff"),
+          o.fillText(this.glyph, 32, 32),
+          t.texImage2D(t.TEXTURE_2D, 0, t.RGBA, t.RGBA, t.UNSIGNED_BYTE, h),
+          t.texParameteri(t.TEXTURE_2D, t.TEXTURE_MIN_FILTER, t.LINEAR),
+          t.texParameteri(t.TEXTURE_2D, t.TEXTURE_MAG_FILTER, t.LINEAR),
+          t.texParameteri(t.TEXTURE_2D, t.TEXTURE_WRAP_S, t.CLAMP_TO_EDGE),
+          t.texParameteri(t.TEXTURE_2D, t.TEXTURE_WRAP_T, t.CLAMP_TO_EDGE));
+      }
+      (this.data.length < e.length * 7 &&
+        (this.data = new Float32Array(e.length * 7)),
+        e.forEach((h, o) => {
+          let r = this.colors.get(h.color);
+          r ||
+            ((r = h.color.match(/\d+/g).map(Number)),
+            this.colors.set(h.color, r));
+          const f = o * 7;
+          this.data.set(
+            [h.x, h.y, h.size, r[0] / 255, r[1] / 255, r[2] / 255, h.alpha],
+            f,
+          );
+        }),
+        t.bindBuffer(t.ARRAY_BUFFER, this.buffer),
+        t.bufferData(
+          t.ARRAY_BUFFER,
+          this.data.subarray(0, e.length * 7),
+          t.DYNAMIC_DRAW,
+        ));
+      const l = t.getAttribLocation(this.program, "position"),
+        i = t.getAttribLocation(this.program, "color");
+      return (
+        t.enableVertexAttribArray(l),
+        t.vertexAttribPointer(l, 3, t.FLOAT, !1, 28, 0),
+        t.enableVertexAttribArray(i),
+        t.vertexAttribPointer(i, 4, t.FLOAT, !1, 28, 12),
+        t.uniform2f(t.getUniformLocation(this.program, "viewport"), s, c),
+        t.uniform1f(t.getUniformLocation(this.program, "scale"), a),
+        t.enable(t.BLEND),
+        t.blendFunc(t.ONE, t.ONE_MINUS_SRC_ALPHA),
+        t.drawArrays(t.POINTS, 0, e.length),
+        !0
+      );
+    }
+    dispose() {
+      (this.canvas.removeEventListener("webglcontextlost", this.onLost),
+        this.canvas.removeEventListener(
+          "webglcontextrestored",
+          this.onRestored,
+        ));
+      const e = this.gl;
+      e &&
+        (e.deleteProgram(this.program),
+        e.deleteBuffer(this.buffer),
+        e.deleteTexture(this.texture));
+    }
+  };
+function sa(e, t, n = 8) {
+  const a = e.closest("[data-overview-reveal]");
+  if (a && Number(getComputedStyle(a).opacity) < 0.05) return [];
+  const s = t.getScreenCTM();
+  if (!s || !e.getClientRects().length) return [];
+  const c = s.inverse(),
+    l = document.createRange();
+  l.selectNodeContents(e);
+  const i = Array.from(l.getClientRects())
+      .filter((o) => o.width > 0 && o.height > 0)
+      .map((o) => ({
+        left: o.left,
+        right: o.right,
+        top: o.top,
+        bottom: o.bottom,
+      })),
+    h = [];
+  for (const o of i.sort((r, f) => r.top - f.top || r.left - f.left)) {
+    if (
+      h.some(
+        (f) =>
+          o.left >= f.left - 0.5 &&
+          o.right <= f.right + 0.5 &&
+          o.top >= f.top - 0.5 &&
+          o.bottom <= f.bottom + 0.5,
+      )
+    )
+      continue;
+    const r = h.find(
+      (f) =>
+        Math.abs(o.top - f.top) < 2 &&
+        Math.abs(o.bottom - f.bottom) < 2 &&
+        o.left <= f.right + 3 &&
+        o.right >= f.left - 3,
+    );
+    r
+      ? ((r.left = Math.min(r.left, o.left)),
+        (r.right = Math.max(r.right, o.right)))
+      : h.push(o);
+  }
+  return h.map((o) => {
+    const r = new DOMPoint(o.left, o.top).matrixTransform(c),
+      f = new DOMPoint(o.right, o.bottom).matrixTransform(c);
+    return {
+      x: (r.x + f.x) / 2,
+      y: (r.y + f.y) / 2,
+      hw: Math.abs(f.x - r.x) / 2 + n,
+      hh: Math.abs(f.y - r.y) / 2 + n,
+    };
+  });
+}
+var Vt = "http://www.w3.org/2000/svg";
+function ia(e, t = {}) {
+  if (!e || e.childNodes.length)
+    throw new Error("Jellyfish capsule requires an empty container");
+  const n = document.createElement("div");
+  Object.assign(n.style, {
+    position: "relative",
+    width: "100%",
+    height: "100%",
+    overflow: "hidden",
+    userSelect: "none",
+  });
+  const a = { ...le, darkBackground: 1, jellyCount: 2 };
+  (a.randomPalette && (a.paletteIndex = Math.floor(Math.random() * ce.length)),
+    (n.style.background = Dt(a).background),
+    t.onPalette?.(Dt(a)));
+  const s = document.createElement("canvas");
+  Object.assign(s.style, {
+    position: "absolute",
+    inset: "0",
+    width: "100%",
+    height: "100%",
+    pointerEvents: "none",
+  });
+  const c = document.createElementNS(Vt, "svg");
+  (c.setAttribute("viewBox", "180 65 560 480"),
+    c.setAttribute("aria-hidden", "true"),
+    Object.assign(c.style, {
+      position: "relative",
+      display: "block",
+      width: "100%",
+      height: "100%",
+      overflow: "hidden",
+      userSelect: "none",
+      touchAction: "pan-y",
+    }));
+  const l = document.createElementNS(Vt, "g"),
+    i = document.createElementNS(Vt, "g"),
+    h = document.createElementNS(Vt, "g");
+  for (const F of [l, i])
+    (F.setAttribute("font-family", "'Courier New', monospace"),
+      F.setAttribute("font-weight", "600"),
+      F.setAttribute("text-anchor", "middle"),
+      F.setAttribute("dominant-baseline", "central"),
+      F.setAttribute("pointer-events", "none"));
+  ((i.style.display = ""),
+    (h.style.display = "none"),
+    c.append(l, i, h),
+    n.append(s, c),
+    e.append(n));
+  let o = {
+    left: 180,
+    right: 740,
+    top: 65,
+    bottom: 545,
+    width: 560,
+    height: 480,
+  };
+  const r = { current: a },
+    f = { current: Ve },
+    u = { current: null },
+    p = { current: i },
+    m = { current: s },
+    d = { current: [] },
+    x = { current: 0 },
+    C = new ea(),
+    b = new oa(),
+    Q = new aa(),
+    w = new ra(s),
+    z = [],
+    j = [],
+    v = Ne(),
+    E = new Map(),
+    X = new Map(),
+    B = new Map();
+  let L = [],
+    P = -1,
+    V = performance.now(),
+    tt = 0,
+    at = 0,
+    ot = !1,
+    ut = 0,
+    Et = 0,
+    mt = !1,
+    Wt = !1;
+  const dt = matchMedia("(prefers-reduced-motion: reduce)");
+  let y = [...(t.avoidElements ?? [])],
+    M = [];
+  const T = () => {
+      const F = performance.now(),
+        I = Math.min(0.05, (F - V) / 1e3);
+      V = F;
+      const H = C.frame(x.current, tt, at, r.current, u.current, o);
+      dt.matches && v.reset();
+      const ht = dt.matches ? H : v.apply(H, I, x.current),
+        W = Q.apply(ht, u.current, I),
+        G = x.current;
+      if (
+        (!Wt && (dt.matches || G >= 2.8) && ((Wt = !0), t.onIntroComplete?.()),
+        G < P && (L = []),
+        r.current.oceanEnabled)
+      ) {
+        if (G - (L.at(-1)?.time ?? -1) >= 1 / 12)
+          for (let A = 0; A < r.current.jellyCount; A++) {
+            const N = W.filter((Y) => Y.subject === A),
+              R = N.filter((Y) => Y.char !== " " && Y.color === "#ff8300");
+            if (!R.length) continue;
+            const U = new Map();
+            for (const Y of N) {
+              if (Y.char === " " || Y.alpha < 0.4) continue;
+              const et = Math.round(Y.y / 18),
+                ct = U.get(et) ?? [];
+              (ct.push(Y), U.set(et, ct));
+            }
+            const st = [...U.values()].map((Y) => {
+              const et = Math.min(...Y.map((bt) => bt.x)),
+                ct = Math.max(...Y.map((bt) => bt.x));
+              return {
+                x: (et + ct) / 2,
+                y: Y.reduce((bt, Ct) => bt + Ct.y, 0) / Y.length,
+                hw: (ct - et) / 2,
+                hh: 10,
+              };
+            });
+            L.push({
+              x: R.reduce((Y, et) => Y + et.x, 0) / R.length,
+              y: R[0].y,
+              time: G,
+              power: he(G, A, r.current).power,
+              footprint: st,
+            });
+          }
+        L = L.filter((A) => G - A.time <= r.current.wakeLife).slice(-64);
+      } else L = [];
+      P = G;
+      const lt = b.frame(
+        G,
+        r.current,
+        W,
+        L,
+        f.current,
+        u.current,
+        d.current,
+        o,
+      );
+      if (!dt.matches && G < 2.8) {
+        const A = qt(Dt(r.current).waterActive);
+        for (const N of lt) {
+          const R = Math.min(
+              1,
+              Math.abs(N.x - (o.left + o.width / 2)) / (o.width / 2),
+            ),
+            U = G - (0.12 + R * 1.8);
+          if (U < 0 || U > 0.72) continue;
+          const st = U < 0.08 ? U / 0.08 : Math.pow(1 - (U - 0.08) / 0.64, 2),
+            Y = N.color.match(/\d+/g).map(Number);
+          ((N.color =
+            "rgb(" +
+            Y.map((et, ct) => Math.round(et + (A[ct] - et) * st)).join(",") +
+            ")"),
+            (N.alpha += (0.98 - N.alpha) * st));
+        }
+      }
+      const g = w.draw(lt);
+      if (
+        ((m.current.style.visibility = g ? "visible" : "hidden"),
+        (l.style.display = g ? "none" : ""),
+        !g)
+      ) {
+        for (; z.length < lt.length; ) {
+          const A = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "text",
+          );
+          (l.appendChild(A), z.push(A));
+        }
+        for (; z.length > lt.length; ) z.pop().remove();
+        lt.forEach((A, N) => {
+          const R = z[N];
+          ((R.textContent = A.char),
+            R.setAttribute("x", A.x.toFixed(1)),
+            R.setAttribute("y", A.y.toFixed(1)),
+            R.setAttribute("font-size", String(A.size)),
+            R.setAttribute("fill", A.color),
+            R.setAttribute("opacity", A.alpha.toFixed(2)));
+        });
+      }
+      for (; j.length < W.length; ) {
+        const A = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "text",
+        );
+        (p.current.appendChild(A), j.push(A));
+      }
+      for (; j.length > W.length; ) j.pop().remove();
+      const Z = Dt(r.current),
+        nt = new Map(),
+        rt = new Map();
+      for (const A of W) {
+        const N = A.subject ?? 0;
+        nt.set(N, (nt.get(N) ?? 0) + 1);
+      }
+      if (!dt.matches)
+        for (const [A, N] of nt) {
+          let R = B.get(A);
+          if (
+            (R ||
+              ((R = {
+                next: G + 2.8 + Math.random() * 1.2,
+                start: -1 / 0,
+                glyphs: new Map(),
+              }),
+              B.set(A, R)),
+            G >= R.next)
+          ) {
+            ((R.start = G),
+              (R.next = G + 2.5 + Math.random() * 1.5),
+              R.glyphs.clear());
+            for (let U = 0; U < N; U++)
+              Math.random() < 0.25 &&
+                R.glyphs.set(U, Math.random() < 0.5 ? "0" : "1");
+          }
+        }
+      W.forEach((A, N) => {
+        const R = A.subject ?? 0;
+        (X.get(R) !== A.incarnation &&
+          (E.delete(R), B.delete(R), X.set(R, A.incarnation)),
+          E.has(R) || E.set(R, G));
+        const U = rt.get(R) ?? 0;
+        rt.set(R, U + 1);
+        const st = G - E.get(R),
+          Y = (U / Math.max(1, nt.get(R) - 1)) * 0.9,
+          et = st - Y,
+          ct = !dt.matches && et < 0.3,
+          bt = et < 0 ? 0.12 : et % 0.15 < 0.09 ? 1 : 0.12,
+          Ct = B.get(R),
+          gt = Ct ? G - Ct.start : 1 / 0,
+          wt =
+            !dt.matches && !ct && gt >= 0 && gt < 1.2
+              ? Ct.glyphs.get(U)
+              : void 0,
+          vt = wt !== void 0 && gt >= 0.28 && gt < 0.92 ? wt : void 0,
+          St = wt !== void 0 && vt === void 0,
+          Zt = (gt < 0.28 ? gt : gt - 0.92) % 0.14 < 0.09 ? 1 : 0.12,
+          It = H[N],
+          zt = u.current ? u.current.radius + A.size * 0.5 : 0,
+          Bt =
+            !dt.matches &&
+            !ct &&
+            (A.creatureContact ||
+              (u.current &&
+                It &&
+                Math.hypot((It.x - u.current.x) / 1.6, It.y - u.current.y) <
+                  zt)),
+          Ft = (G + U * 0.027) % 0.8,
+          _t = Bt && (A.contactBlock || Ft < 0.12 || Ft >= 0.66),
+          Ot = (U + Math.floor(G * 3)) % 2 ? "1" : "0",
+          J = A.exitBlock
+            ? { ...A, char: "█", line: void 0, introBlock: !0 }
+            : ct
+              ? {
+                  ...A,
+                  char: "█",
+                  line: void 0,
+                  introBlock: !0,
+                  alpha: A.alpha * bt,
+                }
+              : Bt
+                ? { ...A, char: _t ? "█" : Ot, line: void 0, introBlock: _t }
+                : St
+                  ? {
+                      ...A,
+                      char: "█",
+                      line: void 0,
+                      introBlock: !0,
+                      alpha: A.alpha * Zt,
+                    }
+                  : vt !== void 0
+                    ? { ...A, char: vt, line: void 0 }
+                    : A,
+          Xt = J.introBlock
+            ? "#ffffff"
+            : J.color === "#308cff"
+              ? Z.bell
+              : J.color === "#46c933"
+                ? Z.tentacle
+                : Z.accent;
+        let K = j[N];
+        const kt = J.line ? "line" : "text";
+        if (K.tagName !== kt) {
+          const At = document.createElementNS("http://www.w3.org/2000/svg", kt);
+          (K.replaceWith(At), (j[N] = K = At));
+        }
+        if (J.line) {
+          const At = (Math.cos(J.line.angle) * J.line.length) / 2,
+            Nt = (Math.sin(J.line.angle) * J.line.length) / 2;
+          (K.setAttribute("x1", String(J.x - At)),
+            K.setAttribute("y1", String(J.y - Nt)),
+            K.setAttribute("x2", String(J.x + At)),
+            K.setAttribute("y2", String(J.y + Nt)),
+            K.setAttribute("stroke", Xt),
+            K.setAttribute("stroke-width", String(Math.max(1, J.size * 0.085))),
+            K.setAttribute("stroke-linecap", "round"),
+            K.setAttribute("opacity", String(J.alpha)));
+          return;
+        }
+        (K.setAttribute("font-size", String(J.size)),
+          K.setAttribute("x", J.x.toFixed(2)),
+          K.setAttribute("y", J.y.toFixed(2)),
+          K.textContent !== J.char && (K.textContent = J.char),
+          K.getAttribute("fill") !== Xt && K.setAttribute("fill", Xt),
+          K.getAttribute("opacity") !== String(J.alpha) &&
+            K.setAttribute("opacity", String(J.alpha)));
+      });
+    },
+    k = () => {
+      if (ot || mt || document.hidden) return;
+      const F = e.getBoundingClientRect(),
+        I = Math.max(1, F.width),
+        H = Math.max(1, F.height);
+      (I !== o.width || H !== o.height) &&
+        ((o = {
+          left: 460 - I / 2,
+          right: 460 + I / 2,
+          top: 305 - H / 2,
+          bottom: 305 + H / 2,
+          width: I,
+          height: H,
+        }),
+        c.setAttribute("viewBox", [o.left, o.top, I, H].join(" ")),
+        b.reset());
+      const ht = e
+        .closest(".payathon-hero")
+        ?.querySelector(".blackhole-button");
+      if (ht) {
+        const W = ht.getBoundingClientRect();
+        o.depthTarget = {
+          x: o.left + W.left + W.width / 2 - F.left,
+          y: o.top + W.top + W.height / 2 - F.top,
+        };
+      }
+      ((d.current = o.depthTarget ? [] : [...y.flatMap((W) => sa(W, c)), ...M]),
+        ut || T());
+    },
+    S = new ResizeObserver(k),
+    D = () => {
+      (S.disconnect(), S.observe(e));
+      for (const F of y) S.observe(F);
+      k();
+    },
+    O = () => !ot && !mt && !dt.matches && !document.hidden,
+    $ = (F) => {
+      if (((ut = 0), !O())) return;
+      const I = Et ? Math.min(0.04, (F - Et) / 1e3) : 0;
+      ((Et = F),
+        (x.current += I * a.speed),
+        T(),
+        (ut = requestAnimationFrame($)));
+    },
+    _ = () => {
+      (cancelAnimationFrame(ut),
+        (ut = 0),
+        (Et = 0),
+        O() && (ut = requestAnimationFrame($)));
+    },
+    q = (F) => {
+      if (mt || document.hidden) return;
+      const I = c.getScreenCTM();
+      if (!I) return;
+      const H = new DOMPoint(F.clientX, F.clientY).matrixTransform(I.inverse());
+      if (H.x < o.left || H.x > o.right || H.y < o.top || H.y > o.bottom) {
+        u.current = null;
+        return;
+      }
+      ((u.current = { x: H.x, y: H.y, radius: a.mouseRadius }),
+        (tt = (H.x - 460) / 280),
+        (at = (H.y - 305) / 240),
+        O() || T());
+    },
+    Mt = () => {
+      mt || document.hidden || ((u.current = null), (tt = at = 0), O() || T());
+    },
+    it = e.parentElement ?? e;
+  return (
+    it.addEventListener("pointermove", q),
+    it.addEventListener("pointerleave", Mt),
+    window.addEventListener("resize", k),
+    window.addEventListener("scroll", k, !0),
+    document.addEventListener("visibilitychange", _),
+    dt.addEventListener("change", _),
+    D(),
+    document.fonts.ready.then(k),
+    _(),
+    {
+      pause() {
+        ((mt = !0), (u.current = null), (tt = at = 0), _());
+      },
+      resume() {
+        ((mt = !1), (V = performance.now()), k(), _());
+      },
+      setAvoidElements(F) {
+        ot || ((y = [...F]), D());
+      },
+      refreshAvoidance: k,
+      setAvoidanceAreas(F) {
+        if (!ot) {
+          if (
+            F.some(
+              (I) =>
+                ![I.x, I.y, I.hw, I.hh].every(Number.isFinite) ||
+                I.hw < 0 ||
+                I.hh < 0,
+            )
+          )
+            throw new Error("Invalid avoidance area");
+          ((M = F.map((I) => ({ ...I }))), k());
+        }
+      },
+      destroy() {
+        ot ||
+          ((ot = !0),
+          cancelAnimationFrame(ut),
+          (ut = 0),
+          S.disconnect(),
+          w.dispose(),
+          it.removeEventListener("pointermove", q),
+          it.removeEventListener("pointerleave", Mt),
+          window.removeEventListener("resize", k),
+          window.removeEventListener("scroll", k, !0),
+          document.removeEventListener("visibilitychange", _),
+          dt.removeEventListener("change", _),
+          n.remove());
+      },
+    }
+  );
+}
+export { ia as mountJellyfish, sa as textObstacles };

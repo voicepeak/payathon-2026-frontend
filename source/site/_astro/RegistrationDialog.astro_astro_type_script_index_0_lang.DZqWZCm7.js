@@ -1,0 +1,874 @@
+import { p as nt } from "./OnboardingControllerScript.astro_astro_type_script_index_0_lang.C106FBnC.js";
+import {
+  r as D,
+  a as je,
+  c as at,
+  g as ot,
+  b as it,
+  d as st,
+  e as lt,
+  f as ct,
+} from "./payathon-benefits.Dtt62WNl.js";
+import {
+  a as L,
+  l as _e,
+  b as dt,
+  f as ut,
+  g as K,
+  T as qe,
+  u as ne,
+  h as ft,
+  i as gt,
+  j as mt,
+} from "./service.DJvbNf3A.js";
+import { w as ae } from "./navigation-query.CcCHnnwN.js";
+import { A as $e, d as oe } from "./account-info.CNV-BU5E.js";
+import { a as A, r as O, b as He } from "./telemetry.BUQSN-xI.js";
+import { M as Ye, s as pt } from "./registration-sources.IT9GsbdT.js";
+function ze(n, l, a = !1) {
+  const s = l.trim().normalize("NFC"),
+    c = [...s].length;
+  switch (n) {
+    case "realName":
+      if (!s) return "请填写联系人姓名";
+      if (c < 2 || c > 20 || !/^[\p{L} ·]+$/u.test(s))
+        return "请输入 2–20 个汉字或字母，可含空格、间隔点";
+      break;
+    case "phone":
+      if (!s) return "请填写中国大陆手机号";
+      if (!/^1[3-9]\d{9}$/.test(s)) return "请输入正确的 11 位中国大陆手机号";
+      break;
+    case "wechat":
+      if (!s) return "请填写微信号";
+      if (c > 64 || /[\r\n\u0000-\u001F]/.test(l))
+        return "请填写有效微信号，最多64个字符";
+      break;
+    case "email":
+      if (!s) return "请填写邮箱";
+      if (s.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s))
+        return "请输入有效的邮箱地址，例如 name@example.com";
+      break;
+    case "nickname":
+      if (!s) return "请填写参赛昵称";
+      if (c < 2 || c > 20) return "参赛昵称应为 2–20 字";
+      break;
+    case "teamSize":
+      if (!s || !Number.isInteger(Number(s)) || Number(s) < 2 || Number(s) > 5)
+        return "团队人数应为 2–5 的整数";
+      break;
+    case "sourceOther":
+      if (!s || c > 20) return "请填写 1–20 字的其他来源说明";
+      break;
+    case "avatar":
+      if (!s) return "请上传参赛头像";
+      break;
+    case "agreement":
+      if (!a) return "请阅读并勾选同意报名声明";
+  }
+  return "";
+}
+function vt({ signal: n, accent: l } = {}) {
+  return nt({
+    signal: n,
+    createPrompt: () => {
+      const a = document.createElement("dialog");
+      return (
+        (a.className = "payathon-confirm payathon-mobile-signup"),
+        a.setAttribute("aria-label", "在支付宝填写报名资料"),
+        a.setAttribute("aria-describedby", "payathon-mobile-signup-message"),
+        l && a.style.setProperty("--confirm-accent", l),
+        (a.innerHTML = `
+      <button type="button" class="payathon-mobile-signup-close" data-mobile-login-cancel data-mobile-login-close aria-label="关闭提示">×</button>
+      <p class="payathon-confirm-message" id="payathon-mobile-signup-message">检测到您可能是在移动端打开，跳转到支付宝可免登录填写</p>
+      <div class="payathon-confirm-actions">
+        <button type="button" class="payathon-confirm-button secondary" data-mobile-login-cancel>取消</button>
+        <button type="button" class="payathon-confirm-button" data-mobile-login-open>打开支付宝</button>
+      </div>`),
+        { dialog: a, report: (s, c) => A("mobile_" + s, c) }
+      );
+    },
+  });
+}
+const bt = "系统繁忙，请稍后重试或联系工作人员",
+  ht = /^(?:Type|Reference|Syntax|Range|URI|Eval|Internal|Aggregate)Error$/,
+  yt =
+    /\b(?:TypeError|ReferenceError|SyntaxError|RangeError|URIError|EvalError|undefined|null|NaN)\b|\n\s*at\s|^\s*[\[{]/;
+function W(n) {
+  const l = typeof n == "string" ? n : n?.message;
+  return typeof l != "string" ||
+    !/[\u3400-\u9fff]/.test(l) ||
+    ht.test(n?.name || "") ||
+    yt.test(l)
+    ? bt
+    : l;
+}
+let ie;
+function Re() {
+  ie?.();
+  const n = document.querySelector("#payathon-registration");
+  if (!n) return;
+  const l = new AbortController(),
+    a = n.querySelector("form"),
+    s = n.querySelector("[data-registration-feedback]"),
+    c = n.querySelector("[data-registration-reload]"),
+    Q = document.querySelector("[data-registration-load-error]"),
+    Xe = Q.querySelector("[data-registration-load-login]");
+  let J = null;
+  const Ge = n.querySelector(".registration-sidebar"),
+    Ke = n.querySelector("[data-registration-rules]"),
+    We = n.querySelector("[data-mobile-rules]"),
+    se = matchMedia("(max-width: 640px)"),
+    le = () => (se.matches ? We : Ge).append(Ke);
+  (le(), se.addEventListener("change", le));
+  const Z = [...a.querySelectorAll("fieldset[id]")],
+    Qe = [...n.querySelectorAll("[data-registration-section]")],
+    ce = () => {
+      if (!n.open) return;
+      const e = a.getBoundingClientRect();
+      let r = Z[0],
+        t = 0;
+      for (const o of Z) {
+        const u = o.getBoundingClientRect(),
+          w = Math.max(
+            0,
+            Math.min(u.bottom, e.bottom - 80) - Math.max(u.top, e.top),
+          );
+        w > t && ((t = w), (r = o));
+      }
+      a.scrollHeight - a.scrollTop - a.clientHeight < 2 && (r = Z.at(-1));
+      for (const o of Qe)
+        o.dataset.registrationSection === r.id
+          ? o.setAttribute("aria-current", "location")
+          : o.removeAttribute("aria-current");
+    },
+    Ce = (e) => {
+      const r = e.target.closest("[data-registration-section]");
+      if (!r) return;
+      const t = Z.find((o) => o.id === r.dataset.registrationSection);
+      a.scrollTo({
+        top: t.offsetTop - 24,
+        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
+      });
+    };
+  (n.addEventListener("click", Ce),
+    a.addEventListener("scroll", ce, { passive: !0 }));
+  let de = null,
+    ue = "";
+  const d = (e) => a.elements.namedItem(e),
+    P = new Set();
+  let m = null,
+    b = null,
+    V = null,
+    E = !0,
+    fe = 0,
+    T = !1;
+  const M = new Map(),
+    j = n.querySelector("[data-registration-avatar]"),
+    $ = async () => {
+      const e = ++fe,
+        r = st(d("kind").value),
+        t = b
+          ? URL.createObjectURL(b)
+          : (await ft(m).catch(
+              (o) => (O("registration_avatar_load_error", o), ""),
+            )) || r;
+      if (l.signal.aborted || e !== fe) {
+        t.startsWith("blob:") && URL.revokeObjectURL(t);
+        return;
+      }
+      (V && URL.revokeObjectURL(V),
+        (V = t?.startsWith("blob:") ? t : null),
+        (j.onerror = () => {
+          ((j.onerror = null), (j.src = r));
+        }),
+        (j.hidden = !1),
+        (j.src = t),
+        (n.querySelector("[data-avatar-remove]").hidden = E));
+    };
+  let _ = !1,
+    g = {},
+    h = !1,
+    C = !1,
+    p = null,
+    ge = null,
+    x = "",
+    y = !1,
+    v = !1;
+  const me = () => (g.server ? g.server.canSubmit === !0 : K(g).editable),
+    I = () =>
+      (a.querySelector("[type=submit]").disabled = C || T || y || v || !me()),
+    Je = () => {
+      const e = {};
+      for (const r of [
+        "realName",
+        "phone",
+        "wechat",
+        "email",
+        "nickname",
+        "teamSize",
+        "sourceOther",
+      ]) {
+        const t = d(r);
+        t.disabled || (e[r] = t.value);
+      }
+      return (
+        (e.source = [...a.querySelectorAll("[name=source]:checked")].map(
+          (r) => r.value,
+        )),
+        (e.agreement = d("agreement").checked),
+        (e.avatar = m),
+        (e.kind = d("kind").value),
+        e
+      );
+    },
+    xe = async () =>
+      !h ||
+      at({
+        message: "未提交的修改不会保存，确定离开吗？",
+        signal: l.signal,
+        accent: getComputedStyle(n).getPropertyValue("--registration-accent"),
+      }),
+    pe = async () => {
+      C || T || ((await xe()) && ((h = !1), n.close()));
+    },
+    Ie = (e) => {
+      h && n.open && (e.preventDefault(), (e.returnValue = ""));
+    };
+  window.addEventListener("beforeunload", Ie);
+  const Ne = (e) => {
+    (e.preventDefault(), pe());
+  };
+  n.addEventListener("cancel", Ne);
+  const H = [...a.querySelectorAll("[name=source]")],
+    Ue = () => H.filter((e) => e.checked).map((e) => e.value),
+    ve = (e) => {
+      const r = a.querySelector('[data-field-error="source"]');
+      (He(r, e, "source"), (r.textContent = e ? W(e) : ""), (r.hidden = !e));
+      for (const t of H)
+        e
+          ? t.setAttribute("aria-invalid", "true")
+          : t.removeAttribute("aria-invalid");
+    },
+    Oe = () => {
+      const e = pt(Ue());
+      return (ve(e), !e);
+    },
+    be = [...a.querySelectorAll("input")].filter(
+      (e) =>
+        e.name !== "source" &&
+        a.querySelector(`[data-field-error="${e.name}"]`),
+    ),
+    Y = (e) => {
+      const r = e.disabled
+          ? ""
+          : e.name === "avatarFile"
+            ? ze("avatar", E || b || m?.id ? "available" : "")
+            : ze(e.name, e.value, e.checked),
+        t = a.querySelector(`[data-field-error="${e.name}"]`);
+      return (
+        He(t, r, e.name),
+        (t.textContent = r),
+        (t.hidden = !r),
+        r
+          ? e.setAttribute("aria-invalid", "true")
+          : e.removeAttribute("aria-invalid"),
+        !r
+      );
+    },
+    q = (e) => {
+      (O("registration_feedback_error", e, { stage: "feedback", requestId: p }),
+        (s.textContent = W(e)),
+        (s.hidden = !1),
+        s.setAttribute("data-error", ""),
+        s.scrollIntoView({ block: "nearest" }));
+    },
+    ee = (e) => {
+      const r = e.target;
+      r.name !== "avatarFile" &&
+        (e.type === "input" && ((h = !0), (p = null)),
+        be.includes(r) &&
+          (!y && !v && (s.hidden = !0),
+          e.type === "focusout" && P.add(r.name),
+          (_ || P.has(r.name)) && Y(r)));
+    },
+    Pe = (e, r) => {
+      const t = a.querySelector(e);
+      ((t.hidden = !r),
+        t.querySelectorAll("input").forEach((o) => (o.disabled = !r)));
+    },
+    Ze = async (e) => {
+      const r = e.files[0];
+      if (((e.value = ""), !(!r || C || T))) {
+        ((T = !0), I());
+        try {
+          const t = await lt(r, {
+            signal: l.signal,
+            accent: getComputedStyle(n).getPropertyValue(
+              "--registration-accent",
+            ),
+          });
+          if (!t || l.signal.aborted) return;
+          ((m = null),
+            (b = t),
+            (E = !1),
+            (h = !0),
+            (p = null),
+            $(),
+            (_ || P.has("avatarFile")) && Y(e));
+        } catch (t) {
+          l.signal.aborted ||
+            (A(
+              "registration_avatar_error",
+              String(t.errorCode || t.kind || "unknown"),
+              { stage: "avatar_crop", error: t },
+            ),
+            q(t));
+        } finally {
+          ((T = !1), l.signal.aborted || I());
+        }
+      }
+    },
+    z = (e) => {
+      if (e?.target.name === "avatarFile") {
+        Ze(e.target);
+        return;
+      }
+      (e && ((h = !0), (p = null)),
+        Pe("[data-team-fields]", d("kind").value === "team"),
+        (a.querySelector("[data-team-agreement]").hidden =
+          d("kind").value !== "team"),
+        e?.target.name === "kind" && (d("agreement").checked = !1),
+        E && (m = M.get(d("kind").value) || null),
+        $());
+      const r = Ue();
+      for (const t of H) t.disabled = !t.checked && r.length >= Ye;
+      (Pe("[data-source-other]", r.includes("其他")),
+        (d("sourceOther").required = !d("sourceOther").disabled),
+        (e?.target.name === "source" || _ || r.length > Ye) && Oe());
+      for (const t of be) (t.disabled || _ || P.has(t.name)) && Y(t);
+      !y && !v && (s.hidden = !0);
+    },
+    he = () => {
+      (a.reset(),
+        (m = null),
+        (b = null),
+        (E = !0),
+        M.clear(),
+        $(),
+        (h = !1),
+        (p = null),
+        (_ = !1),
+        P.clear(),
+        z(),
+        a
+          .querySelectorAll("[aria-invalid]")
+          .forEach((e) => e.removeAttribute("aria-invalid")),
+        a
+          .querySelectorAll("[data-field-error]")
+          .forEach((e) => (e.hidden = !0)),
+        (v = !1),
+        (y = !0),
+        (c.hidden = !1),
+        (n.querySelector(".identity strong").textContent = "报名账号待确认"),
+        (c.textContent = "重新载入报名资料"),
+        q(
+          "登录账号已变更或无法确认，已清除原账号的未提交资料。请重新载入当前账号的报名资料。",
+        ),
+        I());
+    },
+    ye = () => {
+      ((document.documentElement.style.overflow = ue),
+        de?.focus({ preventScroll: !0 }));
+    };
+  let X = !1,
+    te = !1,
+    S = !1,
+    k = null,
+    G = null;
+  const Te = (e) => ({
+      track: e?.dataset.registrationTrack,
+      edit: e?.hasAttribute("data-registration-edit") === !0,
+    }),
+    N = "payathon:registration-login-pending",
+    et = () => {
+      try {
+        sessionStorage.setItem(N, String(Date.now()));
+        const e = k?.dataset.registrationTrack;
+        qe.includes(e)
+          ? sessionStorage.setItem(N + ":track", e)
+          : sessionStorage.removeItem(N + ":track");
+      } catch (e) {
+        O("registration_storage_error", e, { stage: "save_login_pending" });
+      }
+    },
+    re = () => {
+      try {
+        (sessionStorage.removeItem(N), sessionStorage.removeItem(N + ":track"));
+      } catch (e) {
+        O("registration_storage_error", e, { stage: "clear_login_pending" });
+      }
+    },
+    Se = async (e, { reload: r = !1, intent: t = Te(e) } = {}) => {
+      if (S || !n.isConnected || X || (n.open && !r)) return;
+      ((X = !0),
+        (te = !1),
+        k?.removeAttribute("aria-busy"),
+        (k = null),
+        (G = null),
+        re(),
+        (de = e));
+      try {
+        g = (await _e()).registration || {};
+        const f = t.track;
+        if (!r && qe.includes(f) && g.effective) {
+          const U = new URL(ne("/me/works/new"), location.origin);
+          (U.searchParams.set("track", f),
+            location.assign(ae(U.pathname + U.search)));
+          return;
+        }
+        if (!r && !qe.includes(f) && !t.edit && K(g).everSubmitted) {
+          location.assign(ae(ne("/me")));
+          return;
+        }
+        if (!me()) {
+          if (K(g).everSubmitted) {
+            location.assign(ae(ne("/me")));
+            return;
+          }
+          throw new Error(
+            g.server?.blockedReason?.message ||
+              "当前无法提交报名，请稍后重试。",
+          );
+        }
+        ge = g.server?.latestVersionNo ?? null;
+      } catch (i) {
+        if (
+          (A(
+            "registration_load_error",
+            String(i.errorCode || i.kind || "unknown"),
+            { stage: "registration_load", error: i },
+          ),
+          n.open)
+        ) {
+          (i.isLoginExpired &&
+            ((v = !0), (c.hidden = !1), (c.textContent = "重新登录"), I()),
+            q(i));
+          return;
+        }
+        ((Q.querySelector("[data-registration-load-message]").textContent =
+          W(i)),
+          (Xe.hidden = !i.isLoginExpired),
+          (J = e),
+          (Q.hidden = !1));
+        return;
+      } finally {
+        X = !1;
+      }
+      if (S) return;
+      ((Q.hidden = !0), (J = null));
+      const o = K(g);
+      (a.reset(),
+        (m = o.editData.avatar || null),
+        (b = null),
+        (E = !m?.id),
+        M.clear(),
+        a.querySelectorAll("[name=kind]").forEach((i) => (i.disabled = !1)),
+        (_ = !1),
+        P.clear(),
+        (s.hidden = !0),
+        (y = !1),
+        (v = !1),
+        (c.hidden = !0),
+        a
+          .querySelectorAll("[aria-invalid]")
+          .forEach((i) => i.removeAttribute("aria-invalid")),
+        a
+          .querySelectorAll("[data-field-error]")
+          .forEach((i) => (i.hidden = !0)));
+      for (const i of a.querySelectorAll("input")) {
+        const f = o.editData[i.name];
+        f === void 0 ||
+          i.type === "file" ||
+          (i.type === "checkbox"
+            ? (i.checked = Array.isArray(f) ? f.includes(i.value) : !!f)
+            : i.type === "radio"
+              ? (i.checked = i.value === (Array.isArray(f) ? f[0] : f))
+              : (i.value = f));
+      }
+      d("nickname").value = ot(o.editData);
+      const u = window.OpenBridge?.userInfo || {};
+      x = L ? "isolated-preview" : oe(u);
+      const w = L ? "预览参赛账号" : u.nickName || u.name;
+      ((n.querySelector(".identity strong").textContent = w
+        ? `报名账号：${w}`
+        : "报名账号"),
+        !g.draft &&
+          !o.everSubmitted &&
+          u.nickName &&
+          (d("nickname").value = u.nickName),
+        z(),
+        (h = !1),
+        (p = null),
+        (n.querySelector("#registration-heading").textContent = o.everSubmitted
+          ? "修改报名资料"
+          : "填写报名资料"),
+        (a.querySelector("[type=submit]").textContent = it(g)),
+        I(),
+        o.reason && q(o.reason));
+      for (const [i, f] of Object.entries(o.fieldErrors)) {
+        if (i === "source") {
+          ve(f);
+          continue;
+        }
+        const U = a.querySelector(`[data-field-error="${i}"]`);
+        U &&
+          ((U.textContent = W(f)),
+          (U.hidden = !1),
+          d(i).setAttribute("aria-invalid", "true"));
+      }
+      const R =
+        document.querySelector(".payathon-hero") || document.documentElement;
+      (n.style.setProperty(
+        "--registration-accent",
+        getComputedStyle(R).getPropertyValue("--payathon-accent") || "#86eaff",
+      ),
+        n.open ||
+          ((ue = document.documentElement.style.overflow),
+          n.showModal(),
+          (document.documentElement.style.overflow = "hidden"),
+          A("registration_form_exposure")),
+        n.focus({ preventScroll: !0 }),
+        ce());
+    },
+    Me = () => {
+      k && Se(k, { intent: G });
+    },
+    we = async (e) => {
+      if (te || X || n.open || S) return;
+      const r = Te(e);
+      ((te = !0), e.setAttribute("aria-busy", "true"));
+      try {
+        if (!L) {
+          const o =
+            document.querySelector(".payathon-hero") ||
+            document.documentElement;
+          if (
+            !(await vt({
+              signal: l.signal,
+              accent: getComputedStyle(o).getPropertyValue("--payathon-accent"),
+            })) ||
+            S
+          )
+            return;
+        }
+        ((k = e), (G = r), et());
+        const t = L
+          ? await je()
+          : await window.AIPayOnboarding?.openLogin?.({
+              returnPath: location.pathname + location.search + location.hash,
+              skipMobilePrompt: !0,
+            });
+        if (S) return;
+        t ? Se(e, { intent: r }) : k === e && ((k = null), (G = null), re());
+      } catch (t) {
+        (O("registration_login_error", t),
+          re(),
+          (k = null),
+          (G = null),
+          console.error("Unable to open registration login", t));
+      } finally {
+        ((te = !1), e.removeAttribute("aria-busy"));
+      }
+    };
+  window.addEventListener("aipay-onboarding-login-success", Me);
+  try {
+    const e = Number(sessionStorage.getItem(N));
+    if (e && Date.now() - e < 6e5) {
+      const r = sessionStorage.getItem(N + ":track"),
+        t =
+          [...document.querySelectorAll("[data-registration-track]")].find(
+            (o) => o.dataset.registrationTrack === r,
+          ) || document.querySelector("[data-registration-open]");
+      t && we(t);
+    } else re();
+  } catch (e) {
+    O("registration_storage_error", e, { stage: "read_login_pending" });
+  }
+  const Be = (e) => {
+      const r = e.target.closest("[data-registration-open]");
+      if (
+        (r && !n.open && (e.preventDefault(), we(r)),
+        e.target.closest("[data-registration-close]") && pe(),
+        e.target.closest("[data-registration-reload]") && tt(),
+        e.target.closest("[data-registration-load-login]") && J && we(J),
+        e.target.closest("[data-avatar-remove]") &&
+          ((E = !0),
+          (m = M.get(d("kind").value) || null),
+          (b = null),
+          (d("avatarFile").value = ""),
+          (h = !0),
+          (p = null),
+          $(),
+          _ && Y(d("avatarFile"))),
+        e.target === n)
+      ) {
+        const t = n.getBoundingClientRect();
+        (e.clientX < t.left ||
+          e.clientX > t.right ||
+          e.clientY < t.top ||
+          e.clientY > t.bottom) &&
+          pe();
+      }
+    },
+    tt = async () => {
+      if (!(C || X)) {
+        if (!v) return (await xe()) ? Se(de, { reload: !0 }) : void 0;
+        c.disabled = !0;
+        try {
+          n.close();
+          let e;
+          try {
+            e = L
+              ? await je()
+              : await window.AIPayOnboarding?.openLogin?.({
+                  returnPath:
+                    location.pathname + location.search + location.hash,
+                });
+          } finally {
+            !S &&
+              n.isConnected &&
+              !n.open &&
+              ((ue = document.documentElement.style.overflow),
+              n.showModal(),
+              (document.documentElement.style.overflow = "hidden"));
+          }
+          if (!e || S) return;
+          const r = L ? "isolated-preview" : oe(window.OpenBridge?.userInfo);
+          if (!x || !r || r !== x) {
+            he();
+            return;
+          }
+          const t = await _e(),
+            o = t.registration || {};
+          ((v = !1),
+            (y =
+              (o.server?.latestVersionNo ?? null) !== ge ||
+              (o.server && o.server.canSubmit !== !0)),
+            y
+              ? ((c.textContent = "重新载入报名资料"),
+                q("报名状态已更新，请重新载入资料后确认。当前输入暂时保留。"))
+              : ((g = o),
+                (c.hidden = !0),
+                q("登录已恢复，请确认资料后再次提交。")),
+            I());
+        } catch (e) {
+          (A(
+            "registration_recovery_error",
+            String(e.errorCode || e.kind || "unknown"),
+            { stage: "registration_recovery", error: e },
+          ),
+            q(e));
+        } finally {
+          c.disabled = !1;
+        }
+      }
+    },
+    rt = async () => {
+      if (C || T || y || v || !me()) return;
+      if (
+        (A("registration_submit"),
+        !L && x && oe(window.OpenBridge?.userInfo) !== x)
+      ) {
+        he();
+        return;
+      }
+      ((_ = !0), (s.hidden = !0));
+      const e = be.filter((t) => !Y(t));
+      if ((Oe() || e.push(H.find((t) => t.checked) || H[0]), e.length)) {
+        (A("registration_validation_error"), e[0].focus());
+        return;
+      }
+      ((C = !0),
+        (a.inert = !0),
+        a.querySelectorAll("footer button").forEach((t) => (t.disabled = !0)));
+      let r = "request_id";
+      try {
+        if (((p ||= crypto.randomUUID()), b || (E && !m?.id))) {
+          const R = d("kind").value,
+            i =
+              b ||
+              (await ct(R, {
+                signal: l.signal,
+                onStage: (f) => {
+                  r = f;
+                },
+              }));
+          if (
+            l.signal.aborted ||
+            ((r = "avatar_upload"),
+            (m = await gt(i, { kind: "avatar", requestId: p })),
+            l.signal.aborted)
+          )
+            return;
+          (E && M.set(R, m), (b = null), (d("avatarFile").value = ""), $());
+        }
+        if (l.signal.aborted) return;
+        if (!L && x && oe(window.OpenBridge?.userInfo) !== x) {
+          he();
+          return;
+        }
+        r = "form_values";
+        const t = Je();
+        ((r = "registration_submit"),
+          (g = (
+            await mt("registration.submit", t, {
+              requestId: p,
+              expectedLatestVersionNo: ge,
+            })
+          ).registration),
+          (h = !1));
+        const u = g.latest?.status || g.effective?.status;
+        (A("registration_submit_success", u || "", { stage: r, requestId: p }),
+          (r = "result_redirect"));
+        const w =
+          u === "effective"
+            ? "报名资料已生效"
+            : u === "rejected"
+              ? "报名资料未通过审核，请修改后重新提交"
+              : u === "expired"
+                ? "报名状态已更新，请查看当前资料"
+                : "已提交，安全审核中";
+        (sessionStorage.setItem("payathon:result", w),
+          location.assign(ae(ne("/me"))));
+      } catch (t) {
+        (A(
+          "registration_submit_error",
+          String(t.errorCode || t.kind || "unknown"),
+          { stage: r, requestId: p, error: t },
+        ),
+          q(t),
+          (y = t.requiresReview === !0),
+          (v = t.isLoginExpired === !0),
+          (c.hidden = !y && !v),
+          (c.textContent = v ? "重新登录" : "重新载入报名资料"));
+        for (const [o, u] of Object.entries(t.fieldErrors || {})) {
+          if (o === "source") {
+            ve(u);
+            continue;
+          }
+          const w = o === "avatar" ? "avatarFile" : o,
+            R = a.querySelector(`[data-field-error="${w}"]`),
+            i = d(w);
+          R &&
+            i &&
+            ((R.textContent = W(u)),
+            (R.hidden = !1),
+            i.setAttribute("aria-invalid", "true"));
+        }
+      } finally {
+        ((C = !1), (a.inert = !1), I());
+      }
+    },
+    Fe = (e) => {
+      (e.preventDefault(), rt());
+    };
+  let B = 0;
+  const F = async () => {
+      const e = ++B;
+      D(null);
+      try {
+        const r = await _e();
+        if (S || e !== B) return;
+        D(r.registration, { authenticated: !L || dt() });
+        for (const t of document.querySelectorAll(
+          "[data-registration-open]:not([data-registration-edit]):not([data-registration-track]):not([data-benefit-access])",
+        )) {
+          const o = ut(r.registration);
+          (((t.querySelector("span") || t).textContent = o),
+            t.setAttribute("aria-label", o),
+            K(r.registration).everSubmitted
+              ? (t.removeAttribute("aria-haspopup"),
+                t.removeAttribute("aria-controls"))
+              : (t.setAttribute("aria-haspopup", "dialog"),
+                t.setAttribute("aria-controls", "payathon-registration")));
+        }
+      } catch (r) {
+        if ((O("registration_cta_load_error", r), S || e !== B)) return;
+        const t = r.isLoginExpired || String(r.errorCode) === "006";
+        D(null, { authenticated: t ? !1 : null, failed: !t });
+      }
+    },
+    Ee = () => {
+      document.querySelector(
+        '[data-partner-benefits][data-benefits-placement="landing"]',
+      ) && F();
+    };
+  let ke = 0;
+  const Le = () =>
+      !!document.querySelector(
+        '[data-partner-benefits][data-benefits-placement="landing"]',
+      ),
+    Ae = () => {
+      !Le() ||
+        document.hidden ||
+        Date.now() - ke < 1e3 ||
+        ((ke = Date.now()), Ee());
+    },
+    De = () => {
+      Le() && (document.hidden ? (++B, (ke = 0), D(null)) : Ae());
+    },
+    Ve = () => {
+      Le() && (++B, D(null, { authenticated: !1 }));
+    };
+  (F(),
+    window.addEventListener("payathon-participation-change", F),
+    window.addEventListener("aipay-onboarding-login-success", F),
+    window.addEventListener($e, Ee),
+    window.addEventListener("focus", Ae),
+    document.addEventListener("visibilitychange", De),
+    window.addEventListener("aipay:login-expired", Ve),
+    document.addEventListener("click", Be),
+    a.addEventListener("input", ee),
+    a.addEventListener("focusout", ee),
+    a.addEventListener("change", z),
+    a.addEventListener("submit", Fe),
+    n.addEventListener("close", ye),
+    z(),
+    (ie = () => {
+      ((S = !0),
+        ++B,
+        D(null),
+        l.abort(),
+        ++fe,
+        M.clear(),
+        window.removeEventListener("payathon-participation-change", F),
+        window.removeEventListener("aipay-onboarding-login-success", F),
+        window.removeEventListener($e, Ee),
+        window.removeEventListener("focus", Ae),
+        document.removeEventListener("visibilitychange", De),
+        window.removeEventListener("aipay:login-expired", Ve),
+        V && URL.revokeObjectURL(V),
+        window.removeEventListener("beforeunload", Ie),
+        n.removeEventListener("cancel", Ne),
+        window.removeEventListener("aipay-onboarding-login-success", Me),
+        n.removeEventListener("click", Ce),
+        a.removeEventListener("scroll", ce),
+        se.removeEventListener("change", le),
+        n.open && (n.close(), ye()),
+        document.removeEventListener("click", Be),
+        a.removeEventListener("input", ee),
+        a.removeEventListener("focusout", ee),
+        a.removeEventListener("change", z),
+        a.removeEventListener("submit", Fe),
+        n.removeEventListener("close", ye));
+    }));
+}
+Re();
+document.addEventListener("astro:page-load", Re);
+document.addEventListener("astro:before-swap", () => ie?.());
+window.addEventListener("pagehide", () => ie?.());
+window.addEventListener("pageshow", (n) => {
+  n.persisted && Re();
+});

@@ -1,0 +1,7 @@
+{
+  "name": "payathon-2026-local-study",
+  "private": true,
+  "type": "module",
+  "scripts": { "start": "python server.py --open" },
+  "description": "Local study copy of publicly delivered PAYATHON 2026 frontend assets; not original project source."
+}

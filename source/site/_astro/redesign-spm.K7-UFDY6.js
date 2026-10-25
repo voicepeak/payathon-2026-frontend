@@ -1,0 +1,114 @@
+const t = {
+  homeCommand: {
+    code: "c516366",
+    name: "首页接入指令",
+    actions: { copy: ["d790976", "首页接入指令-复制安装命令"] },
+  },
+  homeProof: { code: "c516367", name: "首页规模化验证" },
+  homeSwitch: {
+    code: "c486768",
+    name: "首页产品方案",
+    actions: {
+      agent: ["d790988", "首页产品方案-切换智能体支付"],
+      vibe: ["d790987", "首页产品方案-切换应用收款"],
+      skill: ["d790986", "首页产品方案-切换技能付费"],
+      machine: ["d790990", "首页产品方案-切换按量付费"],
+      token: ["d790989", "首页产品方案-切换连续订阅"],
+    },
+  },
+  comparison: {
+    code: "ca128803",
+    name: "AI付官网产品快速对比",
+    actions: {
+      agent: ["da224237", "AI付官网产品快速对比-查看智能体支付"],
+      vibe: ["da224236", "AI付官网产品快速对比-查看应用收款"],
+      skill: ["da224235", "AI付官网产品快速对比-查看技能付费"],
+      machine: ["da224234", "AI付官网产品快速对比-查看按量付费"],
+      token: ["da224238", "AI付官网产品快速对比-查看连续订阅"],
+    },
+  },
+  vibeHero: {
+    code: "c504295",
+    name: "应用收款首屏",
+    actions: {
+      creator: ["d790977", "应用收款首屏-选择独立创作者"],
+      platform: ["d790978", "应用收款首屏-选择合作平台"],
+    },
+  },
+  vibeFooter: {
+    code: "c504296",
+    name: "应用收款底部接入",
+    actions: {
+      creator: ["d790980", "应用收款底部接入-选择独立创作者"],
+      platform: ["d790979", "应用收款底部接入-选择合作平台"],
+    },
+  },
+  vibeAccess: {
+    code: "c504297",
+    name: "应用收款接入",
+    actions: {
+      creator: ["d790981", "应用收款接入-切换独立创作者"],
+      platform: ["d790985", "应用收款接入-切换合作平台"],
+      creatorDoc: ["d790982", "应用收款接入-查看创作者套件文档"],
+      platformDoc: ["d790984", "应用收款接入-查看平台接入文档"],
+      skillCooperation: ["d790983", "应用收款接入-咨询技能合作"],
+    },
+  },
+  vibeModes: {
+    code: "c516364",
+    name: "应用收款收费方式",
+    actions: {
+      0: ["d790966", "应用收款收费方式-查看次数包"],
+      1: ["d790965", "应用收款收费方式-查看积分包"],
+      2: ["d790967", "应用收款收费方式-查看时长包"],
+      3: ["d790964", "应用收款收费方式-查看买断"],
+    },
+  },
+  vibeDemo: {
+    code: "c516365",
+    name: "应用收款流程演示",
+    actions: {
+      0: ["d790970", "应用收款流程演示-查看开启收费"],
+      1: ["d790972", "应用收款流程演示-查看填写商品信息"],
+      2: ["d790969", "应用收款流程演示-查看扫码完成配置"],
+      3: ["d790971", "应用收款流程演示-查看关联并发布"],
+      4: ["d790968", "应用收款流程演示-查看先购买再使用"],
+      5: ["d790974", "应用收款流程演示-查看支付宝付款"],
+      6: ["d790975", "应用收款流程演示-查看输入生图要求"],
+      7: ["d790973", "应用收款流程演示-查看生成结果与扣次"],
+    },
+  },
+  assistant: {
+    code: "ca128804",
+    name: "AI付官网助手菜单",
+    clickOnly: !0,
+    actions: {
+      toggle: ["da224227", "AI付官网助手菜单-展开或收起菜单"],
+      read: ["da224232", "AI付官网助手菜单-复制网站阅读指令"],
+      products: ["da224233", "AI付官网助手菜单-选择产品接入"],
+      help: ["da224225", "AI付官网助手菜单-打开在线咨询"],
+      agent: ["da224228", "AI付官网助手菜单-复制智能体支付接入指令"],
+      vibe: ["da224230", "AI付官网助手菜单-复制应用收款接入指令"],
+      skill: ["da224231", "AI付官网助手菜单-前往技能付费官网"],
+      machine: ["da224229", "AI付官网助手菜单-复制按量付费接入指令"],
+      token: ["da224226", "AI付官网助手菜单-复制连续订阅接入指令"],
+    },
+  },
+};
+function n(e, a) {
+  const d = t[e];
+  if (a === void 0)
+    return {
+      "data-aspm": d.code,
+      "data-aspm-desc": d.name,
+      "data-aspm-expo": !0,
+    };
+  const [o, c] = d.actions[a];
+  return { "data-aspm-click": d.code + "." + o, "data-aspm-desc": c };
+}
+function s(e) {
+  e.hasAttribute("data-aspm-expo") && window.Tracert?.call("expoCheck", e);
+  for (const a of e.querySelectorAll("[data-aspm-expo]"))
+    window.Tracert?.call("expoCheck", a);
+}
+export { n as g, s as r };

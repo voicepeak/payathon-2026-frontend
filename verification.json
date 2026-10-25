@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-25",
+  "html_pages_checked": 5,
+  "local_references_checked": 875,
+  "missing_references": [],
+  "external_resource_references": [],
+  "javascript_files_checked": 65,
+  "javascript_syntax_errors": [],
+  "http_checks": [
+    {
+      "path": "/__health",
+      "status": 200,
+      "bytes": 38,
+      "content_type": "application/json"
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "bytes": 743874,
+      "content_type": "text/html"
+    },
+    {
+      "path": "/community/events/payathon-2026?preview=1",
+      "status": 200,
+      "bytes": 743874,
+      "content_type": "text/html"
+    },
+    {
+      "path": "/community/events/payathon-2026/me?preview=1",
+      "status": 200,
+      "bytes": 317403,
+      "content_type": "text/html"
+    },
+    {
+      "path": "/community/events/payathon-2026/me/works?preview=1",
+      "status": 200,
+      "bytes": 317098,
+      "content_type": "text/html"
+    },
+    {
+      "path": "/community/events/payathon-2026/me/works/new?preview=1",
+      "status": 200,
+      "bytes": 317138,
+      "content_type": "text/html"
+    },
+    {
+      "path": "/community/events/payathon-2026/me/works/detail?preview=1&id=preview-work-effective",
+      "status": 200,
+      "bytes": 317403,
+      "content_type": "text/html"
+    },
+    {
+      "path": "/assets/site/_astro/three-r132.min.CEObKxds.js",
+      "status": 200,
+      "bytes": 612274,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/local-adapter.js",
+      "status": 200,
+      "bytes": 2353,
+      "content_type": "text/javascript"
+    }
+  ],
+  "visual_browser_qa": "NOT COMPLETED: Computer Use could not reliably determine current browser URL and stopped.",
+  "passed": true
+}

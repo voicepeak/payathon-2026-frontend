@@ -1,0 +1,146 @@
+const i = { DEV: "dev", PRE: "pre", PROD: "prod" },
+  m = "",
+  _ = !1,
+  P = "https://webgw.stable.alipay.net/watchtowerproxy/proxy",
+  R = "http://aipayweb-51.rz01b.dev.alipay.net",
+  b = "x-watchtowerproxy-target-origin",
+  D = "2.0",
+  L = "180020010001292425",
+  S = new Set([
+    "localhost",
+    "127.0.0.1",
+    "::1",
+    "local.dev.alipay.net",
+    "aipay-pre-local.alipay.com",
+  ]),
+  l = {
+    [i.PRE]: "https://aipayapi-pre.alipay.com",
+    [i.PROD]: "https://aipayapi.alipay.com",
+  };
+function c(e) {
+  const n = String(e || "")
+      .trim()
+      .toLowerCase(),
+    r = n.split(/[.-]/);
+  return (
+    n !== "aipay-pre-local.alipay.com" &&
+    r.includes("pre") &&
+    !r.includes("dev") &&
+    !r.includes("stable")
+  );
+}
+function I(e = "", n = c(window.location.hostname)) {
+  const r = new Set(["dev", "pre", "prod"]),
+    a = (t) => {
+      const o = String(t || "")
+        .trim()
+        .toLowerCase();
+      return r.has(o) ? o : "";
+    },
+    E = (t) =>
+      /^(?:\d{1,3}\.){3}\d{1,3}$/.test(t)
+        ? t.split(".").every((o) => {
+            const s = Number(o);
+            return Number.isInteger(s) && s >= 0 && s <= 255;
+          })
+        : !1,
+    A = (t) => t.includes(":") && /^[0-9a-f:]+$/i.test(t),
+    u = (t, o) => t.split(/[.-]/).includes(o),
+    y = () => {
+      const t = String(window.location.hostname || "").toLowerCase();
+      return !t ||
+        t === "localhost" ||
+        t === "local.dev.alipay.net" ||
+        E(t) ||
+        A(t) ||
+        u(t, "dev") ||
+        u(t, "stable")
+        ? "dev"
+        : u(t, "pre")
+          ? "pre"
+          : "prod";
+    },
+    O = () => {
+      const t = new URLSearchParams(window.location.search);
+      for (const o of ["openbridge_env", "aipay_env"]) {
+        const s = a(t.get(o));
+        if (s) return s;
+      }
+      return "";
+    },
+    h = () => {
+      try {
+        return a(window.localStorage?.getItem("aipay:openbridge-env"));
+      } catch {
+        return "";
+      }
+    },
+    d = n ? "pre" : O() || h() || a(e) || y(),
+    p =
+      window.OpenBridge && typeof window.OpenBridge == "object"
+        ? window.OpenBridge
+        : {};
+  return ((p.env = d), (window.OpenBridge = p), d);
+}
+function w(e = {}) {
+  return typeof window > "u" ? i.PROD : I(e.configuredEnv ?? m);
+}
+function B(e = {}) {
+  if (typeof window > "u") return i.PROD;
+  if (c(window.location.hostname)) return w(e);
+  const n = String(window.OpenBridge?.env || "").toLowerCase();
+  return Object.values(i).includes(n) ? n : w(e);
+}
+function H(e, n) {
+  return e ? `${e.replace(/\/+$/, "")}/${n.replace(/^\/+/, "")}` : n;
+}
+function T(e) {
+  return String(e || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^\[(.*)\]$/, "$1");
+}
+function f(e) {
+  return String(e || "")
+    .trim()
+    .replace(/\/+$/, "");
+}
+function v(e = {}) {
+  const n = e.hostname ?? (typeof window > "u" ? "" : window.location.hostname);
+  return c(n) ? !1 : (e.useLocalApiProxy ?? _) ? !0 : S.has(T(n));
+}
+function g(e = {}) {
+  const n = e.hostname ?? (typeof window > "u" ? "" : window.location.hostname);
+  return c(n) ? i.PRE : e.env || B(e);
+}
+function x(e = {}) {
+  return g(e) === i.DEV && !e.devApiOrigin && !v(e);
+}
+function U(e = {}) {
+  const n = g(e);
+  return v(e)
+    ? ""
+    : n === i.DEV && e.devApiOrigin
+      ? f(e.devApiOrigin)
+      : n === i.DEV
+        ? f(e.devWatchtowerOrigin ?? P)
+        : l[n] || l[i.PROD];
+}
+function C(e, n = {}) {
+  return H(U(n), e);
+}
+function V(e, n = {}) {
+  const r = new Headers(e);
+  return (
+    x(n) &&
+      (r.set("x-webgw-version", n.webgwVersion || D),
+      r.set("x-webgw-appid", n.webgwAppId || L),
+      r.set(b, n.devApiTarget || R)),
+    r
+  );
+}
+function W(e, n = {}) {
+  const { headers: r, ...a } = n;
+  return { url: C(e, a), headers: V(r, a) };
+}
+export { i as O, C as a, W as b, V as c, w as e, B as g, v as i };

@@ -1,0 +1,189 @@
+import { _ as k } from "./preload-helper.CVfkMyKi.js";
+import { o as z } from "./payathon-activity.D_OqE3WT.js";
+import { m as N } from "./payathon-intro.2241mNzE.js";
+function J() {
+  const e = document.querySelector(".payathon-hero"),
+    d = e?.querySelector(".payathon-title-frame"),
+    f = e?.querySelector(".overview-registration"),
+    p = document.querySelector("[data-payathon-header]");
+  if (!e || !d || !f) return;
+  if (e.clientWidth <= 767) {
+    const s = e.querySelector("#payathon-title");
+    e.style.setProperty(
+      "--mobile-title-center",
+      `${s.offsetTop + s.offsetHeight / 2}px`,
+    );
+    return;
+  }
+  const i = e.clientHeight,
+    n = p?.offsetHeight || 60,
+    y = Math.max(32, (i - n) * 0.12),
+    g = d.getBoundingClientRect().height,
+    w = n + y,
+    h = w + g,
+    E = e.clientWidth <= 640 ? 68 : 0,
+    l = i - y - E,
+    r = f.getBoundingClientRect().height,
+    m = h + 32,
+    b = (h + l - r) / 2;
+  (e.style.setProperty("--title-rest-y", `${w + g / 2}px`),
+    e.style.setProperty("--overview-top", `${m}px`),
+    e.style.setProperty("--overview-bottom", `${y}px`),
+    e.style.setProperty("--overview-axis", `${b - m}px`),
+    e.style.setProperty("--countdown-x", `${e.clientWidth / 2}px`),
+    e.style.setProperty("--countdown-y", `${l - r}px`));
+}
+let q,
+  A = 0;
+function M() {
+  ((A += 1), q?.(), (q = void 0));
+}
+async function $() {
+  M();
+  const e = document.querySelector("[data-payathon-ascii]"),
+    d = document.querySelector("#payathon-title");
+  if (!e || !d) return;
+  const f = A;
+  try {
+    const { mountJellyfish: p } = await k(async () => {
+      const { mountJellyfish: t } = await import(
+        "./payathon-jellyfish-dark.DnJ70m0h.js"
+      );
+      return { mountJellyfish: t };
+    }, []);
+    if (A !== f || !e.isConnected) return;
+    const i = p(e, {
+        avoidElements: [d],
+        onIntroComplete: () => N("scene"),
+        onPalette(t) {
+          const I = (c) => {
+              const a = [1, 3, 5].map(
+                  (u) => parseInt(c.slice(u, u + 2), 16) / 255,
+                ),
+                o = Math.max(...a),
+                v = Math.min(...a);
+              return o === v ? 0 : (o - v) / (1 - Math.abs(o + v - 1));
+            },
+            R = [t.bell, t.tentacle, t.accent].sort((c, a) => I(a) - I(c))[0],
+            L = e.closest(".payathon-hero").style;
+          (L.setProperty("--payathon-accent", R),
+            document.body.style.setProperty("--payathon-accent", R));
+          const B = (c) => {
+            const a = [1, 3, 5].map(
+                (x) => parseInt(c.slice(x, x + 2), 16) / 255,
+              ),
+              o = Math.max(...a),
+              v = Math.min(...a),
+              u = o ? (o - v) / o : 0,
+              O = Math.min(1, o + 0.12),
+              V = Math.min(1, u * 1.35 + 0.1);
+            return (
+              "#" +
+              a
+                .map((x) => {
+                  const W = u ? O * (1 - ((1 - x / o) * V) / u) : O;
+                  return Math.round(Math.max(0, W) * 255)
+                    .toString(16)
+                    .padStart(2, "0");
+                })
+                .join("")
+            );
+          };
+          for (const [c, a] of [
+            ["forward", t.bell],
+            ["backward", t.tentacle],
+          ]) {
+            const o = B(a);
+            (L.setProperty(`--payathon-split-${c}-text`, `${o}f2`),
+              L.setProperty(`--payathon-split-${c}-svg`, `${o}e6`),
+              document.body.style.setProperty(
+                `--payathon-split-${c}-svg`,
+                `${o}e6`,
+              ));
+          }
+        },
+      }),
+      n = e.closest(".payathon-hero"),
+      y = n.querySelector(".overview-registration"),
+      g = d.querySelector(".payathon-title-frame"),
+      w = document.querySelector("[data-payathon-header]"),
+      h = () => {
+        J();
+      },
+      E = new ResizeObserver(h);
+    for (const t of [n, g, y, w]) t && E.observe(t);
+    h();
+    const l = new Set();
+    let r = 0,
+      m = !1;
+    const b = () => {
+        ((r = 0),
+          i.refreshAvoidance(),
+          l.size && m && !document.hidden && (r = requestAnimationFrame(b)));
+      },
+      s = () => {
+        !r && m && !document.hidden && (r = requestAnimationFrame(b));
+      },
+      H = (t) => {
+        t.propertyName !== "transform" ||
+          !t.target.matches(
+            "#payathon-title, .overview-registration, [data-overview-reveal]",
+          ) ||
+          (l.add(t.target), s());
+      },
+      S = (t) => {
+        t.propertyName === "transform" && (l.delete(t.target), s());
+      },
+      F = (t) => {
+        t.animationName === "overview-arrive" && (l.add(t.target), s());
+      },
+      P = (t) => {
+        t.animationName === "overview-arrive" && (l.delete(t.target), s());
+      },
+      _ = () => {
+        const t = n.hasAttribute("data-intro-complete")
+          ? [d, ...n.querySelectorAll("[data-overview-reveal]")]
+          : [d];
+        (i.setAvoidElements(t), s());
+      },
+      C = new MutationObserver(_);
+    (C.observe(n, { attributes: !0, attributeFilter: ["data-intro-complete"] }),
+      n.addEventListener("animationstart", F),
+      n.addEventListener("animationend", P),
+      n.addEventListener("animationcancel", P),
+      n.addEventListener("transitionrun", H),
+      n.addEventListener("transitionend", S),
+      n.addEventListener("transitioncancel", S),
+      _(),
+      i.pause(),
+      (e.dataset.state = "mounted"));
+    const T = z(n, (t) => {
+      ((m = t),
+        t ? (i.resume(), s()) : (i.pause(), cancelAnimationFrame(r), (r = 0)));
+    });
+    q = () => {
+      (cancelAnimationFrame(r),
+        C.disconnect(),
+        E.disconnect(),
+        n.removeEventListener("animationstart", F),
+        n.removeEventListener("animationend", P),
+        n.removeEventListener("animationcancel", P),
+        n.removeEventListener("transitionrun", H),
+        n.removeEventListener("transitionend", S),
+        n.removeEventListener("transitioncancel", S),
+        T(),
+        i.destroy(),
+        delete e.dataset.state,
+        document.body.style.removeProperty("--payathon-accent"));
+    };
+  } catch (p) {
+    (console.error("PAYATHON ASCII capsule failed to mount", p), N("scene"));
+  }
+}
+$();
+document.addEventListener("astro:before-swap", M);
+document.addEventListener("astro:page-load", $);
+window.addEventListener("pagehide", M);
+window.addEventListener("pageshow", (e) => {
+  e.persisted && $();
+});

@@ -1,0 +1,909 @@
+const __vite__mapDeps = (
+  i,
+  m = __vite__mapDeps,
+  d = m.f ||
+    (m.f = [
+      "_astro/registration-api.CXKSAKJ9.js",
+      "_astro/openbridge-env.DInZk9-t.js",
+      "_astro/participation-provider.BZzNvR-9.js",
+      "_astro/registration-sources.IT9GsbdT.js",
+    ]),
+) => i.map((i) => d[i]);
+import { _ as M } from "./preload-helper.CVfkMyKi.js";
+import { g as Z } from "./openbridge-env.DInZk9-t.js";
+function ce(e, t = !1, i = "dev") {
+  return (
+    i === "dev" && (t || e === "aipay-offa-s090011904093-site.dev.alipay.net")
+  );
+}
+function ue(e, { chinfo: t, deviceId: i } = {}) {
+  const n = { ...e };
+  for (const [r, o, a] of [
+    ["chinfo", t, 32],
+    ["deviceId", i, 36],
+  ]) {
+    if (typeof o != "string") continue;
+    const s = o.trim();
+    s && [...s].length <= a && (n[r] = s);
+  }
+  return n;
+}
+const S = Object.freeze({
+    "Vibe Pay": "VIBE_PAY",
+    "Skill Pay": "SKILL_PAY",
+    "Machine Pay": "MACHINE_PAY",
+    "Token Pay": "TOKEN_PAY",
+    "Agent Pay": "AGENT_PAY",
+  }),
+  F = Object.freeze({
+    网页: "WEB",
+    APP: "APP",
+    桌面应用: "DESKTOPAPP",
+    "小程序 / 快应用": "FLASHAPP",
+  }),
+  h = Object.fromEntries(Object.entries(S).map(([e, t]) => [t, e])),
+  G = Object.fromEntries(Object.entries(F).map(([e, t]) => [t, e])),
+  T = {
+    PENDING_REVIEW: "reviewing",
+    EFFECTIVE: "effective",
+    REVIEW_FAILED: "rejected",
+    EXPIRED: "expired",
+  },
+  q = /^HKWI_[0-9a-f]{32}$/,
+  L = /^HKW_[0-9a-f]{32}$/,
+  fe = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+  E = (e, t) => Object.hasOwn(e, t),
+  m = (e) => e !== null && typeof e == "object" && !Array.isArray(e),
+  C = (e, t) => typeof e == "string" && t.test(e),
+  ee = (e) => typeof e == "string" && [...e].length === 32,
+  _ = (e) => (e ? { ...e } : null);
+function A(e, t = {}) {
+  return Object.assign(new Error(e), {
+    code: "PAYATHON_WORK_CONTRACT_ERROR",
+    fieldErrors: t,
+  });
+}
+function l() {
+  throw A("作品资料格式异常，请重新加载后再试。");
+}
+function te(e, t) {
+  return (
+    (!m(e) ||
+      !C(e.workId, q) ||
+      !E(h, e.trackCode) ||
+      !E(T, e.status) ||
+      !C(e.latestVersionNo, L) ||
+      (e.effectiveVersionNo !== null && !C(e.effectiveVersionNo, L))) &&
+      l(),
+    {
+      status: e.status,
+      trackCode: e.trackCode,
+      latestVersionNo: e.latestVersionNo,
+      effectiveVersionNo: e.effectiveVersionNo,
+      canEdit: e.canEdit === !0,
+      canSubmit: e.canSubmit === !0,
+      blockedReason: _(e.blockedReason),
+      summaryOnly: t,
+      ...(t ? {} : { phase: _(e.phase) }),
+    }
+  );
+}
+function H(e, t, i, n, r, o) {
+  ee(e) || l();
+  const a = r.find(
+    (s) =>
+      m(s) &&
+      s.versionNo === t &&
+      s.field === i &&
+      s.index === n &&
+      s.fileId === e,
+  );
+  return {
+    id: e,
+    url: typeof a?.accessFileUrl == "string" ? a.accessFileUrl : "",
+    name: o,
+  };
+}
+function z(e, { versionNo: t, trackCode: i, fileViews: n, effective: r = !1 }) {
+  (!m(e) ||
+    e.versionNo !== t ||
+    !E(T, e.status) ||
+    !m(e.payload) ||
+    (r && e.status !== "EFFECTIVE")) &&
+    l();
+  const o = e.payload;
+  ((o.trackCode !== i ||
+    typeof o.title != "string" ||
+    typeof o.summary != "string") &&
+    l(),
+    ((o.productIntroduction != null &&
+      typeof o.productIntroduction != "string") ||
+      (o.link != null && typeof o.link != "string")) &&
+      l(),
+    i === "VIBE_PAY" && !E(G, o.category) && l());
+  const a = (u, c) => {
+      const g = o[u] ?? [];
+      return (
+        Array.isArray(g) || l(),
+        Array.from(g, (b, d) => H(b, t, u, d, n, `${c} ${d + 1}`))
+      );
+    },
+    s = {
+      track: h[i],
+      title: o.title,
+      intro: o.summary,
+      details: o.productIntroduction ?? "",
+      detailsFormat: "text",
+      link: o.link ?? "",
+      icon: o.icon == null ? null : H(o.icon, t, "icon", null, n, "作品图标"),
+      images: a("productImages", "作品图片"),
+      files: a("attachments", "附件"),
+    };
+  return (
+    i === "VIBE_PAY" && (s.category = G[o.category]),
+    {
+      id: t,
+      versionNo: t,
+      status: T[e.status],
+      data: s,
+      submittedAt: e.createdAt,
+      createdAt: e.createdAt,
+      updatedAt: e.updatedAt,
+    }
+  );
+}
+function Ce(e) {
+  const t = te(e, !1);
+  ((!Array.isArray(e.fileViews) || e.latestSubmission?.status !== e.status) &&
+    l(),
+    e.latestVersionNo === e.effectiveVersionNo &&
+      e.status !== "EFFECTIVE" &&
+      l());
+  const i = { trackCode: e.trackCode, fileViews: e.fileViews },
+    n = z(e.latestSubmission, { ...i, versionNo: e.latestVersionNo });
+  let r = null;
+  return (
+    e.effectiveVersionNo !== null
+      ? (r = z(e.effectiveData, {
+          ...i,
+          versionNo: e.effectiveVersionNo,
+          effective: !0,
+        }))
+      : e.effectiveData != null && l(),
+    {
+      id: e.workId,
+      everSubmitted: !0,
+      latest: n,
+      effective: r,
+      createdAt: e.createdAt,
+      updatedAt: e.updatedAt,
+      server: t,
+    }
+  );
+}
+function Se(e) {
+  (!m(e) ||
+    !Array.isArray(e.works) ||
+    !Array.isArray(e.trackQuotas) ||
+    (e.trackCode !== "ALL" && !E(h, e.trackCode))) &&
+    l();
+  const t = new Set(),
+    i = e.trackQuotas.map(
+      (r) => (
+        (!m(r) ||
+          !E(h, r.trackCode) ||
+          t.has(r.trackCode) ||
+          !Number.isInteger(r.usedCount) ||
+          r.usedCount < 0 ||
+          !Number.isInteger(r.remainingCount) ||
+          r.remainingCount < 0 ||
+          r.maxCount !== 10 ||
+          r.usedCount + r.remainingCount !== r.maxCount) &&
+          l(),
+        t.add(r.trackCode),
+        {
+          trackCode: r.trackCode,
+          usedCount: r.usedCount,
+          remainingCount: r.remainingCount,
+          maxCount: r.maxCount,
+        }
+      ),
+    );
+  return (
+    t.size !== Object.keys(h).length && l(),
+    {
+      works: e.works.map((r) => {
+        const o = te(r, !0);
+        return (
+          (typeof r.title != "string" || typeof r.summary != "string") && l(),
+          {
+            id: r.workId,
+            everSubmitted: !0,
+            latest: {
+              id: r.latestVersionNo,
+              versionNo: r.latestVersionNo,
+              status: T[r.status],
+              data: { track: h[r.trackCode], title: r.title, intro: r.summary },
+            },
+            server: o,
+          }
+        );
+      }),
+      worksServer: {
+        phase: _(e.phase),
+        canCreateWork: e.canCreateWork === !0,
+        blockedReason: _(e.blockedReason),
+        trackQuotas: i,
+        trackCode: e.trackCode,
+      },
+    }
+  );
+}
+function Ie(
+  e,
+  {
+    requestId: t,
+    id: i,
+    expectedLatestVersionNo: n = null,
+    trackCode: r,
+    chinfo: o,
+    deviceId: a,
+  } = {},
+) {
+  if (!C(t, fe)) throw A("作品请求标识无效，请重新提交。");
+  const s = i != null;
+  if (s && !C(i, q)) throw A("作品编号无效，请重新加载作品资料后再试。");
+  if ((s && !C(n, L)) || (!s && n !== null))
+    throw A("作品版本无效，请重新加载作品资料后再试。");
+  if (r !== void 0 && !E(h, r))
+    throw A("作品赛道无效，请重新加载作品资料后再试。");
+  const u = m(e) ? e : {},
+    c = {},
+    g = E(S, u.track) ? S[u.track] : void 0;
+  g
+    ? r !== void 0 && g !== r && (c.track = "已有作品的赛道不可更改")
+    : (c.track = "请选择一个赛道");
+  const b = (f, y, I, R = !1, ae = 1) => {
+      const W = u[f];
+      if (!R && W == null) return;
+      if (typeof W != "string") {
+        c[f] = I;
+        return;
+      }
+      const O = W.trim();
+      if (!(!O && !R))
+        return (([...O].length < ae || [...O].length > y) && (c[f] = I), O);
+    },
+    d = {
+      clientRequestId: t,
+      expectedLatestVersionNo: n,
+      ...(s ? { workId: i } : {}),
+      trackCode: g,
+      title: b("title", 20, "作品标题应为 1–20 字", !0),
+      summary: b("intro", 200, "作品简介应为 20–200 字", !0, 20),
+    };
+  g === "VIBE_PAY" &&
+    (E(F, u.category)
+      ? (d.category = F[u.category])
+      : (c.category = "请选择作品分类"));
+  const B = (f, y) => {
+    if (!m(f) || !ee(f.id)) {
+      c[y] = "材料尚未上传成功，请重新上传后再提交。";
+      return;
+    }
+    return f.id;
+  };
+  u.icon != null && (d.icon = B(u.icon, "icon"));
+  const Y = b("link", 1 / 0, "请填写有效的作品链接");
+  Y !== void 0 && (d.link = Y);
+  const $ = b("details", 2e3, "详情介绍最多 2000 字");
+  $ !== void 0 && (d.productIntroduction = $);
+  for (const [f, y, I] of [
+    ["images", "productImages", "images"],
+    ["files", "attachments", "file"],
+  ])
+    u[f] != null &&
+      (Array.isArray(u[f])
+        ? (d[y] = Array.from(u[f], (R) => B(R, I)))
+        : (c[I] = "材料格式无效，请重新上传后再提交。"));
+  if (Object.keys(c).length) throw A("请检查作品资料后再提交。", c);
+  const se = Object.fromEntries(
+    Object.entries({
+      trackCode: "TRACK",
+      title: "TITLE",
+      category: "CATEGORY",
+      summary: "SUMMARY",
+      icon: "ICON",
+      link: "LINK",
+      productImages: "PRODUCT_IMAGES",
+      productIntroduction: "PRODUCT_INTRODUCTION",
+      attachments: "ATTACHMENTS",
+    })
+      .filter(
+        ([f]) => d[f] !== void 0 && !(Array.isArray(d[f]) && d[f].length === 0),
+      )
+      .map(([f, y]) => [y, d[f]]),
+  );
+  if ([...JSON.stringify(se)].length > 8192)
+    throw A("作品资料总长度超出限制，请缩短链接或减少材料后再提交。");
+  return ue(d, { chinfo: o, deviceId: a });
+}
+const le = Date.parse("2026-09-30T00:00:00+08:00"),
+  de = Date.parse("2026-12-01T23:59:00+08:00"),
+  k = ["Vibe Pay", "Skill Pay", "Machine Pay", "Token Pay", "Agent Pay"],
+  we = [
+    { value: "网页", label: "网页应用（Web及H5）" },
+    { value: "APP", label: "移动App" },
+    { value: "桌面应用", label: "桌面应用" },
+    { value: "小程序 / 快应用", label: "灵光闪应用" },
+  ],
+  N = 10;
+function x(e, t) {
+  return e.blockedReason?.message
+    ? e.blockedReason.message
+    : e.phase?.work === "NOT_STARTED"
+      ? "作品提交未开始"
+      : e.phase?.work === "ENDED"
+        ? "作品提交已过截止日期，仅支持查看作品信息"
+        : t;
+}
+function pe(e) {
+  const { server: t, latest: i } = e,
+    n = t.status === "PENDING_REVIEW",
+    r = t.status === "REVIEW_FAILED",
+    o = !!t.effectiveVersionNo,
+    a = t.canEdit === !0 && t.canSubmit === !0;
+  return {
+    pending: n,
+    rejected: r,
+    status: {
+      PENDING_REVIEW: "审核中",
+      EFFECTIVE: "已生效",
+      REVIEW_FAILED: "审核未通过",
+      EXPIRED: "已失效",
+    }[t.status],
+    tone: n
+      ? "pending"
+      : r
+        ? "error"
+        : t.status === "EFFECTIVE"
+          ? "success"
+          : "muted",
+    notice: o
+      ? n
+        ? "修改审核中，原内容不受影响"
+        : r
+          ? "本次修改未通过审核，原内容不受影响"
+          : ""
+      : n
+        ? "已提交，安全审核中"
+        : r
+          ? "作品尚未生效，请修改后重新提交"
+          : "",
+    display: i?.data || null,
+    editData: i?.data || {},
+    editable: a,
+    canSave: !1,
+    everSubmitted: !!(e.everSubmitted || i || t.latestVersionNo),
+    editLabel: r ? "继续修改" : "修改作品",
+    reason: r ? i?.reason || "请检查提交资料后重新提交。" : "",
+    fieldErrors: r ? i?.fieldErrors || {} : {},
+    blockedReason: a
+      ? ""
+      : x(
+          t,
+          n ? "作品信息审核中，暂不可修改或提交" : "当前暂不可修改或提交作品",
+        ),
+  };
+}
+function V(e = {}, t = "registration") {
+  if (t === "work" && e.server) return pe(e);
+  const i = t === "registration" ? "报名" : "作品",
+    n = t === "registration" ? "原报名资格不受影响" : "原内容不受影响",
+    r = e.effective,
+    o = e.latest,
+    a = o?.status === "reviewing",
+    s = o?.status === "rejected",
+    u = !!(e.everSubmitted || r || o),
+    c = t === "registration" ? e.server : null;
+  return {
+    pending: a,
+    rejected: s,
+    status: c
+      ? {
+          NONE: "未报名",
+          PENDING_REVIEW: "审核中",
+          EFFECTIVE: "已生效",
+          REVIEW_FAILED: "审核未通过",
+          EXPIRED: "已失效",
+        }[c.status]
+      : r
+        ? "已生效"
+        : a
+          ? "审核中"
+          : s
+            ? "审核未通过"
+            : e.draft
+              ? "草稿"
+              : "未报名",
+    tone: c
+      ? a
+        ? "pending"
+        : s
+          ? "error"
+          : c.status === "EFFECTIVE"
+            ? "success"
+            : "muted"
+      : r
+        ? "success"
+        : s
+          ? "error"
+          : a
+            ? "pending"
+            : "muted",
+    notice: r
+      ? a
+        ? `修改审核中，${n}`
+        : s
+          ? `本次修改未通过审核，${n}`
+          : ""
+      : a
+        ? "已提交，安全审核中"
+        : s
+          ? `${i}尚未生效，请修改后重新提交`
+          : "",
+    display: r?.data || o?.data || e.draft || null,
+    editable: c ? c.canSubmit && (!u || c.canEdit) : !a,
+    canSave: !c && !u,
+    everSubmitted: u,
+    editData: c ? o?.data || {} : s ? o.data : r?.data || e.draft || {},
+    editLabel: s
+      ? "继续修改"
+      : r
+        ? "修改资料"
+        : e.draft
+          ? "继续填写"
+          : "填写报名资料",
+    reason: s ? o.reason || "请检查提交资料后重新提交。" : "",
+    fieldErrors: s ? o.fieldErrors || {} : {},
+    blockedReason: c?.blockedReason?.message || "",
+  };
+}
+function Pe(e) {
+  return V(e).everSubmitted
+    ? "进入参赛中心"
+    : e?.draft
+      ? "继续报名"
+      : "立即报名";
+}
+function re(e, { excludeId: t } = {}) {
+  const i = Object.fromEntries(k.map((n) => [n, 0]));
+  if (e.worksServer) {
+    for (const n of k) {
+      const r = e.worksServer.trackQuotas.find((o) => o.trackCode === S[n]);
+      i[n] = r.usedCount;
+    }
+    return i;
+  }
+  for (const n of e.works || []) {
+    if (t != null && n.id === t) continue;
+    const r = (n.effective?.data || n.latest?.data || n.draft)?.track;
+    k.includes(r) && (i[r] += 1);
+  }
+  return i;
+}
+function U(e, t, { excludeId: i } = {}) {
+  if (!k.includes(t)) return "";
+  if (e.worksServer) {
+    const n = i == null ? null : e.works?.find((o) => o.id === i);
+    if (n?.server) {
+      const o = V(n, "work");
+      return o.editable
+        ? n.server.trackCode === S[t]
+          ? ""
+          : "作品首次提交后，赛道不可更改"
+        : o.blockedReason;
+    }
+    if (e.worksServer.canCreateWork !== !0)
+      return x(e.worksServer, "当前暂不可新建作品");
+    const r = e.worksServer.trackQuotas.find((o) => o.trackCode === S[t]);
+    return r.remainingCount <= 0 ? `${t} 已达到 ${r.maxCount} 件作品上限` : "";
+  }
+  return re(e, { excludeId: i })[t] >= N
+    ? `${t} 已达到 ${N} 件作品上限（含草稿）`
+    : "";
+}
+function ve(e, t = Date.now(), i) {
+  if (e.worksUnavailable) return e.worksUnavailable;
+  if (e.worksServer)
+    return e.worksServer.canCreateWork !== !0
+      ? x(e.worksServer, "当前暂不可新建作品")
+      : k.includes(i)
+        ? U(e, i)
+        : "";
+  if (t < le) return "作品提交将于 9 月 30 日开放";
+  if (!e.registration?.effective) return "报名生效后可新建作品";
+  if (k.includes(i)) return U(e, i);
+  const n = re(e);
+  return k.every((r) => n[r] >= N)
+    ? `各赛道均已达到 ${N} 件作品上限（含草稿）`
+    : "";
+}
+function Q(e, t) {
+  if (!V(e).canSave) throw new Error("成功提交后不支持暂存修改");
+  return { ...e, draft: structuredClone(t) };
+}
+function X(e, t, i) {
+  if (e.latest?.requestId === i) return e;
+  if (!V(e).editable) throw new Error("已有审核中的提交，请等待审核结果");
+  return {
+    ...e,
+    draft: null,
+    everSubmitted: !0,
+    latest: {
+      id: i,
+      requestId: i,
+      status: "reviewing",
+      data: structuredClone(t),
+      submittedAt: new Date().toISOString(),
+    },
+  };
+}
+function Ee(e, t = !1, { formal: i = !1 } = {}) {
+  const n = {};
+  if (
+    (k.includes(e.track) || (n.track = "请选择一个赛道"),
+    t ||
+      ((i ? typeof e.title != "string" || !e.title.trim() : !e.title?.trim()) &&
+        (n.title = "请填写作品标题"),
+      (i ? typeof e.intro != "string" || !e.intro.trim() : !e.intro?.trim()) &&
+        (n.intro = "请填写作品简介"),
+      typeof e.intro == "string" &&
+        e.intro.trim() &&
+        [...e.intro.trim()].length < 20 &&
+        (n.intro = "作品简介至少 20 字"),
+      e.track === "Vibe Pay" &&
+        !we.some((r) => r.value === e.category) &&
+        (n.category = "请选择作品分类"),
+      e.originalityConfirmed !== !0 &&
+        (n.originalityConfirmed = "请确认拥有作品的合法权利或授权")),
+    i)
+  )
+    for (const [r, o, a] of [
+      ["title", 20, "作品标题"],
+      ["intro", 200, "作品简介"],
+      ["details", 2e3, "详情介绍"],
+    ])
+      e[r] != null &&
+        (typeof e[r] != "string" || [...e[r].trim()].length > o) &&
+        (n[r] = `${a}最多 ${o} 字`);
+  if (e.link)
+    try {
+      if (!["http:", "https:"].includes(new URL(e.link).protocol)) throw 0;
+    } catch {
+      n.link = "请输入完整的 http:// 或 https:// 链接，或移除此项";
+    }
+  return n;
+}
+const ge = "/community/events/payathon-2026",
+  ne = "payathon:isolated-preview:v1",
+  ke = ce(
+    location.hostname,
+    ["localhost", "127.0.0.1", "::1"].includes(location.hostname),
+    Z(),
+  ),
+  v = ke && new URLSearchParams(location.search).has("preview"),
+  ie = () => v && sessionStorage.getItem("payathon:preview-login") !== "false";
+function Re(e) {
+  v && sessionStorage.setItem("payathon:preview-login", String(e));
+}
+function Oe(e = "") {
+  return ge + e + (v ? "?preview=1" : "");
+}
+const K = () => ({ registration: {}, works: [] });
+function me() {
+  const e = {};
+  for (const [t, i] of new URLSearchParams(window.location.search))
+    t === "chinfo" && (e.chinfo = i);
+  try {
+    e.deviceId = window.__aipayMonitorContext?.getDeviceInfo?.()?.deviceId;
+  } catch {}
+  return e;
+}
+let w = K(),
+  p;
+async function D() {
+  if (window.PayathonParticipationAPI) return window.PayathonParticipationAPI;
+  if (!p) {
+    const [{ createRegistrationApi: e }, { createParticipationProvider: t }] =
+        await Promise.all([
+          M(
+            () => import("./registration-api.CXKSAKJ9.js"),
+            __vite__mapDeps([0, 1]),
+          ),
+          M(
+            () => import("./participation-provider.BZzNvR-9.js"),
+            __vite__mapDeps([2, 3]),
+          ),
+        ]),
+      i = Z(),
+      n = window.AIPayApiConfig || {};
+    p = t(e({ routeOptions: { ...n, env: i, devApiTarget: n.devApiTarget } }));
+  }
+  return p;
+}
+const j = () =>
+  v && w.worksOpened ? Date.parse("2026-09-30T00:00:00+08:00") : Date.now();
+async function ye(e = {}) {
+  if (v) {
+    try {
+      w = JSON.parse(sessionStorage.getItem(ne)) || K();
+    } catch {
+      w = K();
+    }
+    return structuredClone(w);
+  }
+  if (((p = await D()), !p?.load))
+    throw new Error("参赛资料暂时无法加载，请稍后重试。");
+  return ((w = await p.load(e)), w);
+}
+async function Te(e) {
+  if (v) return null;
+  const t = await D();
+  if (!t?.workIcon) throw new Error("作品图标暂时无法加载。");
+  return t.workIcon(e);
+}
+function P(e) {
+  return (
+    sessionStorage.setItem(ne, JSON.stringify(e)),
+    (w = e),
+    window.dispatchEvent(new CustomEvent("payathon-participation-change")),
+    structuredClone(e)
+  );
+}
+async function _e(
+  e,
+  t,
+  {
+    id: i,
+    requestId: n = crypto.randomUUID(),
+    expectedLatestVersionNo: r,
+    trackCode: o,
+  } = {},
+) {
+  if (!v) {
+    if (((p = await D()), !p?.mutate))
+      throw new Error("提交服务暂不可用，当前输入已保留，请稍后重试。");
+    const s = me(),
+      u = await p.mutate(e, t, {
+        id: i,
+        requestId: n,
+        expectedLatestVersionNo: r,
+        trackCode: o,
+        ...s,
+      });
+    return ((w = u), u);
+  }
+  if (!ie()) throw new Error("请先登录后再操作参赛资料。");
+  const a = await ye();
+  if (e.startsWith("registration.")) {
+    if (j() >= de) throw new Error("报名已截止，无法提交或修改。");
+    a.registration = e.endsWith("save")
+      ? Q(a.registration, t)
+      : X(a.registration, t, n);
+  } else {
+    let s = a.works.find((c) => c.id === i);
+    if (!s) {
+      const c = ve(a, j(), t.track);
+      if (c) throw new Error(c);
+      ((s = { id: i || crypto.randomUUID() }), a.works.push(s));
+    }
+    if (!a.registration.effective) throw new Error("报名生效后可操作作品");
+    if (j() < Date.parse("2026-09-30T00:00:00+08:00"))
+      throw new Error("作品提交将于 9 月 30 日开放");
+    if (s.effective && t.track !== s.effective.data.track)
+      throw new Error("作品首次生效后赛道已锁定");
+    if (Object.keys(Ee(t, e.endsWith("save"))).length)
+      throw new Error("请检查作品资料");
+    const u = e.endsWith("save") ? Q(s, t) : X(s, t, n);
+    if (u !== s) {
+      const c = U(a, t.track, { excludeId: s.id });
+      if (c) throw new Error(c);
+    }
+    a.works[a.works.findIndex((c) => c.id === s.id)] = u;
+  }
+  return P(a);
+}
+const J = {
+  realName: "陈一",
+  phone: "13800000000",
+  wechat: "payathon_builder",
+  email: "builder@example.com",
+  kind: "personal",
+  nickname: "独立开发者",
+  source: ["开发者社区"],
+  agreement: !0,
+};
+function Ne(e) {
+  const t = {
+      status: "effective",
+      data: { ...J },
+      submittedAt: "2026-09-15T04:00:00Z",
+    },
+    i = { ...J, nickname: "Build & Bill" };
+  let n = {};
+  return (
+    e === "draft" && (n = { draft: { kind: "personal", realName: "陈一" } }),
+    e === "reviewing" &&
+      (n = { everSubmitted: !0, latest: { ...t, status: "reviewing" } }),
+    e === "rejected" &&
+      (n = {
+        everSubmitted: !0,
+        latest: {
+          ...t,
+          status: "rejected",
+          reason: "参赛昵称需要调整，请修改后重新提交。",
+          fieldErrors: { nickname: "请调整参赛昵称" },
+        },
+      }),
+    ["effective", "update-reviewing", "update-rejected", "updated"].includes(
+      e,
+    ) && (n = { everSubmitted: !0, effective: t }),
+    e === "update-reviewing" && (n.latest = { status: "reviewing", data: i }),
+    e === "update-rejected" &&
+      (n.latest = {
+        status: "rejected",
+        data: i,
+        reason: "本次参赛昵称未通过审核，请调整后重新提交。",
+        fieldErrors: { nickname: "请调整参赛昵称" },
+      }),
+    e === "updated" &&
+      ((n.effective = { ...t, data: i }), (n.lastActivationWasUpdate = !0)),
+    P({ registration: n, works: [], worksOpened: w.worksOpened })
+  );
+}
+function Ve() {
+  if (!v || !ie()) throw new Error("请先启用独立预览并选择已登录。");
+  if (!w.registration.effective)
+    throw new Error("请先将报名状态设为“报名已生效”。");
+  const e = (r, o) => ({
+      title: r,
+      track: o,
+      intro: "用于检查作品状态、赛道颜色与操作入口的预览作品。",
+      originalityConfirmed: !0,
+      ...(o === "Vibe Pay" ? { category: "效率工具" } : {}),
+    }),
+    t = (r, o) => ({ data: r, status: o, submittedAt: "2026-09-30T01:00:00Z" }),
+    i = e("日常助理", "Agent Pay"),
+    n = e("灵感订阅", "Token Pay");
+  return P({
+    ...w,
+    worksOpened: !0,
+    works: [
+      { id: "preview-work-draft", draft: e("灵感笔记 · 草稿", "Vibe Pay") },
+      {
+        id: "preview-work-reviewing",
+        everSubmitted: !0,
+        latest: t(e("文档助手 · 审核中", "Skill Pay"), "reviewing"),
+      },
+      {
+        id: "preview-work-rejected",
+        everSubmitted: !0,
+        latest: {
+          ...t(e("图像工坊 · 待修改", "Machine Pay"), "rejected"),
+          reason: "作品简介不够清晰，请补充使用场景后重新提交。",
+          fieldErrors: { intro: "请补充具体使用场景" },
+        },
+      },
+      {
+        id: "preview-work-effective",
+        everSubmitted: !0,
+        effective: t(i, "effective"),
+      },
+      {
+        id: "preview-work-update-rejected",
+        everSubmitted: !0,
+        effective: t(n, "effective"),
+        latest: {
+          ...t({ ...n, title: "灵感订阅 · 新版本" }, "rejected"),
+          reason: "本次修改的简介需要补充，原生效内容不受影响。",
+          fieldErrors: { intro: "请补充新版本的功能说明" },
+        },
+      },
+    ],
+  });
+}
+function De(e) {
+  return P({ ...w, worksOpened: e });
+}
+function We(e, t, i) {
+  const n = structuredClone(w),
+    r = e === "registration" ? n.registration : n.works.find((o) => o.id === t);
+  return r?.latest?.status !== "reviewing"
+    ? n
+    : (i === "effective"
+        ? ((r.lastActivationWasUpdate = !!r.effective),
+          (r.effective = { ...r.latest, status: "effective" }),
+          (r.latest = null))
+        : ((r.latest.status = "rejected"),
+          (r.latest.reason = "请补充清晰、准确的资料后重新提交。")),
+      P(n));
+}
+function oe() {
+  return new Promise((e, t) => {
+    const i = indexedDB.open("payathon-preview-assets", 1);
+    ((i.onupgradeneeded = () => i.result.createObjectStore("assets")),
+      (i.onsuccess = () => e(i.result)),
+      (i.onerror = () =>
+        t(new Error("无法保存预览材料，请检查浏览器存储权限"))));
+  });
+}
+async function je(e, { kind: t, requestId: i }) {
+  if (["icon", "avatar", "image"].includes(t) && !e.type.startsWith("image/"))
+    throw new Error(
+      t === "avatar"
+        ? "请选择有效的头像图片"
+        : "请选择有效的图片文件，或移除此项",
+    );
+  if (!v) {
+    if (((p = await D()), !p?.upload))
+      throw new Error("材料上传暂不可用，请稍后重试。");
+    return p.upload(e, { kind: t, requestId: i });
+  }
+  const n = i + ":" + t,
+    r = await oe();
+  return (
+    await new Promise((o, a) => {
+      const s = r.transaction("assets", "readwrite");
+      (s.objectStore("assets").put(e, n),
+        (s.oncomplete = o),
+        (s.onerror = () => a(new Error("材料保存失败，请重试"))),
+        (s.onabort = s.onerror));
+    }).finally(() => r.close()),
+    { id: n, name: e.name, size: e.size, type: e.type }
+  );
+}
+async function Fe(e) {
+  if (!e) return "";
+  if (!v)
+    return typeof e.url == "string" && /^https:\/\//.test(e.url) ? e.url : "";
+  if (!e.id) return "";
+  const t = await oe(),
+    i = await new Promise((n, r) => {
+      const o = t.transaction("assets").objectStore("assets").get(e.id);
+      ((o.onsuccess = () => n(o.result)), (o.onerror = () => r(o.error)));
+    }).finally(() => t.close());
+  return i ? URL.createObjectURL(i) : "";
+}
+export {
+  N as M,
+  de as R,
+  k as T,
+  we as V,
+  le as W,
+  v as a,
+  ie as b,
+  Ne as c,
+  Ie as d,
+  Se as e,
+  Pe as f,
+  V as g,
+  Fe as h,
+  je as i,
+  _e as j,
+  Te as k,
+  ye as l,
+  Ce as m,
+  Ee as n,
+  j as o,
+  ke as p,
+  ve as q,
+  We as r,
+  Re as s,
+  De as t,
+  Oe as u,
+  re as v,
+  ue as w,
+  U as x,
+  Ve as y,
+};

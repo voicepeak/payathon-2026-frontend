@@ -1,0 +1,229 @@
+const F = Math.PI * 2,
+  k = 0.58,
+  B = Array.from({ length: 8 }, (s, o) => `crab-leg-${o}`);
+function R(s, o = 0) {
+  const a = s < 4 ? -1 : 1,
+    t = s % 4,
+    n = { x: 160 + a * (49 - t * 2), y: 99 + t * 11 },
+    e = { x: 160 + a * (85 + t * 4), y: 94 + t * 20 },
+    y = { x: 160 + a * (111 + t * 4), y: 128 + t * 22 },
+    c = o * F + (t % 2) * Math.PI + (a > 0 ? Math.PI : 0),
+    r = { x: y.x + Math.sin(c) * 12, y: y.y - Math.max(0, Math.cos(c)) * 11 },
+    h = Math.hypot(e.x - n.x, e.y - n.y),
+    x = Math.hypot(y.x - e.x, y.y - e.y),
+    f = r.x - n.x,
+    m = r.y - n.y,
+    M = Math.min(h + x - 0.01, Math.hypot(f, m)),
+    i = Math.atan2(m, f),
+    l = (h * h - x * x + M * M) / (2 * M),
+    g = Math.sqrt(Math.max(0, h * h - l * l)),
+    L = [-1, 1].map((d) => ({
+      x: n.x + Math.cos(i) * l - Math.sin(i) * g * d,
+      y: n.y + Math.sin(i) * l + Math.cos(i) * g * d,
+    }));
+  return (
+    L.sort(
+      (d, $) =>
+        Math.hypot(d.x - e.x, d.y - e.y) - Math.hypot($.x - e.x, $.y - e.y),
+    ),
+    [n, L[0], { x: n.x + Math.cos(i) * M, y: n.y + Math.sin(i) * M }]
+  );
+}
+function N(s) {
+  const o = R(s),
+    a = o[0],
+    t = o[1],
+    n = o[2];
+  return `M${a.x} ${a.y} L${t.x} ${t.y} L${n.x} ${n.y}`;
+}
+const T = [
+    [30, 62],
+    [2, 65],
+    [-28, 51],
+    [-22, 26],
+    [3, 20],
+    [45, 14],
+    [62, 25],
+    [48, 48],
+  ],
+  j = [
+    [24, 30],
+    [39, 36],
+    [33, 57],
+    [5, 62],
+    [-31, 51],
+    [-54, 28],
+    [-34, 21],
+    [0, 22],
+  ],
+  I = (s, o, a) => Math.max(o, Math.min(a, s));
+function D(s, o) {
+  const a = (((o % 1) + 1) % 1) * s.length,
+    t = Math.floor(a),
+    n = a - t,
+    e = s.length;
+  return [0, 1].map((y) => {
+    const c = s[(t + e - 1) % e][y],
+      r = s[t][y],
+      h = s[(t + 1) % e][y],
+      x = s[(t + 2) % e][y];
+    return (
+      0.5 *
+      (2 * r +
+        (-c + h) * n +
+        (2 * c - 5 * r + 4 * h - x) * n * n +
+        (-c + 3 * r - 3 * h + x) * n * n * n)
+    );
+  });
+}
+function E(s, o) {
+  const a = s.startsWith("fore"),
+    t = s.endsWith("far"),
+    n = { x: (a ? 217 : 123) - (t ? 7 : 0), y: a ? 116 : 119 },
+    [e, y] = D(a ? T : j, o + (t ? 0.095 : 0)),
+    c = a ? 34 : 30,
+    r = a ? 34 : 36,
+    h = I(Math.hypot(e, y), 14, c + r - 1.2),
+    x = Math.atan2(y, e),
+    f =
+      (a ? 1 : -1) * Math.acos(I((c * c + h * h - r * r) / (2 * c * h), -1, 1)),
+    m = { x: n.x + Math.cos(x + f) * c, y: n.y + Math.sin(x + f) * c },
+    M = { x: n.x + Math.cos(x) * h, y: n.y + Math.sin(x) * h },
+    i = I((175 - M.y) / 40, 0, 1),
+    l = -0.16 * i,
+    g = { x: M.x + 9 * Math.cos(l), y: M.y + 9 * Math.sin(l) };
+  return [n, m, M, g];
+}
+function S(s, o) {
+  const a = Math.min(2, Math.floor(o * 3)),
+    t = Math.min(1, o * 3 - a),
+    n = s[a],
+    e = s[a + 1],
+    y = s[Math.max(0, a - 1)],
+    c = s[Math.min(3, a + 2)],
+    r = (p, b) => ({ x: b.x - p.x, y: b.y - p.y }),
+    h = r(n, e),
+    x = Math.hypot(h.x, h.y),
+    f = a === 0 ? h : r(y, e),
+    m = a === 2 ? h : r(n, c),
+    M = (p) => {
+      const b = Math.hypot(p.x, p.y) || 1;
+      return { x: (p.x / b) * x, y: (p.y / b) * x };
+    },
+    i = M(f),
+    l = M(m),
+    g = 2 * t * t * t - 3 * t * t + 1,
+    L = t * t * t - 2 * t * t + t,
+    d = -2 * t * t * t + 3 * t * t,
+    $ = t * t * t - t * t,
+    O = g * n.x + L * i.x + d * e.x + $ * l.x,
+    w = g * n.y + L * i.y + d * e.y + $ * l.y,
+    A =
+      (6 * t * t - 6 * t) * n.x +
+      (3 * t * t - 4 * t + 1) * i.x +
+      (-6 * t * t + 6 * t) * e.x +
+      (3 * t * t - 2 * t) * l.x,
+    C =
+      (6 * t * t - 6 * t) * n.y +
+      (3 * t * t - 4 * t + 1) * i.y +
+      (-6 * t * t + 6 * t) * e.y +
+      (3 * t * t - 2 * t) * l.y;
+  return { x: O, y: w, angle: Math.atan2(C, A) };
+}
+function W(s) {
+  const o = E(s, 0),
+    a = [[], []];
+  for (let t = 0; t <= 36; t++) {
+    const n = t / 36,
+      e = S(o, n),
+      y = n < 1 / 3 ? 7 - 9 * n : n < 2 / 3 ? 4 - 3 * (n - 1 / 3) : 3;
+    for (let c = 0; c < 2; c++) {
+      const r = c ? 1 : -1;
+      a[c].push(
+        `${(e.x - Math.sin(e.angle) * y * r).toFixed(2)} ${(e.y + Math.cos(e.angle) * y * r).toFixed(2)}`,
+      );
+    }
+  }
+  return `M${[...a[0], ...a[1].reverse()].join(" L")} Z`;
+}
+function K(s, o, a) {
+  const t = E(s, 0);
+  let n = { distance: 1 / 0 };
+  for (let e = 0; e <= 180; e++) {
+    const y = e / 180,
+      c = S(t, y),
+      r = o - c.x,
+      h = a - c.y,
+      x = r * r + h * h;
+    x < n.distance &&
+      (n = {
+        distance: x,
+        u: y,
+        offset: -r * Math.sin(c.angle) + h * Math.cos(c.angle),
+        angle: c.angle,
+      });
+  }
+  return n;
+}
+function U(s, o) {
+  const a = S(s, o.u);
+  return {
+    x: a.x - Math.sin(a.angle) * o.offset,
+    y: a.y + Math.cos(a.angle) * o.offset,
+    angle:
+      (Math.atan2(Math.sin(a.angle - o.angle), Math.cos(a.angle - o.angle)) *
+        180) /
+      Math.PI,
+  };
+}
+const u = [0, 0.115, 0.24, 0.36, 0.47, 0.585, 0.735, 0.885, 1],
+  Z = 1.2,
+  P = u.slice(1).map((s, o) => 0.125 / (s - u[o])),
+  _ = u.map((s, o) => {
+    const a = P[(o + 7) % 8],
+      t = P[o % 8];
+    return (2 * a * t) / (a + t);
+  });
+function q(s) {
+  const o = ((s % 1) + 1) % 1;
+  let a = 0;
+  for (; a < 7 && o >= u[a + 1]; ) a++;
+  const t = u[a + 1] - u[a],
+    n = (o - u[a]) / t;
+  return (
+    ((2 * n * n * n - 3 * n * n + 1) * a) / 8 +
+    (n * n * n - 2 * n * n + n) * t * _[a] +
+    ((-2 * n * n * n + 3 * n * n) * (a + 1)) / 8 +
+    (n * n * n - n * n) * t * _[a + 1]
+  );
+}
+function z(s) {
+  const [o, a] = D(
+    [
+      [0, 0],
+      [3, 1],
+      [2, 2],
+      [0, 0],
+      [-3, -2],
+      [-6, -2],
+      [-5, -1],
+      [-2, 0],
+    ],
+    s,
+  );
+  return `translate(0 ${o.toFixed(3)}) rotate(${a.toFixed(3)} 165 110)`;
+}
+export {
+  k as C,
+  Z as L,
+  R as a,
+  z as b,
+  B as c,
+  U as d,
+  q as e,
+  K as f,
+  S as g,
+  W as h,
+  N as i,
+  E as l,
+};

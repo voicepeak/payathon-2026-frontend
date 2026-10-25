@@ -1,0 +1,516 @@
+let S;
+function $() {
+  S?.();
+  const e = document.querySelector(".payathon-hero"),
+    n = e?.querySelector(".blackhole-button"),
+    s = n?.querySelector("span");
+  if (!s) return;
+  const l = document.createElement("i");
+  ((l.className = "entry-typed"),
+    l.setAttribute("aria-hidden", "true"),
+    n.append(l),
+    (n.dataset.typingEntry = ""));
+  const r = matchMedia("(prefers-reduced-motion: reduce)");
+  let u = 0,
+    c = 0,
+    f = !1,
+    o = Array.from(s.textContent || "");
+  const b = () => !document.hidden && e.hasAttribute("data-motion-running"),
+    t = () => {
+      (clearTimeout(u), (u = 0));
+    },
+    h = () => {
+      ((u = 0),
+        b() &&
+          (c < o.length
+            ? ((l.textContent = o.slice(0, ++c).join("")),
+              (u = setTimeout(h, c === o.length ? 480 : 16)))
+            : ((f = !0), n.removeAttribute("data-entry-cursor"))));
+    },
+    i = () => {
+      if ((t(), r.matches && e.hasAttribute("data-intro-complete"))) {
+        ((l.textContent = o.join("")),
+          (c = o.length),
+          (f = !0),
+          n.removeAttribute("data-entry-cursor"));
+        return;
+      }
+      !e.hasAttribute("data-text-entered") ||
+        !b() ||
+        f ||
+        (n.setAttribute("data-entry-cursor", ""), h());
+    },
+    x = new MutationObserver(() => {
+      const m = Array.from(s.textContent || "");
+      m.join("") !== o.join("") &&
+        ((o = m),
+        f
+          ? (l.textContent = o.join(""))
+          : ((c = 0), (l.textContent = ""), i()));
+    });
+  x.observe(s, { childList: !0, characterData: !0, subtree: !0 });
+  const a = new MutationObserver(i);
+  (a.observe(e, {
+    attributes: !0,
+    attributeFilter: [
+      "data-text-entered",
+      "data-intro-complete",
+      "data-motion-running",
+    ],
+  }),
+    document.addEventListener("visibilitychange", i),
+    r.addEventListener("change", i),
+    i(),
+    (S = () => {
+      (t(),
+        x.disconnect(),
+        a.disconnect(),
+        document.removeEventListener("visibilitychange", i),
+        r.removeEventListener("change", i),
+        l.remove(),
+        delete n.dataset.typingEntry,
+        delete n.dataset.entryCursor);
+    }));
+}
+$();
+document.addEventListener("astro:page-load", $);
+document.addEventListener("astro:before-swap", () => S?.());
+window.addEventListener("pagehide", () => S?.());
+window.addEventListener("pageshow", (e) => {
+  e.persisted && $();
+});
+let C;
+function z() {
+  C?.();
+  const e = document.querySelector("[data-schedule]");
+  if (!e) return;
+  const n = new AbortController(),
+    s = [...e.querySelectorAll("button.schedule-day")],
+    l = e.querySelector("[data-schedule-calendar]"),
+    r = e.querySelector(".schedule-tooltip"),
+    u = e.querySelector(".schedule-calendar-scroll");
+  let c, f;
+  const o = () => {
+      (clearTimeout(f),
+        (r.hidden = !0),
+        c?.removeAttribute("aria-describedby"),
+        (c = null));
+    },
+    b = (a) => {
+      if (c === a && !r.hidden) return;
+      (c?.removeAttribute("aria-describedby"),
+        (c = a),
+        (r.querySelector("time").textContent = a.dataset.date.replaceAll(
+          "-",
+          ".",
+        )),
+        (r.querySelector("time").dateTime = a.dataset.date));
+      const m = a.dataset.phases.split(" ").map((E) => {
+        const y = document.createElement("span");
+        return (
+          (y.dataset.phase = E),
+          (y.textContent = e.querySelector(
+            `.schedule-caption[data-phase="${E}"] h3`,
+          ).textContent),
+          y
+        );
+      });
+      (r.querySelector("[data-tooltip-phases]").replaceChildren(...m),
+        (r.hidden = !1));
+      const d = a.getBoundingClientRect(),
+        v = l.getBoundingClientRect(),
+        g = r.offsetWidth,
+        L = r.offsetHeight,
+        p = Math.max(
+          12 - v.left,
+          Math.min(
+            d.left + d.width / 2 - v.left - g / 2,
+            innerWidth - 12 - v.left - g,
+          ),
+        ),
+        w = d.top < L + 16;
+      ((r.style.left = `${p}px`),
+        (r.style.top = `${(w ? d.bottom + 10 : d.top - L - 10) - v.top}px`),
+        (r.dataset.side = w ? "below" : "above"),
+        r.style.setProperty(
+          "--tip-x",
+          `${d.left + d.width / 2 - v.left - p}px`,
+        ),
+        a.setAttribute("aria-describedby", r.id));
+    },
+    t = (a) => {
+      clearTimeout(f);
+      const m = a?.closest("button.schedule-day"),
+        d = a?.closest(".schedule-caption"),
+        v = m?.dataset.phases || d?.dataset.phase;
+      (v ? (e.dataset.activePhases = v) : delete e.dataset.activePhases,
+        m ? b(m) : o());
+    },
+    h = () => {
+      (clearTimeout(f),
+        (f = setTimeout(() => t(e.querySelector(":focus-visible")), 220)));
+    },
+    i = (a) => {
+      const m = a.target.closest("button.schedule-day,.schedule-caption");
+      m ? t(m) : h();
+    },
+    x = () => {
+      const a =
+        e.querySelector(":focus-visible") ||
+        e.querySelector("button.schedule-day:hover,.schedule-caption:hover");
+      a ? t(a) : h();
+    };
+  (e.addEventListener("pointerover", i, { signal: n.signal }),
+    e.addEventListener("focusin", i, { signal: n.signal }),
+    e.addEventListener("pointerleave", x, { signal: n.signal }),
+    e.addEventListener("focusout", () => queueMicrotask(x), {
+      signal: n.signal,
+    }),
+    e.addEventListener(
+      "click",
+      (a) => {
+        const m = a.target.closest("button.schedule-day");
+        m &&
+          s.forEach((d) => {
+            d.tabIndex = d === m ? 0 : -1;
+          });
+      },
+      { signal: n.signal },
+    ),
+    e.addEventListener(
+      "keydown",
+      (a) => {
+        if (a.key === "Escape") {
+          o();
+          return;
+        }
+        const m = s.indexOf(a.target);
+        if (m < 0) return;
+        const d = { ArrowLeft: -7, ArrowRight: 7, ArrowUp: -1, ArrowDown: 1 }[
+          a.key
+        ];
+        if (d === void 0 && !["Home", "End"].includes(a.key)) return;
+        a.preventDefault();
+        const v =
+          a.key === "Home"
+            ? 0
+            : a.key === "End"
+              ? s.length - 1
+              : Math.max(0, Math.min(s.length - 1, m + d));
+        ((s[m].tabIndex = -1),
+          (s[v].tabIndex = 0),
+          s[v].scrollIntoView({ block: "nearest", inline: "nearest" }),
+          s[v].focus({ preventScroll: !0 }));
+      },
+      { signal: n.signal },
+    ),
+    u.addEventListener("scroll", o, { signal: n.signal, passive: !0 }),
+    u.scrollWidth > u.clientWidth &&
+      (u.scrollLeft = Math.max(0, s[0].offsetLeft - 16)),
+    window.addEventListener("resize", o, { signal: n.signal }),
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        document.hidden && t(null);
+      },
+      { signal: n.signal },
+    ),
+    (C = () => {
+      (o(), n.abort(), delete e.dataset.activePhases);
+    }));
+}
+z();
+document.addEventListener("astro:page-load", z);
+document.addEventListener("astro:before-swap", () => C?.());
+window.addEventListener("pagehide", () => C?.());
+window.addEventListener("pageshow", (e) => {
+  e.persisted && z();
+});
+let M;
+function N() {
+  M?.();
+  const e = [...document.querySelectorAll("#payathon-page .event-section")];
+  if (!e.length) return;
+  const n = matchMedia("(prefers-reduced-motion:reduce)"),
+    s =
+      ".event-section-head,.benefit-grid > article,.track-family > div:first-child,.track-grid > article,.reward-grid > article,.steps-grid,.schedule-calendar,.criteria-grid > article,.rules-layout > div,.rules-layout > ol,.faq-list,.event-closing,.event-data-notes,.partner-benefits-access,.partner-benefits-grid > article:not([data-benefit-loop-copy]),.partner-wall-group,.partner-wall-note",
+    l = [...new Set(e.flatMap((t) => [...t.querySelectorAll(s)]))].filter(
+      (t) => !t.parentElement.closest(".event-closing"),
+    ),
+    r = new Map(),
+    u = (t) => {
+      (t.removeAttribute("data-scroll-reveal"),
+        c.unobserve(t),
+        r.get(t)?.cancel(),
+        r.delete(t));
+    },
+    c = new IntersectionObserver(
+      (t) => {
+        for (const h of t) {
+          const i = h.target;
+          if (!h.isIntersecting) {
+            r.has(i) && u(i);
+            continue;
+          }
+          if (r.has(i)) continue;
+          if ((i.removeAttribute("data-scroll-reveal"), n.matches)) {
+            u(i);
+            continue;
+          }
+          const x = [...i.parentElement.children].filter((v) => l.includes(v)),
+            a = Math.min(x.indexOf(i) * 55, 165),
+            m = i.matches(".partner-benefit-card")
+              ? [
+                  { opacity: 0, translate: "0 24px" },
+                  { opacity: 1, translate: "0 0" },
+                ]
+              : [
+                  { opacity: 0, transform: "translateY(24px)" },
+                  { opacity: 1, transform: "translateY(0)" },
+                ],
+            d = i.animate(m, {
+              duration: 560,
+              delay: a,
+              easing: "cubic-bezier(.22,1,.36,1)",
+              fill: "backwards",
+            });
+          (r.set(i, d),
+            document.hidden && d.pause(),
+            d.finished.then(() => u(i)).catch(() => {}));
+        }
+      },
+      { rootMargin: "0px 0px -24px 0px", threshold: 0 },
+    ),
+    f = () => {
+      n.matches && l.forEach(u);
+    },
+    o = () => r.forEach((t) => (document.hidden ? t.pause() : t.play())),
+    b = (t) => {
+      const h = t.target.closest("[data-scroll-reveal]");
+      h && u(h);
+    };
+  for (const t of l)
+    n.matches ||
+      t.getBoundingClientRect().bottom <= 0 ||
+      (t.setAttribute("data-scroll-reveal", ""), c.observe(t));
+  (document.addEventListener("focusin", b),
+    document.addEventListener("visibilitychange", o),
+    n.addEventListener("change", f),
+    (M = () => {
+      (c.disconnect(),
+        l.forEach((t) => t.removeAttribute("data-scroll-reveal")),
+        r.forEach((t) => t.cancel()),
+        r.clear(),
+        document.removeEventListener("focusin", b),
+        document.removeEventListener("visibilitychange", o),
+        n.removeEventListener("change", f));
+    }));
+}
+N();
+document.addEventListener("astro:page-load", N);
+document.addEventListener("astro:before-swap", () => M?.());
+window.addEventListener("pagehide", () => M?.());
+window.addEventListener("pageshow", (e) => {
+  e.persisted && N();
+});
+let q;
+function O() {
+  q?.();
+  const e = document.querySelector("[data-prize-count]");
+  if (!e) return;
+  const n = Number(e.dataset.prizeCount),
+    s = new Intl.NumberFormat("en-US"),
+    l = matchMedia("(prefers-reduced-motion:reduce)");
+  let r = 0,
+    u = null,
+    c = 0,
+    f = !1,
+    o = e.dataset.countComplete === "true";
+  const b = [],
+    t = () => {
+      const g = document.createDocumentFragment(),
+        L = String(n).length;
+      for (const p of `¥${s.format(n)}`) {
+        if (!/\d/.test(p)) {
+          const T = document.createElement("span");
+          ((T.className = "prize-symbol"), (T.textContent = p), g.append(T));
+          continue;
+        }
+        const w = document.createElement("span");
+        w.className = "prize-digit";
+        const E = document.createElement("span");
+        E.className = "prize-digit-window";
+        const y = document.createElement("span");
+        y.className = "prize-digit-strip";
+        const A = document.createElement("span"),
+          I = document.createElement("span"),
+          P = document.createElement("span");
+        (y.append(A, I, P),
+          E.append(y),
+          w.append(E),
+          g.append(w),
+          b.push({
+            strip: y,
+            previous: A,
+            current: I,
+            next: P,
+            power: 10 ** (L - b.length - 1),
+            delay: (L - b.length - 1) * 55,
+            digit: -1,
+          }));
+      }
+      (e.replaceChildren(g), e.classList.add("prize-wheels"));
+    },
+    h = (g, L) => {
+      for (const p of b) {
+        const w = L >= 1800 ? a(Math.max(1800, L - p.delay)) : g,
+          E = Math.floor(w / p.power),
+          y = E % 10,
+          A = Math.max(0, Math.min(1, w - (E * p.power + p.power - 1)));
+        (y !== p.digit &&
+          ((p.previous.textContent = String((y + 9) % 10)),
+          (p.current.textContent = String(y)),
+          (p.next.textContent = String((y + 1) % 10)),
+          (p.digit = y)),
+          (p.strip.style.transform = `translateY(${-A * 1.2}em)`),
+          (p.previous.style.opacity = "0"),
+          (p.current.style.opacity = String(Math.pow(1 - A, 0.65))),
+          (p.next.style.opacity = String(Math.pow(A, 0.65))));
+      }
+    },
+    i = () => {
+      ((o = !0),
+        (e.dataset.countComplete = "true"),
+        b.length ? h(n) : (e.textContent = `¥${s.format(n)}`),
+        cancelAnimationFrame(r),
+        (r = 0));
+    },
+    x = 2800 + (String(n).length - 1) * 55,
+    a = (g) => {
+      if (g < 1200) return (n - 3) * (1 - Math.pow(1 - g / 1200, 5));
+      let L = g - 1200,
+        p = n - 3;
+      for (const w of [200, 400, 1e3]) {
+        if (L < w) {
+          const E = L / w;
+          return p + E * E * (3 - 2 * E);
+        }
+        ((L -= w), p++);
+      }
+      return n;
+    },
+    m = (g) => {
+      if (
+        ((r = 0),
+        u !== null && (c += Math.min(g - u, 64)),
+        (u = g),
+        h(a(c), c),
+        c >= x)
+      ) {
+        i();
+        return;
+      }
+      r = requestAnimationFrame(m);
+    },
+    d = () => {
+      if ((cancelAnimationFrame(r), (r = 0), (u = null), l.matches)) {
+        i();
+        return;
+      }
+      !o && f && !document.hidden && (r = requestAnimationFrame(m));
+    },
+    v = new IntersectionObserver(
+      ([g]) => {
+        ((f = g.isIntersecting), d());
+      },
+      { threshold: 0.6 },
+    );
+  (l.matches || e.getBoundingClientRect().bottom <= 0 || o
+    ? i()
+    : (t(), h(0), v.observe(e)),
+    document.addEventListener("visibilitychange", d),
+    l.addEventListener("change", d),
+    (q = () => {
+      (cancelAnimationFrame(r),
+        v.disconnect(),
+        document.removeEventListener("visibilitychange", d),
+        l.removeEventListener("change", d),
+        (e.textContent = `¥${s.format(n)}`),
+        e.classList.remove("prize-wheels"));
+    }));
+}
+O();
+document.addEventListener("astro:page-load", O);
+document.addEventListener("astro:before-swap", () => q?.());
+window.addEventListener("pagehide", () => q?.());
+window.addEventListener("pageshow", (e) => {
+  e.persisted && O();
+});
+let k;
+function F() {
+  k?.();
+  const e = document.querySelector("[data-payathon-header]"),
+    n = document.querySelector(".payathon-hero"),
+    s = document.querySelector("#overview");
+  if (!e || !n || !s) return;
+  const l = window.setTimeout(() => {
+      e.hasAttribute("data-ready") ||
+        (document.dispatchEvent(new Event("payathon:intro-timeout")),
+        (e.dataset.ready = "true"),
+        (e.inert = !1),
+        e.removeAttribute("aria-hidden"));
+    }, 5e3),
+    r = () => {
+      const t = e.hasAttribute("data-ready");
+      (t && window.clearTimeout(l),
+        n.toggleAttribute("data-intro-complete", t),
+        t || n.removeAttribute("data-text-entered"),
+        (s.inert = !t),
+        t
+          ? s.removeAttribute("aria-hidden")
+          : s.setAttribute("aria-hidden", "true"));
+    },
+    u = (t) => {
+      t.animationName === "overview-ink" &&
+        t.target instanceof Element &&
+        t.target.closest(".overview-status") &&
+        n.setAttribute("data-text-entered", "");
+    };
+  n.addEventListener("animationend", u);
+  const c = new Set(),
+    f = (t) => {
+      const h = t.target;
+      t.propertyName !== "clip-path" ||
+        !(h instanceof HTMLElement) ||
+        !h.matches(".siteMenuContent") ||
+        ((h.style.willChange = "clip-path, translate, opacity"), c.add(h));
+    },
+    o = (t) => {
+      t.propertyName !== "clip-path" ||
+        !(t.target instanceof HTMLElement) ||
+        (c.delete(t.target) && t.target.style.removeProperty("will-change"));
+    };
+  (e.addEventListener("transitionrun", f),
+    e.addEventListener("transitionend", o),
+    e.addEventListener("transitioncancel", o));
+  const b = new MutationObserver(r);
+  (b.observe(e, { attributes: !0, attributeFilter: ["data-ready"] }),
+    r(),
+    (k = () => {
+      (window.clearTimeout(l),
+        b.disconnect(),
+        n.removeEventListener("animationend", u),
+        e.removeEventListener("transitionrun", f),
+        e.removeEventListener("transitionend", o),
+        e.removeEventListener("transitioncancel", o),
+        c.forEach((t) => t.style.removeProperty("will-change")),
+        c.clear());
+    }));
+}
+F();
+document.addEventListener("astro:page-load", F);
+document.addEventListener("astro:before-swap", () => k?.());
+window.addEventListener("pagehide", () => k?.());
+window.addEventListener("pageshow", (e) => {
+  e.persisted && F();
+});

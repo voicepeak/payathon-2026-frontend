@@ -1,0 +1,368 @@
+import { s as A, S as O } from "./registration-sources.IT9GsbdT.js";
+import { w as U, d as M, m as I, e as y } from "./service.DJvbNf3A.js";
+const h = {
+    PENDING_REVIEW: "reviewing",
+    EFFECTIVE: "effective",
+    REVIEW_FAILED: "rejected",
+    EXPIRED: "expired",
+  },
+  L = Object.fromEntries(Object.entries(O).map(([e, c]) => [c, e])),
+  _ = /^HKS_[0-9a-f]{32}$/,
+  v = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+function E(e, c = {}) {
+  return Object.assign(new Error(e), {
+    code: "PAYATHON_SIGNUP_CONTRACT_ERROR",
+    fieldErrors: c,
+  });
+}
+function m(e, c) {
+  if (!e) return null;
+  if (!_.test(e.versionNo) || !Object.hasOwn(h, e.status) || !e.payload)
+    throw E("报名资料格式异常，请重新加载后再试。");
+  const n = e.payload;
+  if (!["INDIVIDUAL", "TEAM"].includes(n.signupType))
+    throw E("报名类型无法识别，请重新加载后再试。");
+  const l = c.find(
+      (t) =>
+        t.versionNo === e.versionNo &&
+        t.field === "avatar" &&
+        t.index === null &&
+        t.fileId === n.avatar,
+    ),
+    s = Array.isArray(n.sourceChannel)
+      ? n.sourceChannel
+      : typeof n.sourceChannel == "string"
+        ? [n.sourceChannel]
+        : [],
+    r = {
+      kind: n.signupType === "TEAM" ? "team" : "personal",
+      nickname: n.displayName,
+      avatar: n.avatar ? { id: n.avatar, url: l?.accessFileUrl || "" } : null,
+      realName: n.contactName,
+      phone: n.phone,
+      wechat: n.wechat,
+      email: n.email,
+      source: s
+        .filter((t) => typeof t == "string" && Object.hasOwn(O, t))
+        .map((t) => O[t]),
+    };
+  return (
+    n.signupType === "TEAM" && (r.teamSize = n.teamSize),
+    s.includes("OTHER") && (r.sourceOther = n.sourceOtherDesc),
+    {
+      id: e.versionNo,
+      versionNo: e.versionNo,
+      status: h[e.status],
+      data: r,
+      submittedAt: e.createdAt,
+      createdAt: e.createdAt,
+      updatedAt: e.updatedAt,
+    }
+  );
+}
+function k(e) {
+  if (!e || (e.status !== "NONE" && !Object.hasOwn(h, e.status)))
+    throw E("报名状态无法识别，请重新加载后再试。");
+  const c = {
+    status: e.status,
+    message: typeof e.message == "string" ? e.message : "",
+    latestVersionNo: e.latestVersionNo ?? null,
+    effectiveVersionNo: e.effectiveVersionNo ?? null,
+    phase: e.phase ? { ...e.phase } : null,
+    canEdit: e.canEdit === !0,
+    canSubmit: e.canSubmit === !0,
+    blockedReason: e.blockedReason ? { ...e.blockedReason } : null,
+  };
+  if (e.status === "NONE")
+    return { everSubmitted: !1, latest: null, effective: null, server: c };
+  const n = Array.isArray(e.fileViews) ? e.fileViews : [];
+  return {
+    everSubmitted: !0,
+    latest: m(e.latestSubmission, n),
+    effective: m(e.effectiveData, n),
+    server: c,
+  };
+}
+function b(
+  e,
+  {
+    requestId: c,
+    expectedLatestVersionNo: n = null,
+    chinfo: l,
+    deviceId: s,
+  } = {},
+) {
+  if (typeof c != "string" || !v.test(c))
+    throw E("报名请求标识无效，请重新提交。");
+  if (n !== null && (typeof n != "string" || !_.test(n)))
+    throw E("报名版本无效，请重新加载报名资料后再试。");
+  const r = e || {},
+    t = {},
+    i = (f, w, g, S, R = !0) => {
+      const d = r[f],
+        T = typeof d == "string" ? (R ? d.trim() : d) : "",
+        C = [...T].length;
+      return ((typeof d != "string" || C < w || C > g) && (t[f] = S), T);
+    },
+    o = {
+      clientRequestId: c,
+      expectedLatestVersionNo: n,
+      signupType: r.kind === "team" ? "TEAM" : "INDIVIDUAL",
+      displayName: i("nickname", 2, 20, "参赛昵称应为 2–20 字"),
+      avatar: r.avatar?.id,
+      contactName: i("realName", 2, 20, "联系人姓名应为 2–20 字"),
+      phone: i("phone", 11, 11, "请输入正确的 11 位中国大陆手机号"),
+      wechat: i("wechat", 1, 64, "请填写微信号，最多 64 个字符"),
+      email: i("email", 1, 254, "请填写邮箱，最多 254 个字符", !1),
+    };
+  if (
+    (["personal", "team"].includes(r.kind) || (t.kind = "请选择报名类型"),
+    (typeof o.avatar != "string" || o.avatar.length !== 32) &&
+      (t.avatar = "请上传参赛头像"),
+    /^1[3-9]\d{9}$/.test(o.phone) ||
+      (t.phone = "请输入正确的 11 位中国大陆手机号"),
+    r.kind === "team")
+  ) {
+    const f =
+      typeof r.teamSize == "string" && /^[2-5]$/.test(r.teamSize.trim())
+        ? Number(r.teamSize.trim())
+        : r.teamSize;
+    !Number.isInteger(f) || f < 2 || f > 5
+      ? (t.teamSize = "团队人数应为 2–5 的整数")
+      : (o.teamSize = f);
+  }
+  const u = r.source ?? [],
+    a = A(u);
+  if (
+    (a
+      ? (t.source = a)
+      : u.length &&
+        ((o.sourceChannel = u.map((f) => L[f])),
+        o.sourceChannel.includes("OTHER") &&
+          (o.sourceOtherDesc = i(
+            "sourceOther",
+            1,
+            20,
+            "请填写 1–20 字的其他来源说明",
+          ))),
+    Object.keys(t).length)
+  )
+    throw E("请检查报名资料后再提交。", t);
+  return U(o, { chinfo: l, deviceId: s });
+}
+const W = new Set([
+  "COMMUNITY_STATE_CONFLICT",
+  "COMMUNITY_SIGNUP_NOT_EDITABLE",
+  "COMMUNITY_SIGNUP_WINDOW_CLOSED",
+  "COMMUNITY_ACCOUNT_RESTRICTED",
+  "COMMUNITY_APPROVAL_SUBMIT_TIMEOUT",
+  "COMMUNITY_APPROVAL_UNAVAILABLE",
+  "COMMUNITY_APPROVAL_SYNC_RESULT_UNKNOWN",
+]);
+function V(e) {
+  const c = (l) => ({
+      registration: k(l),
+      works: [],
+      worksUnavailable: "作品提交服务尚未接入，当前可查看和修改报名资料。",
+    }),
+    n = async () => c(await e.getCurrentRegistration());
+  return {
+    load: n,
+    async mutate(l, s, r = {}) {
+      if (l !== "registration.submit")
+        throw new Error(
+          l === "registration.save"
+            ? "报名不支持暂存草稿，请填写完整资料后提交。"
+            : "作品提交服务尚未接入。",
+        );
+      const t = b(s, r);
+      try {
+        await e.submitRegistration(t);
+      } catch (i) {
+        if (i.isLoginExpired || String(i.errorCode) === "006") throw i;
+        if (i.uncertain || W.has(i.errorCode))
+          try {
+            const o = await n();
+            i.refreshedState = o;
+            const u = o.registration.server;
+            i.requiresReview =
+              i.errorCode === "COMMUNITY_STATE_CONFLICT" ||
+              u.latestVersionNo !== t.expectedLatestVersionNo ||
+              !u.canSubmit;
+          } catch (o) {
+            ((i.recoveryError = o), (i.requiresReview = !0));
+          }
+        throw i;
+      }
+      try {
+        return await n();
+      } catch (i) {
+        const o = new Error(
+          "报名请求已处理，但当前结果暂时无法读取，请重新载入报名资料。",
+        );
+        throw (
+          (o.errorCode = i.errorCode),
+          (o.isLoginExpired = i.isLoginExpired),
+          (o.uncertain = !0),
+          (o.requiresReview = !0),
+          (o.cause = i),
+          o
+        );
+      }
+    },
+    async upload(l, { kind: s } = {}) {
+      if (s !== "avatar") throw new Error("作品材料上传尚未接入。");
+      const r = await e.uploadSignupAvatar(l);
+      if (
+        typeof r?.fileId != "string" ||
+        [...r.fileId].length !== 32 ||
+        !/^https:\/\//.test(r?.accessFileUrl || "")
+      )
+        throw new Error("头像上传结果无效，请重新上传。");
+      return {
+        id: r.fileId,
+        url: r.accessFileUrl,
+        name: r.fileName,
+        type: r.contentType,
+        size: r.fileSize,
+      };
+    },
+  };
+}
+const p = /^HKWI_[0-9a-f]{32}$/,
+  P = /^HKW_[0-9a-f]{32}$/,
+  D = new Set([
+    "COMMUNITY_STATE_CONFLICT",
+    "COMMUNITY_WORK_NOT_EDITABLE",
+    "COMMUNITY_WORK_WINDOW_CLOSED",
+    "COMMUNITY_SIGNUP_NOT_EFFECTIVE",
+    "COMMUNITY_WORK_LIMIT_REACHED",
+    "COMMUNITY_ACCOUNT_RESTRICTED",
+    "COMMUNITY_APPROVAL_SUBMIT_TIMEOUT",
+    "COMMUNITY_APPROVAL_UNAVAILABLE",
+    "COMMUNITY_APPROVAL_SYNC_RESULT_UNKNOWN",
+  ]),
+  N = (e) =>
+    e.isLoginExpired ||
+    String(e.errorCode) === "006" ||
+    e.errorCode === "COMMUNITY_ACCOUNT_RESTRICTED";
+function x(e) {
+  const c = V(e);
+  async function n({ includeWorks: s = !1, workId: r } = {}) {
+    const t = [c.load()];
+    ((s || r) && t.push(e.getWorks("ALL").then(y)),
+      r && t.push(e.getWork(r).then(I)));
+    const [i, o, u] = await Promise.all(t),
+      a = { registration: i.registration, works: [] };
+    if ((o && Object.assign(a, o), u)) {
+      if (u.id !== r)
+        throw new Error("作品详情与请求不一致，请重新加载后再试。");
+      const f = a.works.findIndex((w) => w.id === u.id);
+      f < 0 ? a.works.push(u) : (a.works[f] = u);
+    }
+    return a;
+  }
+  async function l(s, r) {
+    if (!N(s)) {
+      try {
+        s.refreshedState = await n({ includeWorks: !0, workId: r.workId });
+        const t = s.refreshedState.works.find((i) => i.id === r.workId);
+        s.requiresReview =
+          s.requiresReview === !0 ||
+          s.errorCode === "COMMUNITY_STATE_CONFLICT" ||
+          !r.workId ||
+          t?.server.latestVersionNo !== r.expectedLatestVersionNo ||
+          !t?.server.canSubmit;
+      } catch (t) {
+        ((s.recoveryError = t),
+          N(t) &&
+            ((s.errorCode = t.errorCode),
+            (s.isLoginExpired =
+              t.isLoginExpired || String(t.errorCode) === "006"),
+            (s.message = t.message)),
+          (s.requiresReview = !0));
+      }
+      !r.workId &&
+        (s.uncertain || s.errorCode === "COMMUNITY_STATE_CONFLICT") &&
+        ((s.submissionUnconfirmed = !0), (s.requiresReview = !0));
+    }
+  }
+  return {
+    load: n,
+    async workIcon({ workId: s, versionNo: r } = {}) {
+      if (!p.test(s || "") || !P.test(r || ""))
+        throw new Error("作品图标请求信息无效。");
+      const t = I(await e.getWork(s));
+      if (t.id !== s || t.server.latestVersionNo !== r)
+        throw new Error("作品资料已更新，请刷新列表后查看图标。");
+      return t.latest.data.icon;
+    },
+    async mutate(s, r, t = {}) {
+      if (s.startsWith("registration.")) return c.mutate(s, r, t);
+      if (s !== "work.submit")
+        throw new Error("作品不支持暂存草稿，请填写完整资料后提交。");
+      const i = M(r, t);
+      let o;
+      try {
+        o = await e.submitWork(i);
+      } catch (a) {
+        throw (
+          !N(a) && (a.uncertain || D.has(a.errorCode)) && (await l(a, i)),
+          a
+        );
+      }
+      const u = o?.workId;
+      if (!p.test(u || "") || (i.workId && i.workId !== u)) {
+        const a = Object.assign(
+          new Error("作品请求结果尚未确认，请先查看作品列表核对提交结果。"),
+          { uncertain: !0, requiresReview: !0 },
+        );
+        throw (await l(a, i), a);
+      }
+      try {
+        return {
+          ...(await n({ includeWorks: !0, workId: u })),
+          submittedWorkId: u,
+        };
+      } catch (a) {
+        throw Object.assign(
+          new Error("作品请求已处理，但结果暂时无法读取，请重新查看作品详情。"),
+          {
+            cause: a,
+            errorCode: a.errorCode,
+            isLoginExpired: a.isLoginExpired,
+            uncertain: !0,
+            requiresReview: !0,
+            submittedWorkId: u,
+          },
+        );
+      }
+    },
+    async upload(s, { kind: r } = {}) {
+      if (r === "avatar") return c.upload(s, { kind: r });
+      if (!["icon", "image", "file"].includes(r))
+        throw new Error("作品材料类型无效。");
+      const t = await e.uploadWorkAsset(s, { kind: r });
+      if (
+        typeof t?.fileId != "string" ||
+        [...t.fileId].length !== 32 ||
+        !/^https:\/\//.test(t?.accessFileUrl || "")
+      )
+        throw new Error("材料上传结果无效，请重新上传。");
+      return {
+        id: t.fileId,
+        url: t.accessFileUrl,
+        name: t.fileName || s.name,
+        type: t.contentType,
+        size: t.fileSize,
+      };
+    },
+    async fileUrl({ workId: s, versionNo: r, fileId: t }) {
+      const i = await e.getWorkFileUrl(s, r, t);
+      if (i?.fileId !== t || !/^https:\/\//.test(i?.accessFileUrl || ""))
+        throw new Error("材料地址暂不可用，请重新查看作品详情。");
+      return i.accessFileUrl;
+    },
+  };
+}
+export { x as createParticipationProvider };

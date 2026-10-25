@@ -1,0 +1,136 @@
+import { s as H, m as T } from "./payathon-intro.2241mNzE.js";
+let m;
+function M(p = !1) {
+  m?.();
+  const o = document.querySelector("#payathon-title");
+  if (!o) return;
+  const k = H(p);
+  document.documentElement.toggleAttribute("data-skip-title-intro", k);
+  const c = matchMedia("(prefers-reduced-motion: reduce)"),
+    x = o.querySelector("[data-title-glyphs]"),
+    s = [...o.querySelectorAll(".payathon-name [data-title-char]")].sort(
+      (t, e) => Number(t.dataset.titleChar) - Number(e.dataset.titleChar),
+    ),
+    f = [
+      ...o.querySelectorAll(
+        ".payathon-aipay-logo[data-title-char], .payathon-subtitle [data-title-char]",
+      ),
+    ],
+    b = o.querySelector(".payathon-bracket-left"),
+    g = o.querySelector(".payathon-bracket-right"),
+    $ = s.map((t) => {
+      const e = t.getBBox();
+      return e.x + e.width + (Number(t.dataset.titleChar) >= 8 ? 487 : 0);
+    }),
+    S = 160,
+    A = S * 3,
+    d = 55,
+    u = A,
+    B = f.reduce(
+      (t, e) =>
+        t +
+        (e.matches(".payathon-subtitle-label")
+          ? Array.from(e.textContent).length
+          : 1),
+      0,
+    ),
+    w = u + (s.length + B) * d + 200,
+    O = w + 300;
+  let v = 0,
+    y = null,
+    i = 0,
+    L = !1,
+    q = !1;
+  function P(t) {
+    const e = Math.min(s.length, Math.max(0, Math.floor((t - u) / d))),
+      E = (606 - (e ? $[e - 1] : 0)) / 2;
+    (x.setAttribute("transform", `translate(${E} 0)`),
+      s.forEach((n, h) => {
+        n.style.opacity = h < e ? "1" : "0";
+      }));
+    const N = e === 0 ? 18 : 0;
+    (b.setAttribute("transform", `translate(${E + N} 0)`),
+      g.setAttribute("transform", `translate(${-E - N} 0)`));
+    const D =
+      t < A
+        ? String(t % S < 100 ? 1 : 0)
+        : String(Math.max(0, 1 - Math.max(0, t - w) / 300));
+    b.style.opacity = g.style.opacity = D;
+    const R = Math.max(0, Math.floor((t - u) / d) - s.length);
+    f.forEach((n, h) => {
+      if (!n.closest(".payathon-subtitle-label")) {
+        n.style.opacity = h < R ? "1" : "0";
+        return;
+      }
+      const a = t - (u + (s.length + h) * d),
+        U = Math.max(0, Math.min(1, a / 130)),
+        j = Math.max(0, Math.min(1, (a - 190) / 130)),
+        z = (1 - Math.pow(1 - U, 3)) * (1 - j),
+        G = a < 190 && a % 80 > 53 ? 0.18 : 1;
+      ((n.style.opacity = a >= 0 ? "1" : "0"),
+        n.style.setProperty("--subtitle-block-scale", String(z)),
+        n.style.setProperty(
+          "--subtitle-block-opacity",
+          String(a >= 0 && a < 320 ? G : 0),
+        ),
+        n.style.setProperty(
+          "--subtitle-text-opacity",
+          String(Math.max(0, Math.min(1, (a - 230) / 90))),
+        ));
+    });
+  }
+  function r(t = !0) {
+    ((q = !0),
+      t && T("title"),
+      cancelAnimationFrame(i),
+      (i = 0),
+      x.removeAttribute("transform"),
+      s.forEach((e) => {
+        e.style.opacity = "1";
+      }),
+      f.forEach((e) => {
+        ((e.style.opacity = "1"),
+          e.style.setProperty("--subtitle-block-scale", "0"),
+          e.style.setProperty("--subtitle-block-opacity", "0"),
+          e.style.setProperty("--subtitle-text-opacity", "1"));
+      }),
+      (b.style.opacity = g.style.opacity = "0"));
+  }
+  function I(t) {
+    if (((i = 0), y !== null && (v += Math.min(50, t - y)), (y = t), v >= O)) {
+      r();
+      return;
+    }
+    (P(v), (i = requestAnimationFrame(I)));
+  }
+  function l() {
+    (cancelAnimationFrame(i),
+      (i = 0),
+      (y = null),
+      c.matches && r(),
+      !q && L && !document.hidden && (i = requestAnimationFrame(I)));
+  }
+  k ? (r(), T("scene")) : c.matches ? r() : P(0);
+  const C = new IntersectionObserver(([t]) => {
+    ((L = t.isIntersecting), l());
+  });
+  C.observe(o);
+  const F = () => r();
+  (document.addEventListener("payathon:intro-timeout", F),
+    document.addEventListener("visibilitychange", l),
+    c.addEventListener("change", l),
+    (m = () => {
+      (r(!1),
+        C.disconnect(),
+        document.removeEventListener("payathon:intro-timeout", F),
+        document.removeEventListener("visibilitychange", l),
+        c.removeEventListener("change", l));
+    }));
+}
+M();
+document.addEventListener("astro:before-swap", () => m?.());
+document.addEventListener("astro:page-load", () => M());
+window.addEventListener("pagehide", () => m?.());
+window.addEventListener("pageshow", (p) => {
+  p.persisted && M(!0);
+});

@@ -1,0 +1,210 @@
+import {
+  a as Y,
+  s as z,
+  D as Z,
+} from "./announcement-jellyfish-shape.-7JltxTM.js";
+let M;
+function O() {
+  M?.();
+  const v = [...document.querySelectorAll("[data-payathon-nav-jellyfish]")],
+    q = new AbortController(),
+    r = matchMedia("(prefers-reduced-motion: reduce)"),
+    f = { ...Z, sway: 0, follow: 0 },
+    A = { left: -1e3, right: 1e3, top: -1e3, bottom: 1e3, cx: 0, lip: 0 },
+    E = (f.charge / 100) * 3.2 * 0.45,
+    $ = Y(E, f).lift,
+    H = 0.9 + 0.3,
+    D = (e) => {
+      const t = Math.max(0, e - H),
+        n = E + t;
+      return { phase: n, lift: Math.max(0, Y(n, f).lift - $) };
+    },
+    B = z(E, 0, 0, f, 0, A),
+    K = (Math.min(...B.map((e) => e.y)) + Math.max(...B.map((e) => e.y))) / 2,
+    c = v
+      .map((e) => ({
+        canvas: e,
+        link: e.closest("a"),
+        ctx: e.getContext("2d"),
+        visible: !1,
+        swimming: e.hasAttribute("data-activity-swim"),
+        width: 416,
+        born: 0,
+        burst: { next: 3, start: -1 / 0, glyphs: new Map() },
+      }))
+      .filter((e) => e.ctx),
+    G = (e) =>
+      e.visible &&
+      !e.canvas.closest("[hidden]") &&
+      (e.swimming ||
+        e.canvas.hasAttribute("data-stationary") ||
+        e.link?.matches(":hover,:focus-visible"));
+  let l = 0,
+    g = 0,
+    a = 0;
+  const Q = (e) => {
+      const { ctx: t, width: n, canvas: s, burst: i } = e,
+        m = 0.42,
+        b = 96;
+      (t.setTransform(s.width / n, 0, 0, s.height / b, 0, 0),
+        t.clearRect(0, 0, n, b));
+      let L = r.matches ? 0 : a - e.born,
+        R = D(L),
+        T = R.lift * 22 * m;
+      n - b / 2 - T < -100 &&
+        ((e.born = a),
+        (L = 0),
+        (R = D(0)),
+        (T = 0),
+        (i.next = a + 3),
+        (i.start = -1 / 0),
+        i.glyphs.clear());
+      const V = n - b / 2 - T,
+        I = z(R.phase, 0, 0, f, 0, A);
+      (!r.matches &&
+        a >= i.next &&
+        ((i.start = a),
+        (i.next = a + 2.5 + Math.random() * 1.5),
+        i.glyphs.clear(),
+        I.forEach((o, p) => {
+          Math.random() < 0.25 &&
+            i.glyphs.set(p, Math.random() < 0.5 ? "0" : "1");
+        })),
+        (t.textAlign = "center"),
+        (t.textBaseline = "middle"),
+        I.forEach((o, p) => {
+          const N = L - (p / Math.max(1, I.length - 1)) * 0.9,
+            S = !r.matches && N < 0.3,
+            d = a - i.start,
+            k =
+              !r.matches && !S && d >= 0 && d < 1.2 ? i.glyphs.get(p) : void 0,
+            P = k !== void 0 && d >= 0.28 && d < 0.92 ? k : void 0,
+            y = S || (k !== void 0 && P === void 0),
+            U = S ? N : d < 0.28 ? d : d - 0.92,
+            X = y ? (U < 0 ? 0.12 : U % 0.15 < 0.09 ? 1 : 0.12) : 1;
+          ((t.globalAlpha = o.alpha * X),
+            (t.fillStyle = t.strokeStyle = y ? "#ffffff" : o.color));
+          const F = V + (o.y - K) * m,
+            C = b / 2 - o.x * m;
+          if (o.line && !y && P === void 0) {
+            const w = o.line.angle - Math.PI / 2,
+              x = (o.line.length * m) / 2;
+            ((t.lineWidth = Math.max(0.65, o.size * m * 0.085)),
+              (t.lineCap = "round"),
+              t.beginPath(),
+              t.moveTo(F - Math.cos(w) * x, C - Math.sin(w) * x),
+              t.lineTo(F + Math.cos(w) * x, C + Math.sin(w) * x),
+              t.stroke());
+          } else
+            ((t.font = `600 ${Math.max(3, o.size * m)}px monospace`),
+              t.fillText(y ? "█" : (P ?? o.char), F, C));
+        }),
+        (t.globalAlpha = 1));
+    },
+    u = (e) => {
+      if (e.swimming) {
+        Q(e);
+        return;
+      }
+      const { ctx: t } = e;
+      (t.setTransform(e.canvas.width / 44, 0, 0, e.canvas.height / 32, 0, 0),
+        t.clearRect(0, 0, 44, 32),
+        (t.font = "700 3px monospace"),
+        (t.textAlign = "center"),
+        (t.textBaseline = "middle"),
+        (t.lineWidth = 0.25),
+        (t.lineJoin = "round"));
+      for (const n of z(a, 0, 0, f, 0, A)) {
+        ((t.fillStyle = n.color),
+          (t.strokeStyle = n.color),
+          (t.globalAlpha = n.alpha),
+          t.save(),
+          t.translate(
+            29 -
+              n.y * 0.12 +
+              (e.canvas.hasAttribute("data-stationary")
+                ? 0
+                : Math.sin((a * Math.PI) / 1.6) * 2),
+            16 + n.x * 0.12,
+          ),
+          t.rotate(n.line ? n.line.angle : Math.PI / 2));
+        const s = n.line ? "|" : n.char;
+        (t.strokeText(s, 0, 0), t.fillText(s, 0, 0), t.restore());
+      }
+      t.globalAlpha = 1;
+    },
+    J = (e) => {
+      ((l = 0),
+        e - g >= 1e3 / 24 &&
+          ((a += Math.min((e - g) / 1e3, 0.1)),
+          (g = e),
+          c.filter(G).forEach(u)),
+        (l = requestAnimationFrame(J)));
+    },
+    h = () => {
+      const e = !document.hidden && !r.matches && c.some(G);
+      (e && !l && ((g = performance.now()), (l = requestAnimationFrame(J))),
+        e || (cancelAnimationFrame(l), (l = 0)),
+        r.matches && ((a = 0), c.forEach(u)));
+    },
+    W = new IntersectionObserver((e) => {
+      for (const t of e) {
+        const n = c.find((s) => s.canvas === t.target);
+        n && (n.visible = t.isIntersecting);
+      }
+      h();
+    }),
+    _ = new MutationObserver((e) => {
+      for (const t of e)
+        t.target.hidden ||
+          c
+            .filter((n) => n.swimming && t.target.contains(n.canvas))
+            .forEach((n) => {
+              ((n.born = a),
+                (n.burst.next = a + 3),
+                (n.burst.start = -1 / 0),
+                n.burst.glyphs.clear(),
+                u(n));
+            });
+      h();
+    }),
+    j = new ResizeObserver((e) => {
+      for (const t of e) {
+        const n = c.find((i) => i.canvas === t.target);
+        if (!n || t.contentRect.width <= 0 || t.contentRect.height <= 0)
+          continue;
+        n.width = (t.contentRect.width / t.contentRect.height) * 96;
+        const s = Math.min(devicePixelRatio || 1, 2);
+        ((n.canvas.width = Math.round(t.contentRect.width * s)),
+          (n.canvas.height = Math.round(t.contentRect.height * s)),
+          u(n));
+      }
+    });
+  (v.forEach((e) => {
+    const t = e.closest(".siteMenuContent,[data-activity-notice]");
+    t && _.observe(t, { attributes: !0, attributeFilter: ["hidden"] });
+  }),
+    c.forEach((e) => {
+      (e.swimming && j.observe(e.canvas), u(e), W.observe(e.canvas));
+      for (const t of ["pointerenter", "pointerleave", "focus", "blur"])
+        e.link?.addEventListener(t, h, { signal: q.signal });
+    }),
+    document.addEventListener("visibilitychange", h),
+    r.addEventListener("change", h),
+    (M = () => {
+      (q.abort(),
+        cancelAnimationFrame(l),
+        W.disconnect(),
+        _.disconnect(),
+        j.disconnect(),
+        document.removeEventListener("visibilitychange", h),
+        r.removeEventListener("change", h));
+    }));
+}
+O();
+document.addEventListener("astro:page-load", O);
+document.addEventListener("astro:before-swap", () => M?.());
+window.addEventListener("pagehide", () => M?.());
+window.addEventListener("pageshow", (v) => {
+  v.persisted && O();
+});

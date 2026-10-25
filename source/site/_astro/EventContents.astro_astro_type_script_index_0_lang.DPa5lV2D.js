@@ -1,0 +1,258 @@
+let w;
+function q() {
+  w?.();
+  const n = document.querySelector("[data-event-contents]"),
+    b = document.querySelector("[data-payathon-header]"),
+    f = document.querySelector(".payathon-hero");
+  if (!n || !b || !f) return;
+  const C = new AbortController(),
+    { signal: s } = C,
+    u = matchMedia("(min-width:1440px)"),
+    v = matchMedia("(prefers-reduced-motion:reduce)"),
+    l = [...n.querySelectorAll(".contents-links a")],
+    B = l.map((e) => document.getElementById(e.hash.slice(1))),
+    d = document.createElement("div");
+  ((d.className = "contents-blend-layer"),
+    d.setAttribute("aria-hidden", "true"),
+    (d.hidden = !0));
+  const Y = l.map((e) => {
+      const t = document.createElement("span");
+      return ((t.textContent = e.textContent), d.append(t), t);
+    }),
+    z = [...n.querySelectorAll(".contents-brand svg")]
+      .filter((e) => e.querySelector('path[fill="#FFFFFF"]'))
+      .map((e) => {
+        const t = e.cloneNode(!0);
+        (t
+          .querySelectorAll('path:not([fill="#FFFFFF"])')
+          .forEach((o) => o.remove()),
+          e
+            .querySelectorAll('path[fill="#FFFFFF"]')
+            .forEach((o) => o.setAttribute("data-contents-invert", "")));
+        const r = document.createElement("span");
+        return (
+          (r.className = "contents-blend-logo"),
+          r.append(t),
+          d.append(r),
+          { source: e, layer: r }
+        );
+      });
+  (document.body.append(d), n.setAttribute("data-blend-ready", ""));
+  const N = () => {
+    if (((d.hidden = !u.matches || !n.hasAttribute("data-visible")), d.hidden))
+      return;
+    z.forEach(({ source: t, layer: r }) => {
+      const o = t.getBoundingClientRect();
+      Object.assign(r.style, {
+        left: `${o.left}px`,
+        top: `${o.top}px`,
+        width: `${o.width}px`,
+        height: `${o.height}px`,
+      });
+    });
+    const e = n.querySelector("nav").getBoundingClientRect();
+    ((d.style.clipPath = `inset(${Math.max(0, e.top)}px 0 ${Math.max(0, innerHeight - e.bottom)}px 0)`),
+      l.forEach((t, r) => {
+        const o = Y[r];
+        if (((o.hidden = t.hasAttribute("aria-current")), o.hidden)) return;
+        const a = t.querySelector("span"),
+          i = a.getBoundingClientRect(),
+          h = getComputedStyle(a),
+          A = i.height / (parseFloat(h.lineHeight) || 18);
+        Object.assign(o.style, {
+          left: `${i.left}px`,
+          top: `${i.top}px`,
+          fontFamily: h.fontFamily,
+          fontWeight: h.fontWeight,
+          fontSize: `${parseFloat(h.fontSize) * A}px`,
+          lineHeight: `${i.height}px`,
+        });
+      }));
+  };
+  let m = 0,
+    $ = -1,
+    E = 60,
+    g = !0,
+    k = 0,
+    S = [];
+  const M = l.map(() => 0);
+  let p = -1,
+    y = -1;
+  const K = () => {
+    ((m = 0),
+      g &&
+        ((S = B.map((a) =>
+          a ? a.getBoundingClientRect().top + scrollY : 1 / 0,
+        )),
+        (k = f.getBoundingClientRect().bottom + scrollY),
+        (g = !1)));
+    const e = scrollY + E + 100;
+    n.toggleAttribute("data-visible", k <= e);
+    let t = 0;
+    (S.forEach((a, i) => {
+      a <= e && (t = i);
+    }),
+      scrollY > 0 &&
+        innerHeight + scrollY >= document.documentElement.scrollHeight - 2 &&
+        (t = l.length - 1));
+    const r = Math.max(0, 1 - (S[t + 1] - e) / 160),
+      o = p >= 0 ? p : y >= 0 ? y : t + (Number.isFinite(r) ? r : 0);
+    (l.forEach((a, i) => {
+      const h = Math.abs(i - o),
+        A = v.matches
+          ? i === t
+            ? 1.18
+            : 1
+          : 1 + 0.18 * Math.exp((-h * h) / 1.1),
+        L = Math.round(A * 1e3) / 1e3;
+      M[i] !== L &&
+        ((M[i] = L),
+        a.style.setProperty("--dock-scale", String(L)),
+        u.matches && !v.matches && (R = performance.now() + 400));
+    }),
+      t !== $ &&
+        (($ = t),
+        l.forEach((a, i) => {
+          i === t
+            ? a.setAttribute("aria-current", "location")
+            : a.removeAttribute("aria-current");
+        }),
+        (n.querySelector("[data-contents-current]").textContent = l[
+          t
+        ].textContent.replace(/^\d+\s*/, ""))),
+      N(),
+      u.matches && performance.now() < R && c());
+  };
+  let R = 0;
+  const c = () => {
+      !m && !document.hidden && (m = requestAnimationFrame(K));
+    },
+    F = new ResizeObserver(() => {
+      ((E = b.getBoundingClientRect().height),
+        document.documentElement.style.setProperty(
+          "--event-header-height",
+          `${E}px`,
+        ),
+        (g = !0),
+        c());
+    });
+  (F.observe(b), F.observe(f), B.filter(Boolean).forEach((e) => F.observe(e)));
+  const H = new MutationObserver(c);
+  (H.observe(b, { attributes: !0, attributeFilter: ["data-ready"] }),
+    n
+      .querySelector("nav")
+      .addEventListener("scroll", c, { passive: !0, signal: s }));
+  const x = n.querySelector(".contents-links");
+  (x.addEventListener(
+    "pointerover",
+    (e) => {
+      if (e.pointerType === "touch") return;
+      const t = l.indexOf(e.target.closest("a"));
+      t !== p && ((p = t), c());
+    },
+    { signal: s },
+  ),
+    x.addEventListener(
+      "pointerleave",
+      () => {
+        ((p = -1), c());
+      },
+      { signal: s },
+    ),
+    x.addEventListener(
+      "focusin",
+      (e) => {
+        ((y = l.indexOf(e.target.closest("a"))), c());
+      },
+      { signal: s },
+    ),
+    x.addEventListener(
+      "focusout",
+      () => {
+        ((y = -1), c());
+      },
+      { signal: s },
+    ));
+  const O = () => {
+    ((p = -1), (y = -1), (n.open = u.matches), c());
+  };
+  (u.addEventListener("change", O, { signal: s }),
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        document.hidden ? (cancelAnimationFrame(m), (m = 0)) : ((g = !0), c());
+      },
+      { signal: s },
+    ),
+    window.addEventListener("scroll", c, { passive: !0, signal: s }),
+    window.addEventListener(
+      "resize",
+      () => {
+        ((g = !0), c());
+      },
+      { passive: !0, signal: s },
+    ),
+    v.addEventListener("change", c, { signal: s }),
+    n.addEventListener(
+      "click",
+      (e) => {
+        const t = e.target.closest(".contents-links a");
+        if (
+          !t ||
+          e.button !== 0 ||
+          e.metaKey ||
+          e.ctrlKey ||
+          e.shiftKey ||
+          e.altKey
+        )
+          return;
+        const r = document.getElementById(t.hash.slice(1));
+        if (!r) return;
+        (e.preventDefault(), u.matches || (n.open = !1));
+        const o = t.hash === "#overview" ? f : r;
+        (history.pushState(null, "", t.hash),
+          o.setAttribute("tabindex", "-1"),
+          o.focus({ preventScroll: !0 }));
+        const a =
+          o === f ? 0 : scrollY + o.getBoundingClientRect().top - E - 80;
+        window.scrollTo({ top: a, behavior: v.matches ? "instant" : "smooth" });
+      },
+      { signal: s },
+    ),
+    document.addEventListener(
+      "click",
+      (e) => {
+        !u.matches && !n.contains(e.target) && (n.open = !1);
+      },
+      { signal: s },
+    ),
+    n.addEventListener(
+      "keydown",
+      (e) => {
+        e.key === "Escape" &&
+          !u.matches &&
+          ((n.open = !1), n.querySelector("summary").focus());
+      },
+      { signal: s },
+    ),
+    O(),
+    (w = () => {
+      (d.remove(),
+        n
+          .querySelectorAll("[data-contents-invert]")
+          .forEach((e) => e.removeAttribute("data-contents-invert")),
+        n.removeAttribute("data-blend-ready"),
+        C.abort(),
+        F.disconnect(),
+        H.disconnect(),
+        cancelAnimationFrame(m),
+        document.documentElement.style.removeProperty("--event-header-height"));
+    }));
+}
+q();
+document.addEventListener("astro:page-load", q);
+document.addEventListener("astro:before-swap", () => w?.());
+window.addEventListener("pagehide", () => w?.());
+window.addEventListener("pageshow", (n) => {
+  n.persisted && q();
+});

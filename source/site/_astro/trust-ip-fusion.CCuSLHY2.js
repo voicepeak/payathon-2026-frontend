@@ -1,0 +1,317 @@
+const N = 720,
+  G = (t) => {
+    const l = Math.max(0, Math.min(1, t));
+    return l * l * l * (l * (l * 6 - 15) + 10);
+  };
+function J(t, l) {
+  const h = t
+      .slice(1)
+      .map((i, d) => Math.abs(i.x - t[d].x) + Math.abs(i.y - t[d].y)),
+    s = h.reduce((i, d) => i + d, 0);
+  let x = Math.max(0, Math.min(1, l)) * s;
+  for (let i = 0; i < h.length; i++) {
+    const d = h[i];
+    if (d !== 0) {
+      if (x <= d || i === h.length - 1) {
+        const a = t[i],
+          y = t[i + 1],
+          T = Math.min(1, x / d);
+        return {
+          x: a.x + (y.x - a.x) * T,
+          y: a.y + (y.y - a.y) * T,
+          dx: y.x - a.x,
+          dy: y.y - a.y,
+          leg: i,
+          total: s,
+        };
+      }
+      x -= d;
+    }
+  }
+  return {
+    ...t[t.length - 1],
+    dx: 0,
+    dy: 0,
+    leg: Math.max(0, h.length - 1),
+    total: s,
+  };
+}
+function K(t, l, h = !0) {
+  return [t, h ? { x: t.x, y: l.y } : { x: l.x, y: t.y }, l];
+}
+const W = new WeakMap(),
+  r = {
+    node: null,
+    slot: 0,
+    attached: !1,
+    surface: 1,
+    releasing: !1,
+    arriving: !1,
+  },
+  Q = { x: 0, y: 0, blinkAt: -1e3 },
+  X = (t) => ((t = Math.max(0, Math.min(1, t))), t * t * (3 - 2 * t));
+function U(t, l) {
+  const h = matchMedia("(prefers-reduced-motion: reduce)");
+  let s = null,
+    x = 0,
+    i = 0,
+    d = 0,
+    a = "idle",
+    y = 0,
+    T = 0,
+    B = 1,
+    L = !1,
+    C = 0,
+    w = 1,
+    A = 1,
+    R = -1 / 0,
+    v = { x: 0, y: 0 },
+    f = { x: 0, y: 0 },
+    I = { x: 0, y: 0 },
+    j = 1,
+    g = 1,
+    F = 1,
+    Y = { x: 0, y: 0 },
+    D = [];
+  const P = () => {
+      (clearTimeout(x), (x = 0), (s = null), (d = performance.now()));
+    },
+    p = () => {
+      (P(),
+        (a = "idle"),
+        (L = !1),
+        (w = A = 1),
+        (R = -1 / 0),
+        (r.node = null),
+        (r.attached = !1),
+        (r.releasing = !1),
+        (r.arriving = !1),
+        (r.slot = 0),
+        (r.surface = 1));
+    };
+  (document.querySelectorAll("[data-trust-clay]").forEach((E) => {
+    const m = E.closest(".trustCard");
+    (m?.addEventListener(
+      "pointerenter",
+      (u) => {
+        u.pointerType === "touch" ||
+          h.matches ||
+          (clearTimeout(x),
+          (x = window.setTimeout(
+            () => {
+              ((s = E), (i = performance.now()), (C = 0), t());
+            },
+            a === "idle" ? 70 : 0,
+          )));
+      },
+      { signal: l },
+    ),
+      m?.addEventListener(
+        "pointerleave",
+        () => {
+          (P(), t());
+        },
+        { signal: l },
+      ),
+      m?.addEventListener(
+        "pointercancel",
+        () => {
+          (P(), t());
+        },
+        { signal: l },
+      ));
+  }),
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        (document.hidden && p(), t());
+      },
+      { signal: l },
+    ),
+    window.addEventListener(
+      "blur",
+      () => {
+        (P(), t());
+      },
+      { signal: l },
+    ),
+    h.addEventListener(
+      "change",
+      () => {
+        (p(), t());
+      },
+      { signal: l },
+    ),
+    l.addEventListener("abort", p, { once: !0 }));
+  const q = (E, m) => {
+    const u = r.node,
+      b = u && W.get(u)?.[r.slot];
+    if (!u || !b) return null;
+    const o = u.getBoundingClientRect(),
+      M = Math.max(0.3, (b.width * o.width) / 22.25),
+      S = o.left + (E ? b.entryX : b.x) * o.width,
+      n = o.top + (E ? b.entryY : b.y) * o.height;
+    return { x: S + m.x * M, y: n + m.y * M, scale: M };
+  };
+  return {
+    get active() {
+      return a !== "idle";
+    },
+    get attached() {
+      return a === "surface" || a === "attached";
+    },
+    get shell() {
+      return { x: w, y: A };
+    },
+    get center() {
+      return Y;
+    },
+    sample(E, m, u, b) {
+      if (!b || h.matches || document.hidden) return (p(), null);
+      const o = performance.now();
+      if (s) {
+        const n = s.getBoundingClientRect();
+        (n.bottom < 80 || n.top > innerHeight - 50) && P();
+      }
+      const M = () => {
+          if (!s) return !0;
+          const n = s.closest("[data-trust-entrance]")?.dataset.trustEntrance;
+          return (
+            s.dataset.volume === "ready" &&
+            (!n || n === "done") &&
+            !!W.get(s)?.length
+          );
+        },
+        S = (n = !1) => {
+          if (
+            ((v = { ...f }),
+            (j = g),
+            (y = o),
+            (a = "flight"),
+            (r.attached = !1),
+            (r.releasing = !1),
+            (r.arriving = !1),
+            (w = A = 1),
+            n && (R = o),
+            (L = !s),
+            s)
+          ) {
+            (r.node !== s && (B = 1), (r.node = s), (r.slot = C));
+            const e = q(!0, u);
+            if (!e) {
+              p();
+              return;
+            }
+            ((I = { x: e.x, y: e.y }), (F = e.scale));
+          } else {
+            const e = document
+              .querySelector("[data-agent-friendly]")
+              ?.getBoundingClientRect();
+            ((I = {
+              x: e ? e.right + 18 : innerWidth - 48,
+              y: e ? e.top + e.height * 1.32 : 72,
+            }),
+              (F = e ? e.height / 36 : 1));
+          }
+          D = K(v, I);
+        };
+      if (a === "idle") {
+        if (!s) return null;
+        if (!M()) return (o - i < 2400 ? t() : P(), null);
+        ((f = { ...E }), (g = m), S());
+      }
+      if (a === "attached") {
+        const n = W.get(r.node)?.length || 1;
+        let e = s !== r.node && (s !== null || o - d > 100);
+        if (
+          (!e &&
+            s &&
+            n > 1 &&
+            o - T > 1150 &&
+            (r.slot === n - 1 ? (B = -1) : r.slot === 0 && (B = 1),
+            (C = r.slot + B),
+            (e = !0)),
+          e && M())
+        ) {
+          const c = q(!1, u);
+          (c && ((f = c), (g = c.scale)), S(!0));
+        }
+      }
+      if (
+        (a === "flight" && s !== r.node && M() && !L && S(),
+        a === "flight" && L && s && M() && S(),
+        a === "flight")
+      ) {
+        const n = Math.min(1, (o - R) / 210),
+          e = n - 1,
+          c = 1 + 2.7 * e * e * e + 1.7 * e * e,
+          H = Math.sin(n * Math.PI * 2) * Math.sin(n * Math.PI) * 0.12;
+        ((w = Math.max(0.001, c + H)), (A = Math.max(0.001, c - H)));
+        const O = Math.min(1, (o - y) / (L ? 560 : 520)),
+          z = 0.65 * X(O) + 0.35 * G(O);
+        if (((f = J(D, z)), (g = j + (F - j) * z), O === 1)) {
+          if (L)
+            return (
+              p(),
+              t(),
+              {
+                ...f,
+                scale: g,
+                proofPointer: !1,
+                hidden: !1,
+                stretch: 0,
+                occluder: null,
+                preserveOrientation: !1,
+                tangent: null,
+                rejoinProgress: 1,
+              }
+            );
+          ((a = "absorb"), (y = o), (v = { ...f }), (r.arriving = !0));
+        }
+      } else if (a === "absorb") {
+        const n = Math.min(1, (o - y) / 120),
+          e = X(n),
+          c = q(!0, u);
+        (c &&
+          ((f = { x: v.x + (c.x - v.x) * e, y: v.y + (c.y - v.y) * e }),
+          (g = c.scale)),
+          (w = 1 - e),
+          (A = 1 - e),
+          n === 1 &&
+            ((a = "surface"), (y = o), (r.attached = !0), (r.surface = 0)));
+      } else if (a === "surface") {
+        const n = Math.min(1, (o - y) / 190);
+        r.surface = X(n);
+        const e = q(!0, u),
+          c = q(!1, u);
+        (e &&
+          c &&
+          ((f = {
+            x: e.x + (c.x - e.x) * r.surface,
+            y: e.y + (c.y - e.y) * r.surface,
+          }),
+          (g = c.scale)),
+          n === 1 && ((a = "attached"), (T = o)));
+      } else if (a === "attached") {
+        const n = q(!1, u);
+        n && ((f = n), (g = n.scale));
+      }
+      return (
+        (Y = { x: f.x - u.x * g, y: f.y - u.y * g }),
+        t(),
+        {
+          ...f,
+          scale: g,
+          proofPointer: !1,
+          hidden: !1,
+          stretch: 0,
+          occluder: null,
+          preserveOrientation: !1,
+          tangent: null,
+          rejoinProgress: 1,
+        }
+      );
+    },
+  };
+}
+export { W as a, r as b, K as c, N as d, G as e, U as m, J as s, Q as t };

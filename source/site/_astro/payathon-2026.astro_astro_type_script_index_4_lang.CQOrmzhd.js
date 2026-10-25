@@ -1,0 +1,374 @@
+import { o as st } from "./payathon-activity.D_OqE3WT.js";
+let T;
+function H() {
+  T?.();
+  const o = [
+    ...document.querySelectorAll(
+      ".payathon-hero, [data-tide-footer], #payathon-page .event-english-title, #payathon-page .race-partners-window",
+    ),
+  ].map(it);
+  T = () => o.forEach((y) => y());
+}
+function it(o) {
+  const y = o.classList.contains("event-english-title"),
+    c = o.classList.contains("race-partners-window"),
+    X = y ? window : o,
+    N = c ? o.querySelector(".race-partners-track") : null,
+    g = matchMedia("(prefers-reduced-motion: reduce)"),
+    l = [],
+    R = [];
+  for (const e of o.querySelectorAll(".reveal-ink, .payathon-subtitle-label")) {
+    const a = document.createTreeWalker(e, NodeFilter.SHOW_TEXT),
+      n = [];
+    for (; a.nextNode(); )
+      a.currentNode.parentElement.closest("[data-countdown]") ||
+        n.push(a.currentNode);
+    for (const d of n) {
+      const r = document.createDocumentFragment();
+      for (const t of d.textContent) {
+        if (/\s/.test(t)) {
+          r.append(t);
+          continue;
+        }
+        const f = document.createElement("span");
+        ((f.className = "interactive-glyph"),
+          (f.textContent = t),
+          r.append(f),
+          R.push(f),
+          l.push({
+            node: f,
+            svg: !1,
+            amount: 0,
+            x: 0,
+            y: 0,
+            kickX: 0,
+            kickY: 0,
+          }));
+      }
+      d.replaceWith(r);
+    }
+  }
+  for (const e of o.querySelectorAll("[data-countdown-digit]"))
+    l.push({
+      node: e,
+      svg: !1,
+      vector: !0,
+      amount: 0,
+      x: 0,
+      y: 0,
+      kickX: 0,
+      kickY: 0,
+    });
+  for (const e of o.querySelectorAll(".payathon-aipay-logo"))
+    l.push({
+      node: e,
+      svg: !1,
+      vector: !0,
+      image: !0,
+      amount: 0,
+      x: 0,
+      y: 0,
+      kickX: 0,
+      kickY: 0,
+    });
+  for (const e of o.querySelectorAll(
+    ".payathon-name [data-title-char], [data-tide-logo] path, .english-heading use",
+  ))
+    l.push({ node: e, svg: !0, amount: 0, x: 0, y: 0, kickX: 0, kickY: 0 });
+  if (c)
+    for (const e of o.querySelectorAll(".race-partners-list img"))
+      l.push({
+        node: e,
+        svg: !1,
+        vector: !0,
+        image: !0,
+        amount: 0,
+        x: 0,
+        y: 0,
+        kickX: 0,
+        kickY: 0,
+      });
+  function et(e) {
+    return (
+      e.layers ||
+        (e.layers = [
+          "var(--payathon-split-forward-svg, #21b8ffe6)",
+          "var(--payathon-split-backward-svg, #ff8623e6)",
+        ].map((a) => {
+          const n = document.createElementNS("http://www.w3.org/2000/svg", "g"),
+            d = e.node.cloneNode(!0);
+          for (const r of [d, ...d.querySelectorAll("*")]) {
+            for (const t of [...r.attributes])
+              (t.name === "id" || t.name.startsWith("data-")) &&
+                r.removeAttribute(t.name);
+            (r.style.removeProperty("transform"),
+              r.style.removeProperty("filter"),
+              (r.style.opacity = "1"),
+              (r.style.color = a),
+              r.getAttribute("fill") !== "none" && (r.style.fill = a));
+          }
+          return (
+            n.setAttribute("aria-hidden", "true"),
+            (n.style.pointerEvents = "none"),
+            n.append(d),
+            e.node.before(n),
+            n
+          );
+        })),
+      e.layers
+    );
+  }
+  let p = null,
+    k = 0,
+    $ = 0,
+    Y = !0,
+    M = !1,
+    i = null;
+  const E = [];
+  let z, x;
+  const B = () => {
+      y && (z = getComputedStyle(o).color);
+      for (const e of l) {
+        if (c) {
+          const n = e.node.parentElement;
+          ((e.localX = n.offsetLeft + n.offsetWidth / 2),
+            (e.localY = n.offsetTop + n.offsetHeight / 2),
+            (e.scale = 1));
+          continue;
+        }
+        const a = e.node.getBoundingClientRect();
+        ((e.cx = a.x + a.width / 2 - e.x),
+          (e.cy = a.y + a.height / 2 - e.y),
+          (e.scale = e.svg
+            ? Math.hypot(
+                e.node.getScreenCTM()?.a ?? 1,
+                e.node.getScreenCTM()?.b ?? 0,
+              )
+            : e.image
+              ? a.width / (e.node.offsetWidth || a.width || 1)
+              : 1));
+      }
+      (y &&
+        (x = {
+          left: Math.min(...l.map((e) => e.cx)) - 85,
+          right: Math.max(...l.map((e) => e.cx)) + 85,
+          top: Math.min(...l.map((e) => e.cy)) - 85,
+          bottom: Math.max(...l.map((e) => e.cy)) + 85,
+        }),
+        (Y = !1));
+    },
+    D = (e) => {
+      (c && !e.painted) ||
+        ((e.painted = !1),
+        e.layers?.forEach((a) => (a.style.display = "none")),
+        e.node.style.removeProperty("transform"),
+        e.node.style.removeProperty("text-shadow"),
+        e.node.style.removeProperty("filter"),
+        y && e.node.style.removeProperty("color"));
+    },
+    O = (e) => {
+      if (((k = 0), !M || document.hidden || g.matches)) return;
+      if (c && o.closest(".race-partners").hasAttribute("data-error")) {
+        P();
+        return;
+      }
+      if ((Y && B(), c)) {
+        const t = N.getBoundingClientRect();
+        for (const f of l)
+          ((f.cx = t.left + f.localX), (f.cy = t.top + f.localY));
+      }
+      const a = $ ? Math.min(0.05, (e - $) / 1e3) : 1 / 60;
+      $ = e;
+      let n = !1;
+      const d = E.splice(0),
+        r =
+          o.hasAttribute("data-text-entered") ||
+          o.hasAttribute("data-tide-footer") ||
+          y ||
+          c;
+      for (const t of l) {
+        const f = p ? Math.hypot(t.cx - p.x, t.cy - p.y) : 1e3,
+          j = r ? Math.max(0, 1 - f / 85) ** 1.5 : 0;
+        t.amount += (j - t.amount) * (1 - Math.exp(-a * 10));
+        const G = Math.exp(-a * (c ? 8 : 4.5));
+        if (((t.kickX *= G), (t.kickY *= G), r))
+          for (const s of d) {
+            const u = s.x - s.ax,
+              h = s.y - s.ay,
+              A = u * u + h * h,
+              Z = A
+                ? Math.max(
+                    0,
+                    Math.min(1, ((t.cx - s.ax) * u + (t.cy - s.ay) * h) / A),
+                  )
+                : 0,
+              rt = Math.hypot(t.cx - s.ax - Z * u, t.cy - s.ay - Z * h),
+              F = Math.max(0, 1 - rt / 85) ** 1.5 * s.power * 36;
+            if (F > Math.hypot(t.kickX, t.kickY)) {
+              const tt = Math.sqrt(A) || 1;
+              ((t.kickX = (u / tt) * F), (t.kickY = (h / tt) * F));
+            }
+          }
+        if (
+          t.amount < 0.005 &&
+          !j &&
+          Math.hypot(t.kickX, t.kickY) < 0.08 &&
+          (!c || Math.hypot(t.x, t.y) < 0.025)
+        ) {
+          ((t.amount = 0), (t.x = t.y = t.kickX = t.kickY = 0), D(t));
+          continue;
+        }
+        ((n = !0), (t.painted = !0));
+        const q = Math.sin(e * 0.003 - t.cx * 0.035 + t.cy * 0.012),
+          J = p ? t.cx - p.x : t.x,
+          K = p ? t.cy - p.y : t.y,
+          C = Math.hypot(J, K),
+          Q = C > 0.5 ? J / C : 1,
+          U = C > 0.5 ? K / C : 0,
+          ot = (Q * 11 - U * q * 3) * t.amount + t.kickX,
+          at = (U * 11 + Q * q * 3) * t.amount + t.kickY,
+          V = 1 - Math.exp(-a * 14);
+        ((t.x += (ot - t.x) * V), (t.y += (at - t.y) * V));
+        const w = t.x * 0.42,
+          b = t.y * 0.42,
+          v = t.scale;
+        if (y) {
+          const s = Math.min(
+            1,
+            Math.max(t.amount * 1.8, Math.hypot(t.kickX, t.kickY) / 12),
+          );
+          t.node.style.color = `color-mix(in srgb, ${z}, white ${s * 100}%)`;
+        }
+        if (
+          ((t.node.style.transform = `translate(${t.x / v}px,${t.y / v}px) skewX(${q * t.amount * 3}deg)`),
+          t.svg)
+        )
+          et(t).forEach((s, u) => {
+            const h = u === 0 ? 1 : -1;
+            ((s.style.display = ""),
+              (s.style.transform = `translate(${(t.x + h * w) / v}px,${(t.y + h * b) / v}px) skewX(${q * t.amount * 3}deg)`));
+          });
+        else if (t.vector) {
+          const s = c ? Math.min(1, Math.hypot(w, b) / 2) : 1,
+            u = s * s * (3 - 2 * s) * 100,
+            h = c
+              ? `color-mix(in srgb, var(--payathon-split-forward-svg, #21b8ffe6) ${u}%, transparent)`
+              : "var(--payathon-split-forward-svg, #21b8ffe6)",
+            A = c
+              ? `color-mix(in srgb, var(--payathon-split-backward-svg, #ff8623e6) ${u}%, transparent)`
+              : "var(--payathon-split-backward-svg, #ff8623e6)";
+          t.node.style.filter = `drop-shadow(${w / v}px ${b / v}px 0px ${h}) drop-shadow(${-w / v}px ${-b / v}px 0px ${A})`;
+        } else
+          t.node.style.textShadow = `${w}px ${b}px var(--payathon-split-forward-text), ${-w}px ${-b}px var(--payathon-split-backward-text)`;
+      }
+      (n || (c && p)) && (k = requestAnimationFrame(O));
+    },
+    S = () => {
+      !k &&
+        M &&
+        !document.hidden &&
+        !g.matches &&
+        (k = requestAnimationFrame(O));
+    },
+    I = (e) => {
+      if (
+        e.pointerType === "touch" ||
+        !M ||
+        document.hidden ||
+        g.matches ||
+        (c && o.closest(".race-partners").hasAttribute("data-error"))
+      )
+        return;
+      y && Y && B();
+      const a = performance.now(),
+        n = { x: e.clientX, y: e.clientY, time: a };
+      if (y) {
+        const d =
+            n.x >= x.left && n.x <= x.right && n.y >= x.top && n.y <= x.bottom,
+          r =
+            i &&
+            a - i.time < 200 &&
+            Math.max(i.x, n.x) >= x.left &&
+            Math.min(i.x, n.x) <= x.right &&
+            Math.max(i.y, n.y) >= x.top &&
+            Math.min(i.y, n.y) <= x.bottom;
+        if (!d && !r) {
+          const t = p !== null;
+          ((p = null), (i = n), t && S());
+          return;
+        }
+      }
+      if (i) {
+        const d = (a - i.time) / 1e3;
+        if (d > 0 && d < 0.2) {
+          const r = Math.hypot(n.x - i.x, n.y - i.y) / Math.max(0.004, d);
+          (E.push({
+            ax: i.x,
+            ay: i.y,
+            x: n.x,
+            y: n.y,
+            power: Math.min(1, Math.max(0, (r - 80) / 1800)),
+          }),
+            E.length > 24 && E.shift());
+        }
+      }
+      ((i = n), (p = n), S());
+    },
+    _ = () => {
+      ((p = null), (i = null), S());
+    },
+    m = () => {
+      ((Y = !0), S());
+    },
+    P = () => {
+      (cancelAnimationFrame(k),
+        (k = 0),
+        ($ = 0),
+        (p = null),
+        (i = null),
+        (E.length = 0));
+      for (const e of l)
+        ((e.amount = 0), (e.x = e.y = e.kickX = e.kickY = 0), D(e));
+    },
+    L = () => {
+      document.hidden || g.matches || !M ? P() : m();
+    },
+    nt = st(o, (e) => {
+      ((M = e), L());
+    }),
+    W = new ResizeObserver(m);
+  return (
+    W.observe(o),
+    N && W.observe(N),
+    o.addEventListener("pointerenter", m),
+    X.addEventListener("pointermove", I, { passive: !0 }),
+    X.addEventListener("pointerleave", _),
+    o.addEventListener("animationend", m),
+    o.addEventListener("transitionend", m),
+    window.addEventListener("scroll", m, { passive: !0 }),
+    document.addEventListener("visibilitychange", L),
+    g.addEventListener("change", L),
+    () => {
+      (P(),
+        nt(),
+        W.disconnect(),
+        o.removeEventListener("pointerenter", m),
+        X.removeEventListener("pointermove", I),
+        X.removeEventListener("pointerleave", _),
+        o.removeEventListener("animationend", m),
+        o.removeEventListener("transitionend", m),
+        window.removeEventListener("scroll", m),
+        document.removeEventListener("visibilitychange", L),
+        g.removeEventListener("change", L));
+      for (const e of l) e.layers?.forEach((a) => a.remove());
+      for (const e of R) e.replaceWith(e.textContent);
+    }
+  );
+}
+H();
+document.addEventListener("astro:page-load", H);
+document.addEventListener("astro:before-swap", () => T?.());
+window.addEventListener("pagehide", () => T?.());
+window.addEventListener("pageshow", (o) => {
+  o.persisted && H();
+});
